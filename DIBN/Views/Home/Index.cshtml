@@ -1,0 +1,370 @@
+﻿@model DIBN.Models.HomePageViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" asp-for="@Model.Module" id="Module" />
+<input type="hidden" asp-for="@Model.Role" id="Role" />
+@if (Model.allowedModule.Contains("View"))
+{
+    <div id="View">
+        <!-- Important notice reminder -->
+        @if (@Model.Role != "Sales Person" && @Model.Role != "RM Team")
+        {
+            <div class="row p-0" id="ImportantMessageReminder">
+                <div class="col-12">
+                    <h6 class="front-text-theme">
+                        <strong>Important Reminder </strong>
+                    </h6>
+                </div>
+                <div class="pb-0 text-scroll">
+                    <ul>
+                        <marquee id="remiderMenu"></marquee>
+                    </ul>
+                </div>
+            </div>
+        }
+
+        <!-- End of Important notice reminder -->
+        <!-- Service(s)-->
+        @if (Model.allowedPermission.Contains("EmployeeServices") || Model.allowedPermission.Contains("CompanyServices") || Model.allowedPermission.Contains("MyRequests"))
+        {
+            <div class="row p-0">
+                <div class="col-12 float-start Services1">
+                    <div class="pb-2 ps-0 pt-0 card-body">
+                        @if (@Model.Role != "Sales Person" && @Model.Role != "RM Team")
+                        {
+                            @if (Model.allowedPermission.Contains("CompanyServices"))
+                            {
+                                <a class="btn ms-2 mb-2 text-center" style="font-size:12px;background-color:#243c7c !important;color:#fff !important;" href="@Url.Action("Index","CompanyService",new{name="CompanyServices"})" id="CompanyServices1">
+                                    Access Company Services<i class="fas fa-wrench ms-2" aria-hidden="true"></i>
+                                </a>
+                            }
+                            @if (Model.allowedPermission.Contains("EmployeeServices"))
+                            {
+                                <a class="btn ms-2 mb-2 text-center" style="font-size:12px;background-color:#243c7c !important;color:#fff !important;" href="@Url.Action("Index","EmployeeService",new{name="EmployeeServices"})" id="EmployeeServices1">
+                                    Access Employee Services<i class="fas fa-wrench ms-2" aria-hidden="true"></i>
+                                </a>
+                            }
+                        }
+                        <a class="btn ms-2 mb-2  text-center MyRequests1" style="font-size:12px;background-color:#243c7c !important;color:#fff !important;" href="@Url.Action("Index", "ServiceRequests",new{name="MyRequests"})">
+                            Track Request<i class="fas fa-address-card ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+       
+        <!-- End of Service(s)-->
+        @if (Model.allowedPermission.Contains("Company") || Model.allowedPermission.Contains("SupportTickets")
+        || Model.allowedPermission.Contains("MyRequests") || Model.allowedPermission.Contains("MyAccoun"))
+        {
+            <div class="row">
+                @if (Model.allowedPermission.Contains("Company") || Model.allowedPermission.Contains("SupportTickets"))
+                {
+                    <div class="col-lg-4 col-xl-4 col-md-8 col-sm-10 align-items-center float-start Company1">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-center">
+                                    @if (Model.allowedPermission.Contains("Company"))
+                                    {
+                                        <div class="col col-md-6 col-xl-5 col-sm-6 float-start mt-3 Company1">
+                                            <div class="card card-box-shadow">
+                                                <div class="card-body py-0 px-0 m-3">
+                                                    <a href="@Url.Action("Index","Company",new{name="Company"})">
+                                                        <div class="mx-auto d-flex justify-content-center flex-wrap">
+                                                            <i class='fas fa-city c-icon'></i>
+                                                        </div>
+                                                        <div class="mx-auto d-flex justify-content-center flex-wrap text-center text-truncate mt-2" title="My Company">
+                                                            <h6 class="front-text-theme text-center text-truncate">My Company</h6>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div> <!-- end col-->
+                                    }
+                                    @if (Model.allowedPermission.Contains("SupportTickets"))
+                                    {
+                                        <div class="col col-md-6 col-xl-5 col-sm-6 float-start ms-2 mt-3 SupportTickets101" id="SupportTickets101">
+                                            <div class="card card-box-shadow">
+                                                <div class="card-body py-0 px-0 m-3">
+                                                    <a href="@Url.Action("Index", "SupportTicket",new{name="SupportTickets"})">
+                                                        <div class="mx-auto d-flex justify-content-center flex-wrap">
+                                                            <i class='far fa-folder c-icon'></i>
+                                                        </div>
+                                                        <div class="mx-auto d-flex justify-content-center flex-wrap text-center text-truncate mt-2" title="My Cases">
+                                                            <h6 class="front-text-theme text-center text-truncate">My Cases</h6>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div> <!-- end col-->
+                                    }
+                                </div>
+                        </div>
+                    </div>
+                </div>
+                }
+                @if (Model.allowedPermission.Contains("MyRequests") || Model.allowedPermission.Contains("MyAccount"))
+                {
+                    <div class="col-lg-4 col-xl-4 col-md-8 col-sm-10 align-items-center float-start MyRequests1">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-center">
+                                    @if (Model.allowedPermission.Contains("MyRequests"))
+                                    {
+                                        <div class="col col-md-6 col-xl-5 col-sm-6 float-start mt-3 MyRequests1">
+                                            <div class="card card-box-shadow">
+                                                <div class="card-body py-0 px-0 m-3">
+                                                    <a href="@Url.Action("Index", "ServiceRequests",new{name="MyRequests"})">
+                                                        <div class="mx-auto d-flex justify-content-center flex-wrap">
+                                                            <i class='far fa-folder-open c-icon'></i>
+                                                        </div>
+                                                        <div class="mx-auto d-flex justify-content-center flex-wrap text-center text-truncate mt-2" title="My Requests">
+                                                            <h6 class="front-text-theme text-center text-truncate">My Requests</h6>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div> <!-- end col-->
+                                    }
+
+                                    @if (Model.allowedPermission.Contains("MyAccount"))
+                                    {
+                                        <div class="col col-md-6 col-xl-5 col-sm-6 float-start ms-2 mt-3" id="MyAccount1">
+                                            <div class="card card-box-shadow">
+                                                <div class="card-body py-0 px-0 m-3">
+                                                    <a href="@Url.Action("Index", "CompanyAccount",new{name="MyAccount"})">
+                                                        <div class="mx-auto d-flex justify-content-center flex-wrap">
+                                                            <i class='fas fa-chart-bar c-icon'></i>
+                                                        </div>
+                                                        <div class="mx-auto d-flex justify-content-center flex-wrap text-center text-truncate mt-2" title="My Reports">
+                                                            <h6 class="front-text-theme text-center text-truncate">My Reports</h6>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div> <!-- end col-->
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        
+        <!-- Company block -->
+        @if (Model.allowedPermission.Contains("Shareholders") || Model.allowedPermission.Contains("Employees") || Model.allowedPermission.Contains("MyRequests"))
+        {
+            <div class="row">
+                @if (Model.allowedPermission.Contains("Shareholders") || Model.allowedPermission.Contains("Employees"))
+                {
+                    <div class="col-lg-4 col-xl-4 col-md-8 col-sm-10 align-items-center float-start Employees1">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="page-title-box text-center">
+                                    <h4 class="text-center text-theme"><strong>Company</strong></h4>
+                                    <hr class="text-theme" style="height:1px;" />
+                                </div>
+                                <div class="d-flex justify-content-center">
+                                    @if (Model.allowedPermission.Contains("Shareholders"))
+                                    {
+                                        <div class="col col-md-6 col-xl-5 col-sm-6 float-start" id="Shareholders1">
+                                            <div class="card card-box-shadow">
+                                                <div class="card-body py-0 px-0 m-1">
+                                                    <a href="@Url.Action("Index","UserShareholder",new{name="Shareholders"})">
+                                                        <h6 class="text-center text-break text-truncate front-text-theme"><strong>Shareholder(s)</strong></h6>
+                                                        <div class="mx-auto d-flex justify-content-center flex-wrap my-3">
+                                                            <i class="fas fa-user-friends fa-3x text-theme"></i>
+                                                        </div>
+                                                        <h6 class="text-center mb-1 front-text-theme"><strong>@Model.CountOfShareholders</strong></h6>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div> <!-- end col-->
+                                    }
+
+                                    @if (Model.allowedPermission.Contains("Employees"))
+                                    {
+                                        <div class="col col-md-6 col-xl-5 col-sm-6 float-start ms-2 Employees1">
+                                            <div class="card card-box-shadow">
+                                                <div class="card-body py-0 px-0 m-1">
+                                                    <a href="@Url.Action("Index","User",new{name="Employees"})">
+                                                        <h6 class="text-break text-center text-truncate front-text-theme"><strong>Employee</strong></h6>
+                                                        <div class="mx-auto d-flex justify-content-center flex-wrap my-3">
+                                                            <i class="fas fa-users fa-3x text-theme"></i>
+                                                        </div>
+                                                        <h6 class="text-center mb-1 front-text-theme"><strong>@Model.CountOfEmployee</strong></h6>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div> <!-- end col-->
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                
+                @if (Model.allowedPermission.Contains("MyRequests"))
+                {
+                    <div class="col-lg-4 col-xl-4 col-md-8 col-sm-10 align-items-center float-start MyRequests1">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="page-title-box text-center">
+                                    <h4 class="text-center text-theme"><strong>Services</strong></h4>
+                                    <hr class="text-theme" style="height:1px;" />
+                                </div>
+                                <div class="d-flex justify-content-center">
+                                    <div class="col-md-4 col-xl-4 col-sm-4 float-start overflow-auto">
+                                        <div class="card card-box-shadow">
+                                            <div class="card-body py-0 px-0 m-1">
+                                                <a href="@Url.Action("Index","ServiceRequests",new{name="MyRequests",Status=0})">
+                                                    <h6 class="text-center text-truncate front-text-theme"><strong>Open Services</strong></h6>
+                                                    <div class="mx-auto d-flex justify-content-center flex-wrap my-3">
+                                                        <i class="fas fa-cogs fa-3x" style="color:#243c7c;"></i>
+                                                    </div>
+                                                    <h6 class="text-center mb-1 front-text-theme"><strong>@Model.CountOfOpenService</strong></h6>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div> <!-- end col-->
+
+                                    <div class="col-md-4 col-xl-4 col-sm-4 float-start ms-2 overflow-auto">
+                                        <div class="card card-box-shadow">
+                                            <div class="card-body py-0 px-0 m-1">
+                                                <a href="@Url.Action("Index","ServiceRequests",new{name="MyRequests",Status=3})">
+                                                    <h6 class="text-center text-truncate front-text-theme"><strong>Closed Services</strong></h6>
+                                                    <div class="mx-auto d-flex justify-content-center flex-wrap my-3">
+                                                        <i class="fas fa-cogs fa-3x" style="color:#243c7c;"></i>
+                                                    </div>
+                                                    <h6 class="text-center mb-1 front-text-theme"><strong>@Model.CountOfCloseService</strong></h6>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div> <!-- end col-->
+                                    <div class="col-md-4 col-xl-4 col-sm-4 float-start ms-2 overflow-auto">
+                                        <div class="card card-box-shadow">
+                                            <div class="card-body py-0 px-0 m-1">
+                                                <a href="@Url.Action("Index","ServiceRequests",new{name="MyRequests",Status=4})">
+                                                    <h6 class="text-center text-truncate front-text-theme"><strong>Rejected Services</strong></h6>
+                                                    <div class="mx-auto d-flex justify-content-center flex-wrap my-3">
+                                                        <i class="fas fa-cogs fa-3x" style="color:#243c7c;"></i>
+                                                    </div>
+                                                    <h6 class="text-center mb-1 front-text-theme"><strong>@Model.CountOfRejectedService</strong></h6>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div> <!-- end col-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                
+            </div>
+        }
+        
+        <!-- End of Company Block-->
+
+        <div id="importantReminder" class="modal" tabindex="-1" data-bs-keyboard="false" data-bs-backdrop="static" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Important Reminder</h5>
+                        <button type="button" class="close btn btn-theme" id="importantReminderModalClose" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="close btn btn-theme" id="closeModal">
+                            Later
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+}
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+<script>
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>
+<script>
+    $("marquee").hover(function () {
+        this.stop();
+    }, function () {
+        this.start();
+    });
+</script>
+<script>
+    $("#importantReminder").on("click", function () {
+        $("#importantReminder").modal('hide');
+    });
+    $("#closeModal").on("click", function () {
+        $("#importantReminder").modal('hide');
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $("#ImportantMessageReminder").hide();
+        $("#loader").show();
+        var role = $("#Role").val();
+        if (role != "Sales Person" && role != "RM Team") {
+            $.ajax({
+                url: "@Url.Action("GetNoticeMessage", "Home")",
+                method: "POST",
+                success: function (response) {
+                    if (response != null) {
+                        if (response.message != null) {
+                            var getMessages = response.message.split("<br/><br/>");
+                            for (var index = 0; index < getMessages.length; index++) {
+                                $("#ImportantMessageReminder").show();
+                                if (parseInt(index) % 2 == 0) {
+                                    $("#remiderMenu").append('<li style="color:#333D51 !important;">' + getMessages[index] + '</li>');
+                                }
+                                else {
+                                    $("#remiderMenu").append('<li style="color:#1f3c89 !important;">' + getMessages[index] + '</li>');
+                                }
+                            }
+                            $mymodal = $("#importantReminder");
+                            $mymodal.find("div.modal-body").html(response.message);
+                            $mymodal.find("div.modal-body").css("font-size", "16px");
+                            $mymodal.modal("show");
+                            $("#loader").hide();
+                        }
+                        else {
+                            $("#ImportantMessageReminder").hide();
+                            $("#loader").hide();
+                        }
+                    }
+                    else {
+                        $("#ImportantMessageReminder").hide();
+                        $("#loader").hide();
+                    }
+                }
+            });
+        }
+        else{
+            $("#loader").hide();
+        }
+        
+    });
+</script>

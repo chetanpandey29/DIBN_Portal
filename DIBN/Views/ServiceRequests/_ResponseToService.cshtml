@@ -1,0 +1,137 @@
+﻿@model DIBN.Models.GetRequestResponses
+<div class="row" id="View">
+
+    <form asp-action="AddServiceResponse" asp-controller="ServiceRequests" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <div class="form-group">
+                <label asp-for="StatusId" class="control-label"></label> <span class="text-danger">*</span>
+                @Html.DropDownListFor(w => w.StatusId, Model.StatusList, new { @class = "form-control form-select single-line",@id="StatusIds" })
+                <span asp-validation-for="StatusId" class="text-danger"></span>
+            </div>
+            <span asp-validation-for="StatusId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Description" class="control-label"></label>
+            <textarea asp-for="Description" class="form-control" oninvalid="this.setCustomValidity('Please Enter Description for your Service Request.')" oninput="this.setCustomValidity('')" required rows="5" cols="20">
+
+            </textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label class="control-label">Document</label>
+            <input name="formFile" class="form-control m-2" type="file" id="formFile" />
+            <span asp-validation-for="formFile" class="text-danger"></span>
+        </div>
+        <input type="hidden" asp-for="CompanyId" />
+        <input type="hidden" asp-for="UserId" />
+        <input type="hidden" asp-for="SerialNumber" />
+        <input type="hidden" asp-for="StepId" />
+        <input type="hidden" asp-for="ServiceId" />
+        <input type="hidden" asp-for="isCompany" />
+        <input type="hidden" asp-for="serviceRequestType" />
+        <input type="hidden" asp-for="FormId" />
+        <input type="hidden" asp-for="Module" id="Module" />
+
+        <div class="modal-footer">
+            <div class="form-group">
+                <input type="submit" value="Send" id="SubmittedBtn" class="btn btn-theme" />
+            </div>
+        </div>
+    </form>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    $(function () {
+        $("#Insert").hide();
+        $("#View").hide();
+        $("#View1").hide();
+        $(".Update").hide();
+        $(".Delete").hide();
+        $(".Details").hide();
+    });
+</script>
+<script>
+    $(function () {
+        var module = $("#Module").val();
+        $.ajax({
+            url: "@Url.Action("GetRolePermissionsName", "UserPermission")",
+            method: "GET",
+            data: { "Module": module },
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (RoleResponse) {
+                $.ajax({
+                    url: "@Url.Action("GetUserPermissionsName", "UserPermission")",
+                    method: "GET",
+                    data: { "Module": module },
+                    async: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (UserResponse) {
+
+                        if (UserResponse.length > 0) {
+                            for (let i = 0; i < UserResponse.length; i++) {
+                                if (UserResponse[i] == "PermissionCount") {
+                                    alert("You don't have any permission for this module.");
+                                    var url = "@Url.Action("Index","Home")";
+                                    url = url + "?name=HomePage";
+                                    window.location.href = url;
+                                } else {
+                                    $("#" + UserResponse[i]).show();
+                                    if (UserResponse[i] == "View") {
+                                        $(".Details").show();
+                                        $("#View1").show();
+                                    }
+                                    if (UserResponse[i] == "Update") {
+                                        $("." + UserResponse[i]).show();
+                                    }
+                                    if (UserResponse[i] == "Delete") {
+                                        $("." + UserResponse[i]).show();
+                                    }
+                                }
+
+                            }
+
+                        } else if (RoleResponse.length > 0) {
+                            for (let i = 0; i < RoleResponse.length; i++) {
+                                if (RoleResponse[i] == "PermissionCount") {
+                                    alert("You don't have any permission for this module.");
+                                    var url = "@Url.Action("Index","Home")";
+                                    url = url + "?name=HomePage";
+                                    window.location.href = url;
+                                }
+                                else {
+                                    $("#" + RoleResponse[i]).show();
+                                    if (RoleResponse[i] == "View") {
+                                        $(".Details").show();
+                                        $("#View1").show();
+                                    }
+                                    if (RoleResponse[i] == "Update") {
+                                        $("." + RoleResponse[i]).show();
+                                    }
+                                    if (RoleResponse[i] == "Delete") {
+                                        $("." + RoleResponse[i]).show();
+                                    }
+                                }
+
+                            }
+
+                        } else {
+                            alert("You don't have any permission for this module.");
+
+                        }
+                    }
+                })
+            }
+        });
+    });
+</script>
+<script>
+    $('form').submit(function () {
+        alert("Please Wait for a while,We are currently submitting Your Response.");
+        $('input[type="submit"]').attr('disabled', 'disabled');
+    });
+</script>

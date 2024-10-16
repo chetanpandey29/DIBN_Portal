@@ -1,0 +1,262 @@
+﻿@model DIBN.Areas.Admin.Models.MainCompanyDocumentTypeModel
+
+@{
+    ViewData["Title"] = "Index";
+}  
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+@if (Model.allowedModule.Contains("Insert"))
+{
+    <div class="row">
+        <div class="col-lg-12">
+            <button type="button" class="btn btn-theme pull-right" style="float:right;margin-bottom:15px;" onclick="AddNew();" id="Insert">Create</button>
+        </div>
+    </div>
+}
+@if (Model.allowedModule.Contains("View"))
+{
+    <div class="row" id="View">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-center">Company Document Type(s)</h4>
+                    <hr style="height:1px;" class="text-theme" />
+                    <div class="table-rep-plugin">
+                        <div class="table-responsive mb-0" data-pattern="priority-columns">
+                            <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            #
+                                        </th>
+                                        <th>
+                                            Name
+                                        </th>
+                                        @if (Model.allowedModule.Contains("Delete") || Model.allowedModule.Contains("Update"))
+                                        {
+                                            <th class="Update Delete">
+
+                                            </th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        var i = 0;
+                                    }
+                                    @foreach (var item in Model.documentTypes)
+                                    {
+                                        @if (item.DocumentName != null)
+                                        {
+
+                                            <tr>
+                                                <td>@(i + 1)</td>
+                                                <td>
+                                                    @item.DocumentName
+                                                </td>
+                                                @if (Model.allowedModule.Contains("Delete") || Model.allowedModule.Contains("Update"))
+                                                {
+                                                    <td class="Delete Update">
+                                                        @if (Model.allowedModule.Contains("Update"))
+                                                        {
+                                                            <span class="btn btn-theme Update" onclick="Update(@item.ID)">
+                                                                <i class="fas fa-edit"></i>
+                                                            </span>
+                                                        }
+                                                        @if (Model.allowedModule.Contains("Delete"))
+                                                        {
+                                                            <span class="btn btn-theme Delete" onclick="Remove(@item.ID)">
+                                                                <i class="fas fa-trash"></i>
+                                                            </span>
+                                                        }
+                                                        
+                                                    </td>
+                                                }
+                                                
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td></td>
+                                                <td>
+                                                    No data found.
+                                                </td>
+                                                @if (Model.allowedModule.Contains("Delete") || Model.allowedModule.Contains("Update"))
+                                                {
+                                                    <td class="Delete Update">
+                                                    </td>
+                                                }
+                                            </tr>
+                                        }
+                                        i++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!--Create New Company Document Type-->
+
+<div id="CreateType" class="modal" tabindex="-1" data-bs-keyboard="false" data-bs-backdrop="static" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Company Document Type</h5>
+                <button type="button" class="close btn btn-theme" id="CreateModalClose" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Edit Company Document Type-->
+
+<div id="EditType" class="modal" tabindex="-1" data-bs-keyboard="false" data-bs-backdrop="static" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit</h5>
+                <button type="button" class="close btn btn-theme" id="EditModalClose" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" name="Module" id="Module" value="@Model.Module" />
+<script src="~/bootstrap.min.js"></script>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+<script>
+    var table = $('#datatable').DataTable({
+        responsive:true,
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    });
+
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>
+<script>
+    $("#CreateModalClose").on("click", function () {
+        window.location.reload();
+    });
+    $("#EditModalClose").on("click", function () {
+        window.location.reload();
+    });
+</script>
+<script>
+    function AddNew() {
+        var module = $("#Module").val();
+        $.ajax({
+            url: "@Url.Action("Create","CompanyDocumentType")",
+            method: "GET",
+            data: { "name": module },
+            success: function (response) {
+                $mymodal = $("#CreateType");
+                $mymodal.find("div.modal-body").html(response);
+                $mymodal.modal("show");
+            }
+        });
+    }
+</script>
+<script>
+    function Update(Id) {
+        var module = $("#Module").val();
+        $.ajax({
+            url: "@Url.Action("Edit","CompanyDocumentType")",
+            method: "GET",
+            data: { "name": module, "Id": Id },
+            success: function (response) {
+                $mymodal = $("#EditType");
+                $mymodal.find("div.modal-body").html(response);
+                $mymodal.modal("show");
+            }
+        });
+    }
+</script>
+<script>
+    function Remove(Id) {
+        event.preventDefault();
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'ms-3 btn btn-success',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: false
+        })
+
+        swalWithBootstrapButtons.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true,
+            showConfirmButton: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#loader").show();
+                $.ajax({
+                    url: "@Url.Action("Remove", "CompanyDocumentType")",
+                    method: "GET",
+                    data: { "Id": Id },
+                    success: function (response) {
+                        $("#loader").hide();
+                        swalWithBootstrapButtons.fire({
+                            title: 'Deleted.',
+                            text: "Document Type Deleted Successfully..!!",
+                            icon: 'success'
+                        }).then((result) => {
+                            window.location.reload();
+                        });
+                    }
+                });
+            }
+            else if (
+                result.dismiss === Swal.DismissReason.cancel
+            ) {
+                $("#loader").hide();
+                swalWithBootstrapButtons.fire(
+                    'Cancelled',
+                    'Cancled by User..!! :)',
+                    'error'
+                )
+            }
+        });
+    }
+</script>

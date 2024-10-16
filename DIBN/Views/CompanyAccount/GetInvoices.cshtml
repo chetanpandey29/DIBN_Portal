@@ -1,0 +1,705 @@
+﻿@model DIBN.Models.GetPIAndFinalInvoices
+@{
+    ViewData["Title"] = "GetInvoices";
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row" id="View">
+    <input type="hidden" id="CompanyId" value="@Model.CompanyId"/>
+    <div class="col-md-12 p-0">
+        <div class="col-md-3 col-sm-12 col ps-1 float-start">
+            <div class="card bg-blue p-3 mb-0 Suitable text-white text-center text-break font-weight-4 font-size-16" style="border-radius:15px 15px 0px 0px;">
+                Proforma Invoice(s)
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-12 col ps-1 float-start">
+            <div class="card p-3 Benefits mb-0 text-break border-theme-top border-theme-left border-theme-right text-theme text-center font-weight-4 font-size-16" style="border-radius:15px 15px 0px 0px;">
+                Final Invoice(s)
+            </div>
+        </div>
+        <div class="col-md-12 col-sm-12 col-12 ps-1 float-start cssanimation fadeInBottom" style="background:#F8F8F8;" id="Suitable">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-rep-plugin">
+                            <div class="table-responsive mb-0" data-pattern="priority-columns">
+                                <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                Invoice No.
+                                            </th>
+                                            <th>
+                                                Service
+                                            </th>
+                                            <th>
+                                                Currency
+                                            </th>
+                                            <th>
+                                                Amount
+                                            </th>
+                                            <th>
+                                                Created Date
+                                            </th>
+                                            <th>
+
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 col-sm-12 col-12 ps-1 float-start d-none cssanimation fadeInBottom" style="background:#F8F8F8;" id="Benefits">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-rep-plugin">
+                            <div class="table-responsive mb-0" data-pattern="priority-columns">
+                                <table id="datatable-1" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                Invoice No.
+                                            </th>
+                                            <th>
+                                                Invoice
+                                            </th>
+                                            <th>
+
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+
+<script src="~/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var companyId = $("#CompanyId").val();
+        var url = "@Url.Action("GetAllCompanyProformaInvoicesWithPagination","CompanyAccount")";
+        url = url + "?companyId=" + companyId;
+
+        var table = $('#datatable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "ajax": {
+                "type": "post",
+                "datatype": "json",
+                "data": function () {
+                    var info = $('#datatable').DataTable().page.info();
+                    $('#datatable').DataTable().ajax.url(
+                        url
+                    );
+                }
+            },
+            "responsive": true,
+            "deferRender": true,
+            "language": {
+                'processing': '<div class="spinner-2"><div class="center-div-2"><div class="loader-circle-1"></div></div></div>'
+            },
+            "columns": [
+                { "data": "invoiceNumber", "name": "Invoice No." },
+                { "data": "service", "name": "Service" },
+                { "data": "currency", "name": "Currency" },
+                { "data": "totalAmount", "name": "Amount" },
+                { "data": "date", "name": "Created Date" },
+                {
+                    "data": function (data, full, meta) {
+                        var viewProformaInvoice = "GeneratePI('" + data.invoiceNumber + "')";
+                        return '<button class="btn btn-theme float-start ms-2 mt-1 Details" onclick=' + viewProformaInvoice + '>View Proforma Invoice</button>';
+                    },
+                    "name": ""
+                },
+            ],
+            "initComplete": function (settings, json) {
+                $(".Update").hide();
+                $(".Delete").hide();
+                $(".Details").hide();
+                var module = $("#Module").val();
+                $.ajax({
+                    url: "@Url.Action("GetRolePermissionsName", "UserPermission")",
+                    method: "GET",
+                    data: { "Module": "Invoice" },
+                    success: function (RoleResponse) {
+                        $.ajax({
+                            url: "@Url.Action("GetUserPermissionsName", "UserPermission")",
+                            method: "GET",
+                            data: { "Module": "Invoice" },
+                            success: function (UserResponse) {
+                                if (UserResponse.length > 0) {
+                                    for (let i = 0; i < UserResponse.length; i++) {
+                                        $("#" + UserResponse[i]).show();
+                                        if (UserResponse[i] == "View") {
+                                            $(".Details").show();
+                                        }
+                                        if (UserResponse[i] == "Update") {
+                                            $("." + UserResponse[i]).show();
+                                        }
+                                        if (UserResponse[i] == "Delete") {
+                                            $(".Delete").show();
+                                        }
+                                    }
+                                    $($.fn.dataTable.tables(true)).DataTable()
+                                        .columns.adjust();
+                                    $("#loader").hide();
+                                }
+                                else if (RoleResponse.length > 0) {
+                                    for (let i = 0; i < RoleResponse.length; i++) {
+                                        $("#" + RoleResponse[i]).show();
+                                        if (RoleResponse[i] == "View") {
+                                            $(".Details").show();
+                                        }
+                                        if (RoleResponse[i] == "Update") {
+                                            $("." + RoleResponse[i]).show();
+                                        }
+                                        if (RoleResponse[i] == "Delete") {
+                                            $(".Delete").show();
+                                        }
+                                    }
+                                    $($.fn.dataTable.tables(true)).DataTable()
+                                        .columns.adjust();
+                                    $("#loader").hide();
+                                }
+                            }
+                        })
+                    }
+                });
+                $("#loader").hide();
+            },
+            "drawCallback": function (settings, json) {
+                $(".Update").hide();
+                $(".Delete").hide();
+                $(".Details").hide();
+                var module = $("#Module").val();
+                $.ajax({
+                    url: "@Url.Action("GetRolePermissionsName", "UserPermission")",
+                    method: "GET",
+                    data: { "Module": "Invoice" },
+                    success: function (RoleResponse) {
+                        $.ajax({
+                            url: "@Url.Action("GetUserPermissionsName", "UserPermission")",
+                            method: "GET",
+                            data: { "Module": "Invoice" },
+                            success: function (UserResponse) {
+                                if (UserResponse.length > 0) {
+                                    for (let i = 0; i < UserResponse.length; i++) {
+                                        $("#" + UserResponse[i]).show();
+                                        if (UserResponse[i] == "View") {
+                                            $(".Details").show();
+                                        }
+                                        if (UserResponse[i] == "Update") {
+                                            $("." + UserResponse[i]).show();
+                                        }
+                                        if (UserResponse[i] == "Delete") {
+                                            $(".Delete").show();
+                                        }
+                                    }
+                                    $($.fn.dataTable.tables(true)).DataTable()
+                                        .columns.adjust();
+                                    $("#loader").hide();
+                                }
+                                else if (RoleResponse.length > 0) {
+                                    for (let i = 0; i < RoleResponse.length; i++) {
+                                        $("#" + RoleResponse[i]).show();
+                                        if (RoleResponse[i] == "View") {
+                                            $(".Details").show();
+                                        }
+                                        if (RoleResponse[i] == "Update") {
+                                            $("." + RoleResponse[i]).show();
+                                        }
+                                        if (RoleResponse[i] == "Delete") {
+                                            $(".Delete").show();
+                                        }
+                                    }
+                                    $($.fn.dataTable.tables(true)).DataTable()
+                                        .columns.adjust();
+                                    $("#loader").hide();
+                                }
+                            }
+                        })
+                    }
+                });
+                $("#loader").hide();
+            },
+            paging: true,
+            ordering: true,
+            searching: true,
+            pagingType: 'simple_numbers',
+            "aLengthMenu": [20, 30, 50],
+            dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+        })
+
+        $('#datatable tbody').on('click', 'td.dtr-control', function () {
+            var tr = $(this).closest('tr');
+            var row = table.row(tr);
+            if (!tr.hasClass("shown")) {
+                row.child.show();
+                tr.addClass('shown');
+                $(".Update").hide();
+                $(".Delete").hide();
+                $(".Details").hide();
+                var module = $("#Module").val();
+                $.ajax({
+                    url: "@Url.Action("GetRolePermissionsName", "UserPermission")",
+                    method: "GET",
+                    data: { "Module": "Invoice" },
+                    success: function (RoleResponse) {
+                        $.ajax({
+                            url: "@Url.Action("GetUserPermissionsName", "UserPermission")",
+                            method: "GET",
+                            data: { "Module": "Invoice" },
+                            success: function (UserResponse) {
+                                if (UserResponse.length > 0) {
+                                    for (let i = 0; i < UserResponse.length; i++) {
+                                        $("#" + UserResponse[i]).show();
+                                        if (UserResponse[i] == "View") {
+                                            $(".Details").show();
+                                        }
+                                        if (UserResponse[i] == "Update") {
+                                            $("." + UserResponse[i]).show();
+                                        }
+                                        if (UserResponse[i] == "Delete") {
+                                            $(".Delete").show();
+                                        }
+                                    }
+                                    $("#loader").hide();
+                                }
+                                else if (RoleResponse.length > 0) {
+                                    for (let i = 0; i < RoleResponse.length; i++) {
+                                        $("#" + RoleResponse[i]).show();
+                                        if (RoleResponse[i] == "View") {
+                                            $(".Details").show();
+                                        }
+                                        if (RoleResponse[i] == "Update") {
+                                            $("." + RoleResponse[i]).show();
+                                        }
+                                        if (RoleResponse[i] == "Delete") {
+                                            $(".Delete").show();
+                                        }
+                                    }
+                                    $("#loader").hide();
+                                }
+                            }
+                        })
+                    }
+                });
+                $("#loader").hide();
+            }
+            else {
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+        });
+        var coll = document.getElementsByClassName("Suitable");
+
+        for (var i = 0; i < coll.length; i++) {
+
+            coll[i].addEventListener("click", function () {
+                $("#Suitable").removeClass("d-none");
+                $("#Benefits").addClass("d-none");
+                $(".Suitable").addClass("bg-blue").removeClass("border-theme");
+                $(".Suitable").closest("div").addClass("text-white").removeClass("text-theme");
+                if ($(".Benefits").hasClass("bg-blue")) {
+                    $(".Benefits").removeClass("bg-blue").addClass("border-theme-top").addClass("border-theme-left").addClass("border-theme-right");
+                    $(".Benefits").closest("div").addClass("text-theme").removeClass("text-white");
+                }
+            });
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        var companyId = $("#CompanyId").val();
+        var url = "@Url.Action("GetAllCompanyFinalInvoicesWithPagination","CompanyAccount")";
+        url = url + "?companyId=" + companyId;
+
+        var coll = document.getElementsByClassName("Benefits");
+        for (var i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function () {
+                $("#sortingByFinal").val("Invoice No.");
+                $("#sortingDirectionFinal").val("asc");
+                $("#searchByValueFinal").val("Invoice No.");
+                $("#searchedValueFinal").val("");
+                if ($.fn.DataTable.isDataTable('#datatable-1')) {
+                    $('#datatable-1').DataTable().destroy();
+                    $('#datatable-1').empty();
+                }
+
+                var table1 = $('#datatable-1').DataTable({
+                    "processing": true,
+                    "serverSide": true,
+                    "filter": true,
+                    "ajax": {
+                        "type": "post",
+                        "datatype": "json",
+                        "data": function () {
+                            var info = $('#datatable-1').DataTable().page.info();
+                            $('#datatable-1').DataTable().ajax.url(
+                                url
+                            );
+                        }
+                    },
+                    "responsive": true,
+                    "deferRender": true,
+                    "language": {
+                        'processing': '<div class="spinner-2"><div class="center-div-2"><div class="loader-circle-1"></div></div></div>'
+                    },
+                    "columns": [
+                        { "data": "invoiceNumber", title: "Invoice No.", name: "Invoice No." },
+                        { "data": "pdfName", title: "Invoice" , name: "Invoice" },
+                        {
+                            "data": function (data, full, meta) {
+                                var downloadPdf = "@Url.Action("DownloadSelectedDocument","CompanyAccount")";
+                                downloadPdf = downloadPdf + "?Id=" + data.id;
+                                return '<a href=' + downloadPdf + ' class="btn btn-theme float-start ms-2 Details" >Download Invoice</a>';
+                            },
+                            title: "",
+                            name: ""
+                        },
+                    ],
+                    "initComplete": function (settings, json) {
+                        $(".Update").hide();
+                        $(".Delete").hide();
+                        $(".Details").hide();
+                        var module = $("#Module").val();
+                        $.ajax({
+                            url: "@Url.Action("GetRolePermissionsName", "UserPermission")",
+                            method: "GET",
+                            data: { "Module": "Invoice" },
+                            success: function (RoleResponse) {
+                                $.ajax({
+                                    url: "@Url.Action("GetUserPermissionsName", "UserPermission")",
+                                    method: "GET",
+                                    data: { "Module": "Invoice" },
+                                    success: function (UserResponse) {
+                                        if (UserResponse.length > 0) {
+                                            for (let i = 0; i < UserResponse.length; i++) {
+                                                $("#" + UserResponse[i]).show();
+                                                if (UserResponse[i] == "View") {
+                                                    $(".Details").show();
+                                                }
+                                                if (UserResponse[i] == "Update") {
+                                                    $("." + UserResponse[i]).show();
+                                                }
+                                                if (UserResponse[i] == "Delete") {
+                                                    $(".Delete").show();
+                                                }
+                                            }
+                                            $($.fn.dataTable.tables(true)).DataTable()
+                                                .columns.adjust();
+                                            $("#loader").hide();
+                                        }
+                                        else if (RoleResponse.length > 0) {
+                                            for (let i = 0; i < RoleResponse.length; i++) {
+                                                $("#" + RoleResponse[i]).show();
+                                                if (RoleResponse[i] == "View") {
+                                                    $(".Details").show();
+                                                }
+                                                if (RoleResponse[i] == "Update") {
+                                                    $("." + RoleResponse[i]).show();
+                                                }
+                                                if (RoleResponse[i] == "Delete") {
+                                                    $(".Delete").show();
+                                                }
+                                            }
+                                            $($.fn.dataTable.tables(true)).DataTable()
+                                                .columns.adjust();
+                                            $("#loader").hide();
+                                        }
+                                    }
+                                })
+                            }
+                        });
+                        $("#loader").hide();
+                    },
+                    "drawCallback": function (settings, json) {
+                        $(".Update").hide();
+                        $(".Delete").hide();
+                        $(".Details").hide();
+                        var module = $("#Module").val();
+                        $.ajax({
+                            url: "@Url.Action("GetRolePermissionsName", "UserPermission")",
+                            method: "GET",
+                            data: { "Module": "Invoice" },
+                            success: function (RoleResponse) {
+                                $.ajax({
+                                    url: "@Url.Action("GetUserPermissionsName", "UserPermission")",
+                                    method: "GET",
+                                    data: { "Module": "Invoice" },
+                                    success: function (UserResponse) {
+                                        if (UserResponse.length > 0) {
+                                            for (let i = 0; i < UserResponse.length; i++) {
+                                                $("#" + UserResponse[i]).show();
+                                                if (UserResponse[i] == "View") {
+                                                    $(".Details").show();
+                                                }
+                                                if (UserResponse[i] == "Update") {
+                                                    $("." + UserResponse[i]).show();
+                                                }
+                                                if (UserResponse[i] == "Delete") {
+                                                    $(".Delete").show();
+                                                }
+                                            }
+                                            $($.fn.dataTable.tables(true)).DataTable()
+                                                .columns.adjust();
+                                            $("#loader").hide();
+                                        }
+                                        else if (RoleResponse.length > 0) {
+                                            for (let i = 0; i < RoleResponse.length; i++) {
+                                                $("#" + RoleResponse[i]).show();
+                                                if (RoleResponse[i] == "View") {
+                                                    $(".Details").show();
+                                                }
+                                                if (RoleResponse[i] == "Update") {
+                                                    $("." + RoleResponse[i]).show();
+                                                }
+                                                if (RoleResponse[i] == "Delete") {
+                                                    $(".Delete").show();
+                                                }
+                                            }
+                                            $($.fn.dataTable.tables(true)).DataTable()
+                                                .columns.adjust();
+                                            $("#loader").hide();
+                                        }
+                                    }
+                                })
+                            }
+                        });
+                        $("#loader").hide();
+                    },
+                    paging: true,
+                    ordering: true,
+                    searching: true,
+                    "aLengthMenu": [20, 30, 50],
+                });
+
+                $('#datatable-1 tbody').on('click', 'td.dtr-control', function () {
+                    var tr = $(this).closest('tr');
+                    var row = table1.row(tr);
+                    if (!tr.hasClass("shown")) {
+                        row.child.show();
+                        tr.addClass('shown');
+                        $(".Update").hide();
+                        $(".Delete").hide();
+                        $(".Details").hide();
+                        var module = $("#Module").val();
+                        $.ajax({
+                            url: "@Url.Action("GetRolePermissionsName", "UserPermission")",
+                            method: "GET",
+                            data: { "Module": "Invoice" },
+                            success: function (RoleResponse) {
+                                $.ajax({
+                                    url: "@Url.Action("GetUserPermissionsName", "UserPermission")",
+                                    method: "GET",
+                                    data: { "Module": "Invoice" },
+                                    success: function (UserResponse) {
+                                        if (UserResponse.length > 0) {
+                                            for (let i = 0; i < UserResponse.length; i++) {
+                                                $("#" + UserResponse[i]).show();
+                                                if (UserResponse[i] == "View") {
+                                                    $(".Details").show();
+                                                }
+                                                if (UserResponse[i] == "Update") {
+                                                    $("." + UserResponse[i]).show();
+                                                }
+                                                if (UserResponse[i] == "Delete") {
+                                                    $(".Delete").show();
+                                                }
+                                            }
+                                            $("#loader").hide();
+                                        }
+                                        else if (RoleResponse.length > 0) {
+                                            for (let i = 0; i < RoleResponse.length; i++) {
+                                                $("#" + RoleResponse[i]).show();
+                                                if (RoleResponse[i] == "View") {
+                                                    $(".Details").show();
+                                                }
+                                                if (RoleResponse[i] == "Update") {
+                                                    $("." + RoleResponse[i]).show();
+                                                }
+                                                if (RoleResponse[i] == "Delete") {
+                                                    $(".Delete").show();
+                                                }
+                                            }
+                                            $("#loader").hide();
+                                        }
+                                    }
+                                })
+                            }
+                        });
+                        $("#loader").hide();
+                    }
+                    else {
+                        row.child.hide();
+                        tr.removeClass('shown');
+                    }
+                });
+                
+                $("#Suitable").addClass("d-none");
+                $("#Benefits").removeClass("d-none");
+                $(".Benefits").addClass("bg-blue").removeClass("border-theme");
+                $(".Benefits").closest("div").addClass("text-white").removeClass("text-theme");
+                if ($(".Suitable").hasClass("bg-blue")) {
+                    $(".Suitable").removeClass("bg-blue").addClass("border-theme-top").addClass("border-theme-left").addClass("border-theme-right");
+                    $(".Suitable").closest("div").addClass("text-theme").removeClass("text-white");
+                }
+            });
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+    function GeneratePI(invoice) {
+        var url = "@Url.Action("ProformaInvoice","CompanyAccount")";
+        url = url + "?InvoiceNumber=" + invoice;
+        window.open(url, "NewWindow");
+    };
+</script>
+<script>
+    $(window).resize(function () {
+        var allRows = $('#datatable tbody tr');
+        allRows.each(function () {
+            var tr = $(this).closest('tr');
+            var row = $($.fn.dataTable.tables(true)).DataTable().row(tr);
+            if (tr.hasClass("shown")) {
+                row.child.hide();
+                tr.removeClass('shown');
+                tr.removeClass('parent');
+            }
+        });
+
+        var allRows1 = $('#datatable-1 tbody tr');
+        allRows1.each(function () {
+            var tr = $(this).closest('tr');
+            var row = $($.fn.dataTable.tables(true)).DataTable().row(tr);
+            if (tr.hasClass("shown")) {
+                row.child.hide();
+                tr.removeClass('shown');
+                tr.removeClass('parent');
+            }
+        });
+    });
+</script>
+<script>
+    $(function () {
+        $("#Insert").hide();
+        $("#View").hide();
+        $("#View1").hide();
+        $(".Update").hide();
+        $(".Delete").hide();
+        $(".Details").hide();
+    });
+</script>
+<script>
+    $(function () {
+        $("#loader").show();
+        var module = $("#Module").val();
+        $.ajax({
+            url: "@Url.Action("GetRolePermissionsName", "UserPermission")",
+            method: "GET",
+            data: { "Module": "Invoice" },
+            async: false,
+            dataType: "json",
+            success: function (RoleResponse) {
+                $("#loader").show();
+                $.ajax({
+                    url: "@Url.Action("GetUserPermissionsName", "UserPermission")",
+                    method: "GET",
+                    data: { "Module": "Invoice" },
+                    async: false,
+                    dataType: "json",
+                    success: function (UserResponse) {
+                        $("#loader").show();
+                        if (UserResponse.length > 0) {
+                            for (let i = 0; i < UserResponse.length; i++) {
+                                if (UserResponse[i] == "PermissionCount") {
+                                    alert("You don't have any permission for this module.");
+                                    var url = "@Url.Action("Index","Home")";
+                                    url = url + "?name=HomePage";
+                                    window.location.href = url;
+                                } else {
+                                    $("#" + UserResponse[i]).show();
+                                    if (UserResponse[i] == "View") {
+                                        $(".Details").show();
+                                        $("#View1").show();
+                                    }
+                                    if (UserResponse[i] == "Update") {
+                                        $("." + UserResponse[i]).show();
+                                    }
+                                    if (UserResponse[i] == "Delete") {
+                                        $("." + UserResponse[i]).show();
+                                    }
+                                }
+                            }
+                            $("#loader").hide();
+                        } else if (RoleResponse.length > 0) {
+                            for (let i = 0; i < RoleResponse.length; i++) {
+                                if (RoleResponse[i] == "PermissionCount") {
+                                    alert("You don't have any permission for this module.");
+                                    var url = "@Url.Action("Index","Home")";
+                                    url = url + "?name=HomePage";
+                                    window.location.href = url;
+                                }
+                                else {
+                                    $("#" + RoleResponse[i]).show();
+                                    if (RoleResponse[i] == "View") {
+                                        $(".Details").show();
+                                        $("#View1").show();
+                                    }
+                                    if (RoleResponse[i] == "Update") {
+                                        $("." + RoleResponse[i]).show();
+                                    }
+                                    if (RoleResponse[i] == "Delete") {
+                                        $("." + RoleResponse[i]).show();
+                                    }
+                                }
+                            }
+                            $("#loader").hide();
+
+                        } else {
+                            alert("You don't have any permission for this module.");
+                            $("#loader").hide();
+                        }
+                    }
+                })
+
+            }
+        });
+        $("#loader").hide();
+    });
+</script>

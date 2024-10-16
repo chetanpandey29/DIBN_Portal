@@ -1,0 +1,471 @@
+﻿@model DIBN.Models.CompanyAccountDetails
+@{
+    ViewData["Title"] = "Index";
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.TotalBalance != null && Model.TotalBalance != "0")
+{
+    <div class="row" id="View1">
+        <div class="card">
+            <div class="card-body">
+                <div class="col-lg-12">
+                    <div class="col-lg-4 float-start">
+                        <div class="form-group">
+                            <label class="control-label">From Date : </label>
+                            <input asp-for="FromDate" class="form-control" data-toggle="datepicker" id="FromDate" placeholder="yyyy-mm-dd" readonly />
+                        </div>
+                    </div>
+                    <div class="col-lg-4 float-start">
+                        <div class="form-group ms-2">
+                            <label class="control-label">To Date : </label>
+                            <input asp-for="ToDate" class="form-control" data-toggle="datepicker" id="ToDate" placeholder="yyyy-mm-dd" readonly />
+                        </div>
+                    </div>
+                    <div class="float-start mt-4 ms-4">
+                        <button class="btn btn-theme float-left" onclick="ShowData();">Show</button>
+                    </div>
+                    <div class="float-start mt-4 ms-4">
+                        <button class="btn btn-theme float-left" onclick="ShowAllData();">Show All</button>
+                    </div>
+                    <div class="float-start mt-4 ms-4">
+                        <button class="btn btn-theme float-left" onclick="ExportAsPdf();">Export Pdf</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<div class="row" id="View">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title text-center">Company Account</h4>
+                <hr style="height:1px;" class="text-theme" />
+                <div class="table-rep-plugin">
+                    <div class="table-responsive mb-0" data-pattern="priority-columns">
+                        <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        No.
+                                    </th>
+                                    <th>
+                                        Transaction Id
+                                    </th>
+                                    <th>
+                                        Date
+                                    </th>
+                                    <th>
+                                        Description
+                                    </th>
+                                    <th>
+                                        Credit(AED)
+                                    </th>
+                                    <th>
+                                        Debit(AED)
+                                    </th>
+                                    <th>
+                                        Balance AED
+                                    </th>
+                                    <th>
+                                        Download Receipt
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var i = 0;
+                                    var desc = "";
+                                }
+                                @foreach (var item in Model.getexpensesofCompanies)
+                                {
+                                    @if (item.Description != null)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @(i + 1)
+                                            </td>
+                                            <td>
+                                                @item.TransactionId
+                                            </td>
+                                            <td>
+                                                @item.Date
+                                            </td>
+                                            <td title="@item.Description" class="text-wrap">
+                                                @if (@item.Description.Length > 100)
+                                                {
+                                                    desc = item.Description.Substring(0, 100);
+                                                    desc = desc + "....";
+                                                    @Html.Raw(@item.Description)
+                                                }
+                                                else
+                                                {
+                                                    @item.Description
+                                                }
+
+                                            </td>
+                                            <td>
+                                                @item.Credit
+                                            </td>
+                                            <td>
+                                                @item.Debit
+                                            </td>
+                                            <td>
+                                                @item.Balance
+                                            </td>
+                                            <td>
+                                                @if (item.ExpenseReceiptId != 0 && item.Type == "Debit")
+                                                {
+                                                    <form asp-action="DownloadReceipt" asp-controller="PortalBalance" method="get" class="Details">
+                                                        <input type="hidden" asp-for="@item.ExpenseReceiptId" name="ReceiptId" />
+                                                        <input type="submit" value="Download" name="Download Receipt" class="btn btn-theme Details" />
+                                                    </form>
+                                                }
+                                                else if (item.ExpenseReceiptId != 0 && item.Type == "Credit")
+                                                {
+                                                    <form asp-action="DownloadPaymentReceipt" asp-controller="PortalBalance" method="get" class="Details">
+                                                        <input type="hidden" asp-for="@item.ExpenseReceiptId" name="ReceiptId" />
+                                                        <input type="submit" value="Download" name="Download Receipt" class="btn btn-theme Details" />
+                                                    </form>
+                                                }
+                                                else
+                                                {
+                                                    @Html.Raw("---")
+                                                }
+
+                                            </td>
+                                        </tr>
+
+                                        i++;
+                                    }
+
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4">@Html.Raw("Total")</td>
+                                    <td>@Model.TotalCredit</td>
+                                    <td>@Model.TotalDebit</td>
+                                    <td>@Model.TotalBalance</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" name="Module" id="Module" value="@Model.Module" />
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+
+<script src="~/assets/libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+<link href="~/assets/libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet" type="text/css" />
+
+<script>
+    var table = $('#datatable').DataTable({
+        paging: true,
+        ordering: false,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+        "columnDefs": [
+            { "orderable": false, "targets": 1 }
+        ]
+    });
+
+    $('#datatable tbody').on('click', 'td.dtr-control', function () {
+        var tr = $(this).closest('tr');
+        var row = table.row(tr);
+        if (!tr.hasClass("shown")) {
+            $("#loader").show();
+            row.child.show();
+            tr.addClass('shown');
+            $(".Update").hide();
+            $(".Delete").hide();
+            $(".Details").hide();
+            var module = $("#Module").val();
+            $.ajax({
+                url: "@Url.Action("GetRolePermissionsName", "UserPermission")",
+                method: "GET",
+                data: { "Module": "MyAccount" },
+                success: function (RoleResponse) {
+                    $("#loader").show();
+                    $.ajax({
+                        url: "@Url.Action("GetUserPermissionsName", "UserPermission")",
+                        method: "GET",
+                        data: { "Module": "MyAccount" },
+                        success: function (UserResponse) {
+                            $("#loader").show();
+                            if (UserResponse.length > 0) {
+                                for (let i = 0; i < UserResponse.length; i++) {
+                                    $("#" + UserResponse[i]).show();
+                                    if (UserResponse[i] == "View") {
+                                        $(".Details").show();
+                                    }
+                                    if (UserResponse[i] == "Update") {
+                                        $("." + UserResponse[i]).show();
+                                    }
+                                    if (UserResponse[i] == "Delete") {
+                                        $(".Delete").show();
+                                    }
+                                }
+                                $("#loader").hide();
+                            }
+                            else if (RoleResponse.length > 0) {
+                                for (let i = 0; i < RoleResponse.length; i++) {
+                                    $("#" + RoleResponse[i]).show();
+                                    if (RoleResponse[i] == "View") {
+                                        $(".Details").show();
+                                    }
+                                    if (RoleResponse[i] == "Update") {
+                                        $("." + RoleResponse[i]).show();
+                                    }
+                                    if (RoleResponse[i] == "Delete") {
+                                        $(".Delete").show();
+                                    }
+                                }
+                                $("#loader").hide();
+                            }
+                        }
+                    })
+                }
+            });
+            $("#loader").hide();
+        }
+        else {
+            row.child.hide();
+            tr.removeClass('shown');
+        }
+    });
+
+
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>
+<script>
+    function ExportAsPdf() {
+        var fromDate = $("#FromDate").val();
+        var toDate = $("#ToDate").val();
+
+        var today = new Date();
+        var dd = String(today.getDate() + 1).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0');
+        var yyyy = today.getFullYear();
+
+        today = yyyy + '-' + mm + '-' + dd;
+        if (!/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(fromDate) || !/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(toDate)) {
+            alert("Please Enter Valid Date Format for From and To Date.");
+            if (!/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(fromDate)) {
+                $("#FromDate").datepicker("setDate", 0);
+                $("#FromDate").focus();
+            }
+            else if (!/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(toDate)) {
+                $("#ToDate").datepicker("setDate", 0);
+                $("#ToDate").focus();
+            }
+            return false;
+        }
+        else {
+            var url = "@Url.Action("GetCompanyExpenses","CompanyAccount")";
+            url = url + "?FromDate=" + fromDate + "&ToDate=" + toDate;
+            window.open(url);
+        }
+
+    };
+
+
+    function ShowData() {
+        $("#loader").show();
+        var fromDate = $("#FromDate").val();
+        var toDate = $("#ToDate").val();
+        var module = $("#Module").val();
+        var today = new Date();
+        var dd = String(today.getDate() + 1).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0');
+        var yyyy = today.getFullYear();
+
+        today = yyyy + '-' + mm + '-' + dd;
+        if (!/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(fromDate) || !/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(toDate)) {
+            $("#loader").hide();
+            alert("Please Enter Valid Date Format for From and To Date.");
+            if (!/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(fromDate)) {
+                $("#FromDate").datepicker("setDate", 0);
+                $("#FromDate").focus();
+            }
+            else if (!/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(toDate)) {
+                $("#ToDate").datepicker("setDate", 0);
+                $("#ToDate").focus();
+            }
+            return false;
+        }
+        else {
+            var url = "@Url.Action("Index","CompanyAccount")";
+            url = url + "?name=" + module + "&FromDate=" + fromDate + "&ToDate=" + toDate;
+            window.location.href = url;
+        }
+        $("#loader").hide();
+    };
+
+    function ShowAllData() {
+        var module = $("#Module").val();
+        var url = "@Url.Action("Index","CompanyAccount")";
+        url = url + "?name=" + module;
+        window.location.href = url;
+    };
+</script>
+<script>
+    $(function () {
+        $("#Insert").hide();
+        $("#View").hide();
+        $("#View1").hide();
+        $(".Update").hide();
+        $(".Delete").hide();
+        $(".Details").hide();
+    });
+</script>
+<script>
+    $(function () {
+        $("#loader").show();
+        var module = $("#Module").val();
+        $.ajax({
+            url: "@Url.Action("GetRolePermissionsName", "UserPermission")",
+            method: "GET",
+            data: { "Module": module },
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (RoleResponse) {
+
+                $.ajax({
+                    url: "@Url.Action("GetUserPermissionsName", "UserPermission")",
+                    method: "GET",
+                    data: { "Module": module },
+                    async: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (UserResponse) {
+                        if (UserResponse.length > 0) {
+                            for (let i = 0; i < UserResponse.length; i++) {
+                                if (UserResponse[i] == "PermissionCount") {
+                                    alert("You don't have any permission for this module.");
+                                    var url = "@Url.Action("Index","Home")";
+                                    url = url + "?name=HomePage";
+                                    window.location.href = url;
+                                } else {
+                                    $("#" + UserResponse[i]).show();
+                                    if (UserResponse[i] == "View") {
+                                        $(".Details").show();
+                                        $("#View1").show();
+                                    }
+                                    if (UserResponse[i] == "Update") {
+                                        $("." + UserResponse[i]).show();
+                                    }
+                                    if (UserResponse[i] == "Delete") {
+                                        $("." + UserResponse[i]).show();
+                                    }
+                                }
+
+                            }
+                            $("#loader").hide();
+                        }
+                        else if (RoleResponse.length > 0) {
+                            for (let i = 0; i < RoleResponse.length; i++) {
+                                if (RoleResponse[i] == "PermissionCount") {
+                                    alert("You don't have any permission for this module.");
+                                    var url = "@Url.Action("Index","Home")";
+                                    url = url + "?name=HomePage";
+                                    window.location.href = url;
+                                }
+                                else {
+                                    $("#" + RoleResponse[i]).show();
+                                    if (RoleResponse[i] == "View") {
+                                        $(".Details").show();
+                                        $("#View1").show();
+                                    }
+                                    if (RoleResponse[i] == "Update") {
+                                        $("." + RoleResponse[i]).show();
+                                    }
+                                    if (RoleResponse[i] == "Delete") {
+                                        $("." + RoleResponse[i]).show();
+                                    }
+                                }
+
+                            }
+                            $("#loader").hide();
+                        } else {
+                            alert("You don't have any permission for this module.");
+                            $("#loader").hide();
+                        }
+                    }
+                })
+            }
+        });
+    });
+</script>
+<script>
+    $(function () {
+
+        $("#FromDate").datepicker({
+            format: 'yyyy-mm-dd',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            todayHighlight: true,
+        }).on('changeDate', function (selected) {
+            var minDate = new Date(selected.date);
+            minDate.setDate(minDate.getDate() + 1);
+            $('#ToDate').datepicker('setStartDate', minDate);
+        });
+        $("#ToDate").datepicker({
+            format: 'yyyy-mm-dd',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            todayHighlight: true,
+        }).on('changeDate', function (selected) {
+            var minDate = new Date(selected.date);
+            minDate.setDate(minDate.getDate() - 1);
+            $('#FromDate').datepicker('setEndDate', minDate);
+        });
+    });
+</script>
+<script>
+    $(window).resize(function () {
+        var allRows = $('#datatable tbody tr');
+        allRows.each(function () {
+            var tr = $(this).closest('tr');
+            var row = $($.fn.dataTable.tables(true)).DataTable().row(tr);
+            if (tr.hasClass("shown")) {
+                row.child.hide();
+                tr.removeClass('shown');
+                tr.removeClass('parent');
+            }
+        });
+    });
+</script>

@@ -1,0 +1,720 @@
+﻿@model DIBN.Models.UserEmployeeViewModel.GetEmployeesForCompany
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<input type="hidden" name="Module" id="Module" value="@Model.Module" />
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+@if (Model.Role != "Employee")
+{
+    @foreach (var item in Model.getActiveEmployees)
+    {
+        <div class="row">
+            <div class="col-md-12 float-end">
+                <a href="@Url.Action("ExportToPdf","User",new{Id=item.CompanyId})" class="btn btn-theme mb-3 ms-3 float-end">Export(Pdf)</a>
+            </div>
+
+        </div>
+
+        break;
+    }
+    <div class="row" id="View">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-center">Active Employee(s)</h4>
+                    <hr style="height:1px;" class="text-theme" />
+                    <div class="table-rep-plugin">
+                        <div class="table-responsive mb-0" data-pattern="priority-columns">
+                            <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            #
+                                        </th>
+                                        <th>
+                                            Name
+                                        </th>
+                                        <th>
+                                            Passport No.
+                                        </th>
+                                        <th>
+                                            Passport Expiry Date
+                                        </th>
+                                        <th>
+                                            Nationality
+                                        </th>
+                                        <th>
+                                            Designation
+                                        </th>
+                                        <th>
+                                            Visa Expiry Date
+                                        </th>
+                                        <th>
+                                            Insurance Company
+                                        </th>
+                                        <th>
+                                            Insuarnce Expiry Date
+                                        </th>
+                                        <th>
+
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        var i = 0;
+                                    }
+                                    @foreach (var item in Model.getActiveEmployees)
+                                    {
+                                        @if (!item.Role.Contains("Company Owner"))
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @(i + 1)
+                                                </td>
+                                                <td>
+                                                    @item.FirstName @Html.Raw(" ") @item.LastName
+                                                </td>
+                                                <td>
+                                                    @item.PassportNumber
+                                                </td>
+                                                <td>
+                                                    @item.PassportExpiryDate
+                                                </td>
+                                                <td>
+                                                    @item.Nationality
+                                                </td>
+                                                <td>
+                                                    @item.Designation
+                                                </td>
+                                                <td>
+                                                    @item.VisaExpiryDate
+                                                </td>
+                                                <td>
+                                                    @item.InsuranceCompany
+                                                </td>
+                                                <td>
+                                                    @item.InsuranceExpiryDate
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-theme Details" onclick="GetDocumentsForActiveUser(@item.Id)">
+                                                        Documents
+                                                    </button>
+                                                </td>
+                                            </tr>
+
+                                            i++;
+                                        }
+
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-center">InActive Employee(s)</h4>
+                    <hr style="height:1px;" class="text-theme" />
+                    <div class="table-rep-plugin">
+                        <div class="table-responsive mb-0" data-pattern="priority-columns">
+                            <table id="datatable-1" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            #
+                                        </th>
+                                        <th>
+                                            Employee Name
+                                        </th>
+                                        <th>
+                                            Passport No.
+                                        </th>
+                                        <th>
+                                            Passport Expiry Date
+                                        </th>
+                                        <th>
+                                            Nationality
+                                        </th>
+                                        <th>
+                                            Designation
+                                        </th>
+                                        <th>
+                                            Visa Expiry Date
+                                        </th>
+                                        <th>
+                                            Insurance Company
+                                        </th>
+                                        <th>
+                                            Insuarnce Expiry Date
+                                        </th>
+                                        <th>
+
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        var j = 0;
+                                    }
+                                    @foreach (var item in Model.getInActiveEmployees)
+                                    {
+                                        @if (!item.Role.Contains("Company Owner"))
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @(j + 1)
+                                                </td>
+                                                <td>
+                                                    @item.FirstName @Html.Raw(" ") @item.LastName
+                                                </td>
+                                                <td>
+                                                    @item.PassportNumber
+                                                </td>
+                                                <td>
+                                                    @item.PassportExpiryDate
+                                                </td>
+                                                <td>
+                                                    @item.Nationality
+                                                </td>
+                                                <td>
+                                                    @item.Designation
+                                                </td>
+                                                <td>
+                                                    @item.VisaExpiryDate
+                                                </td>
+                                                <td>
+                                                    @item.InsuranceCompany
+                                                </td>
+                                                <td>
+                                                    @item.InsuranceExpiryDate
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-theme Details" onclick="GetDocumentsForInActiveUser(@item.Id)">
+                                                        Documents
+                                                    </button>
+                                                </td>
+                                            </tr>
+
+                                            j++;
+                                        }
+
+                                    }
+                                </tbody>
+                            </table>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row" id="View1">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-center">Employee(s)</h4>
+                    <hr style="height:1px;" class="text-theme" />
+                    <div class="table-rep-plugin">
+                        <div class="table-responsive mb-0" data-pattern="priority-columns">
+                            <table id="datatable-2" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            #
+                                        </th>
+                                        <th>
+                                            Name
+                                        </th>
+                                        <th>
+                                            Passport No.
+                                        </th>
+                                        <th>
+                                            Passport Expiry Date
+                                        </th>
+                                        <th>
+                                            Nationality
+                                        </th>
+                                        <th>
+                                            Designation
+                                        </th>
+                                        <th>
+                                            Visa Expiry Date
+                                        </th>
+                                        <th>
+                                            Insurance Company
+                                        </th>
+                                        <th>
+                                            Insuarnce Expiry Date
+                                        </th>
+                                        <th>
+
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        var i = 0;
+                                    }
+                                    @foreach (var item in Model.getUserDetails)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @(i + 1)
+                                            </td>
+                                            <td>
+                                                @item.FirstName @Html.Raw(" ") @item.LastName
+                                            </td>
+                                            <td>
+                                                @item.PassportNumber
+                                            </td>
+                                            <td>
+                                                @item.PassportExpiryDate
+                                            </td>
+                                            <td>
+                                                @item.Nationality
+                                            </td>
+                                            <td>
+                                                @item.Designation
+                                            </td>
+                                            <td>
+                                                @item.VisaExpiryDate
+                                            </td>
+                                            <td>
+                                                @item.InsuranceCompany
+                                            </td>
+                                            <td>
+                                                @item.InsuranceExpiryDate
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-theme Details" onclick="GetDocumentsForActiveUser(@item.Id)">
+                                                    Documents
+                                                </button>
+                                            </td>
+                                        </tr>
+
+                                        i++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+
+
+<script>
+    var table = $('#datatable').DataTable({
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    });
+
+    $('#datatable tbody').on('click', 'td.dtr-control', function () {
+        var tr = $(this).closest('tr');
+        var row = table.row(tr);
+        if (!tr.hasClass("shown")) {
+            $("#loader").show();
+            row.child.show();
+            tr.addClass('shown');
+            $(".Update").hide();
+            $(".Delete").hide();
+            $(".Details").hide();
+            var module = $("#Module").val();
+            $.ajax({
+                url: "@Url.Action("GetRolePermissionsName", "UserPermission")",
+                method: "GET",
+                data: { "Module": "Employees" },
+                success: function (RoleResponse) {
+                    $("#loader").show();
+                    $.ajax({
+                        url: "@Url.Action("GetUserPermissionsName", "UserPermission")",
+                        method: "GET",
+                        data: { "Module": "Employees" },
+                        success: function (UserResponse) {
+                            $("#loader").show();
+                            if (UserResponse.length > 0) {
+                                for (let i = 0; i < UserResponse.length; i++) {
+                                    $("#" + UserResponse[i]).show();
+                                    if (UserResponse[i] == "View") {
+                                        $(".Details").show();
+                                    }
+                                    if (UserResponse[i] == "Update") {
+                                        $("." + UserResponse[i]).show();
+                                    }
+                                    if (UserResponse[i] == "Delete") {
+                                        $(".Delete").show();
+                                    }
+                                }
+                                $("#loader").hide();
+                            }
+                            else if (RoleResponse.length > 0) {
+                                for (let i = 0; i < RoleResponse.length; i++) {
+                                    $("#" + RoleResponse[i]).show();
+                                    if (RoleResponse[i] == "View") {
+                                        $(".Details").show();
+                                    }
+                                    if (RoleResponse[i] == "Update") {
+                                        $("." + RoleResponse[i]).show();
+                                    }
+                                    if (RoleResponse[i] == "Delete") {
+                                        $(".Delete").show();
+                                    }
+                                }
+                                $("#loader").hide();
+                            }
+                        }
+                    })
+                }
+            });
+            $("#loader").hide();
+        }
+        else {
+            row.child.hide();
+            tr.removeClass('shown');
+        }
+    });
+    
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>
+<script>
+    var table = $('#datatable-1').DataTable({
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    });
+
+    $('#datatable-1 tbody').on('click', 'td.dtr-control', function () {
+        var tr = $(this).closest('tr');
+        var row = table.row(tr);
+        if (!tr.hasClass("shown")) {
+            $("#loader").show();
+            row.child.show();
+            tr.addClass('shown');
+            $(".Update").hide();
+            $(".Delete").hide();
+            $(".Details").hide();
+            var module = $("#Module").val();
+            $.ajax({
+                url: "@Url.Action("GetRolePermissionsName", "UserPermission")",
+                method: "GET",
+                data: { "Module": "Employees" },
+                success: function (RoleResponse) {
+                    $("#loader").show();
+                    $.ajax({
+                        url: "@Url.Action("GetUserPermissionsName", "UserPermission")",
+                        method: "GET",
+                        data: { "Module": "Employees" },
+                        success: function (UserResponse) {
+                            $("#loader").show();
+                            if (UserResponse.length > 0) {
+                                for (let i = 0; i < UserResponse.length; i++) {
+                                    $("#" + UserResponse[i]).show();
+                                    if (UserResponse[i] == "View") {
+                                        $(".Details").show();
+                                    }
+                                    if (UserResponse[i] == "Update") {
+                                        $("." + UserResponse[i]).show();
+                                    }
+                                    if (UserResponse[i] == "Delete") {
+                                        $(".Delete").show();
+                                    }
+                                }
+                                $("#loader").hide();
+                            }
+                            else if (RoleResponse.length > 0) {
+                                for (let i = 0; i < RoleResponse.length; i++) {
+                                    $("#" + RoleResponse[i]).show();
+                                    if (RoleResponse[i] == "View") {
+                                        $(".Details").show();
+                                    }
+                                    if (RoleResponse[i] == "Update") {
+                                        $("." + RoleResponse[i]).show();
+                                    }
+                                    if (RoleResponse[i] == "Delete") {
+                                        $(".Delete").show();
+                                    }
+                                }
+                                $("#loader").hide();
+                            }
+                        }
+                    })
+                }
+            });
+            $("#loader").hide();
+        }
+        else {
+            row.child.hide();
+            tr.removeClass('shown');
+        }
+    });
+</script>
+<script>
+    var table = $('#datatable-2').DataTable({
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    });
+
+    $('#datatable-2 tbody').on('click', 'td.dtr-control', function () {
+        var tr = $(this).closest('tr');
+        var row = table.row(tr);
+        if (!tr.hasClass("shown")) {
+            $("#loader").show();
+            row.child.show();
+            tr.addClass('shown');
+            $(".Update").hide();
+            $(".Delete").hide();
+            $(".Details").hide();
+            var module = $("#Module").val();
+            $.ajax({
+                url: "@Url.Action("GetRolePermissionsName", "UserPermission")",
+                method: "GET",
+                data: { "Module": "Employees" },
+                success: function (RoleResponse) {
+                    $("#loader").show();
+                    $.ajax({
+                        url: "@Url.Action("GetUserPermissionsName", "UserPermission")",
+                        method: "GET",
+                        data: { "Module": "Employees" },
+                        success: function (UserResponse) {
+                            $("#loader").show();
+                            if (UserResponse.length > 0) {
+                                for (let i = 0; i < UserResponse.length; i++) {
+                                    $("#" + UserResponse[i]).show();
+                                    if (UserResponse[i] == "View") {
+                                        $(".Details").show();
+                                    }
+                                    if (UserResponse[i] == "Update") {
+                                        $("." + UserResponse[i]).show();
+                                    }
+                                    if (UserResponse[i] == "Delete") {
+                                        $(".Delete").show();
+                                    }
+                                }
+                                $("#loader").hide();
+                            }
+                            else if (RoleResponse.length > 0) {
+                                for (let i = 0; i < RoleResponse.length; i++) {
+                                    $("#" + RoleResponse[i]).show();
+                                    if (RoleResponse[i] == "View") {
+                                        $(".Details").show();
+                                    }
+                                    if (RoleResponse[i] == "Update") {
+                                        $("." + RoleResponse[i]).show();
+                                    }
+                                    if (RoleResponse[i] == "Delete") {
+                                        $(".Delete").show();
+                                    }
+                                }
+                                $("#loader").hide();
+                            }
+                        }
+                    })
+                }
+            });
+            $("#loader").hide();
+        }
+        else {
+            row.child.hide();
+            tr.removeClass('shown');
+        }
+    });
+</script>
+<script>
+    function GetUserDetail(Id) {
+        var module = $("#Module").val();
+        var url = "@Url.Action("UserDetail","User")";
+        window.location.href = url + "?UserId=" + Id + "&name=" + module;
+    }
+</script>
+
+<script>
+    $(function () {
+        $("#Insert").hide();
+        $("#View").hide();
+        $("#View1").hide();
+        $(".Update").hide();
+        $(".Delete").hide();
+        $(".Details").hide();
+    });
+</script>
+<script>
+    $(function () {
+        var module = $("#Module").val();
+        $("#loader").show();
+        $.ajax({
+            url: "@Url.Action("GetRolePermissionsName", "UserPermission")",
+            method: "GET",
+            data: { "Module": module },
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (RoleResponse) {
+
+                $.ajax({
+                    url: "@Url.Action("GetUserPermissionsName", "UserPermission")",
+                    method: "GET",
+                    data: { "Module": module },
+                    async: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (UserResponse) {
+
+                        if (UserResponse.length > 0) {
+                            for (let i = 0; i < UserResponse.length; i++) {
+                                if (UserResponse[i] == "PermissionCount") {
+                                    alert("You don't have any permission for this module.");
+                                    var url = "@Url.Action("Index","Home")";
+                                    url = url + "?name=HomePage";
+                                    window.location.href = url;
+                                } else {
+                                    $("#" + UserResponse[i]).show();
+                                    if (UserResponse[i] == "View") {
+                                        $(".Details").show();
+                                        $("#View1").show();
+                                    }
+                                    if (UserResponse[i] == "Update") {
+                                        $("." + UserResponse[i]).show();
+                                    }
+                                    if (UserResponse[i] == "Delete") {
+                                        $("." + UserResponse[i]).show();
+                                    }
+                                }
+
+                            }
+                            $("#loader").hide();
+                        } else if (RoleResponse.length > 0) {
+                            for (let i = 0; i < RoleResponse.length; i++) {
+                                if (RoleResponse[i] == "PermissionCount") {
+                                    alert("You don't have any permission for this module.");
+                                    var url = "@Url.Action("Index","Home")";
+                                    url = url + "?name=HomePage";
+                                    window.location.href = url;
+                                }
+                                else {
+                                    $("#" + RoleResponse[i]).show();
+                                    if (RoleResponse[i] == "View") {
+                                        $(".Details").show();
+                                        $("#View1").show();
+                                    }
+                                    if (RoleResponse[i] == "Update") {
+                                        $("." + RoleResponse[i]).show();
+                                    }
+                                    if (RoleResponse[i] == "Delete") {
+                                        $("." + RoleResponse[i]).show();
+                                    }
+                                }
+
+                            }
+                            $("#loader").hide();
+
+                        } else {
+                            alert("You don't have any permission for this module.");
+                            $("#loader").hide();
+                        }
+                    }
+                })
+            }
+        });
+    });
+</script>
+
+<script>
+    function GetDocumentsForActiveUser(Id) {
+
+        var Module = $("#Module").val();
+        var url = "@Url.Action("GetMyDocuments","User")";
+        window.location.href = url + "?Id=" + Id + "&Type=Active&name=" + Module;
+    }
+</script>
+<script>
+    function GetDocumentsForInActiveUser(Id) {
+
+        var Module = $("#Module").val();
+        var url = "@Url.Action("GetMyDocuments","User")";
+        window.location.href = url + "?Id=" + Id + "&Type=InActive" + "&name=" + Module;
+    }
+</script>
+<script>
+    $(window).resize(function () {
+        var allRows = $('#datatable tbody tr');
+        allRows.each(function () {
+            var tr = $(this).closest('tr');
+            var row = $($.fn.dataTable.tables(true)).DataTable().row(tr);
+            if (tr.hasClass("shown")) {
+                row.child.hide();
+                tr.removeClass('shown');
+                tr.removeClass('parent');
+            }
+        });
+
+        var allRows1 = $('#datatable-1 tbody tr');
+        allRows1.each(function () {
+            var tr = $(this).closest('tr');
+            var row = $($.fn.dataTable.tables(true)).DataTable().row(tr);
+            if (tr.hasClass("shown")) {
+                row.child.hide();
+                tr.removeClass('shown');
+                tr.removeClass('parent');
+            }
+        });
+
+        var allRows2 = $('#datatable-2 tbody tr');
+        allRows2.each(function () {
+            var tr = $(this).closest('tr');
+            var row = $($.fn.dataTable.tables(true)).DataTable().row(tr);
+            if (tr.hasClass("shown")) {
+                row.child.hide();
+                tr.removeClass('shown');
+                tr.removeClass('parent');
+            }
+        });
+    });
+</script>

@@ -1,0 +1,20 @@
+﻿@model DIBN.Areas.Admin.Models.SaveAssignUserForEnquiry
+
+<div class="row">
+    <form asp-action="SaveAssignedUser" asp-controller="Home" method="post">
+        @foreach (var item in Model.getMainCompanyEmployees)
+        {
+            <div class="form-group">
+                <input name="UserId" class="form-check-input" type="checkbox" value="@item.Id" @item._checked !="" ? @item._checked : "" />
+                <span class="ms-3 mb-1">@item.FirstName @Html.Raw(" ") @item.LastName </span>
+            </div>
+        }
+        <input asp-for="@Model.RequestId" type="hidden" />
+        <input asp-for="@Model.EnquiryNumber" type="hidden" />
+        <div class="modal-footer">
+            <div class="form-group">
+                <input type="submit" value="Assign" class="btn btn-theme" />
+            </div>
+        </div>
+    </form>
+</div>

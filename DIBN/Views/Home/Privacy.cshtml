@@ -1,0 +1,137 @@
+﻿@{
+    ViewBag.Title = "Privacy Notice";
+    Layout = "~/Views/Shared/Theme/_BlankLayout.cshtml";
+}
+
+<html class="bg-white">
+<body class="bg-white m-0 p-0">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 mt-5">
+                <div class="animation d-flex justify-content-center">
+                    <div class="one spin-one"></div>
+                    <div class="two spin-two"></div>
+                    <div class="three spin-one"></div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <h1 class="text-center display-4 fw-bolder">Under maintenance</h1>
+                <p class="text-center mt-3 fs-4 fw-bolder">Please wait for a while. Our developers are working on it, We are sorry for the inconvenience.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<style>
+    body {
+        font-family: 'Noto Sans', sans-serif;
+        color: #616161 /*#757575*/;
+        background-color: #eeeeee;
+    }
+
+
+    .box {
+        width: auto;
+        height: 500px;
+        background: #fff;
+        margin-top: 50px;
+        margin-left: 100px;
+        margin-right: 100px;
+        border-radius: 5px;
+        box-shadow: 6px 18px 18px rgba(0, 0, 0, 0.08), -6px 18px 18px rgba(0, 0, 0, 0.08);
+    }
+
+    .animation {
+        margin-top: 20%;
+        display: inline-block;
+        margin-bottom: 5%;
+    }
+
+    h1 {
+        font-size: 32px;
+        font-weight: 400;
+        text-transform: uppercase;
+        margin: 0;
+    }
+
+    p {
+        font-size: 16px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    a {
+        color: #243c7c;
+        font-weight: bold;
+        text-decoration: none;
+        margin-left: 5px;
+    }
+
+    .one, .two, .three {
+        display: block;
+        float: left;
+    }
+
+    .one {
+        background: url('/maintanance/download.png');
+        width: 100px;
+        height: 100px;
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+        margin-top: -10px;
+        margin-right: 8px;
+    }
+
+    .two {
+        background: url('/maintanance/icons8-settings.svg');
+        width: 120px;
+        height: 120px;
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+    }
+
+    .three {
+        background: url('/maintanance/download.png');
+        width: 100px;
+        height: 100px;
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+        margin-top: -50px;
+        margin-left: -10px;
+    }
+
+    @@keyframes spin-one {
+        0% {
+            -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+        }
+
+        100% {
+            -webkit-transform: rotate(-359deg);
+            transform: rotate(-359deg);
+        }
+    }
+
+    .spin-one {
+        -webkit-animation: spin-one 1.5s infinite linear;
+        animation: spin-one 1.5s infinite linear;
+    }
+
+    @@keyframes spin-two {
+        0% {
+            -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+        }
+
+        100% {
+            -webkit-transform: rotate(-359deg);
+            transform: rotate(359deg);
+        }
+    }
+
+    .spin-two {
+        -webkit-animation: spin-two 2s infinite linear;
+        animation: spin-two 2s infinite linear;
+    }
+</style>

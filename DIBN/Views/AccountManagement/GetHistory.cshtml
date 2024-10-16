@@ -1,0 +1,1205 @@
+﻿@model DIBN.Models.ConfirmationModel
+@{
+    ViewData["Title"] = "GetHistory";
+}
+<input type="hidden" asp-for="message" id="message" />
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <a href="@Url.Action("Index","AccountManagement",new{name="AccountManagement"})" class="btn btn-theme float-end" style="margin-bottom:15px;">Back to List</a>
+    </div>
+</div>
+<input type="hidden" name="Module" value="AccountManagement" id="Module" />
+<input type="hidden" name="IndexValue" id="IndexValue" />
+<div class="row Details">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                @*style="background:#243c7c !important;color:#fff !important;"*@
+                <div class="col-md-12 float-end">
+                    <button class="btn btn-theme float-end" onclick="ClearFilterToDatatable();">Clear All</button>
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-6 float-start">
+                        <div class="col-lg-4 float-start">
+                            <div class="form-group">
+                                <label class="control-label">Sort By : </label>
+                                <select class="form-select" id="sortingBy">
+                                    <option value="Transaction Id">Transaction Id</option>
+                                    <option value="Created On">Created On</option>
+                                    <option value="Company">Company</option>
+                                    <option value="Type">Type</option>
+                                    <option value="Grand Total">Grand Total</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 float-start">
+                            <div class="form-group ms-2">
+                                <label class="control-label">Sorting Order : </label>
+                                <select class="form-select" id="sortingDirection">
+                                    <option value="asc">Low to High</option>
+                                    <option value="desc">High to Low</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 float-start" style="margin-top:28px !important;">
+                            <button class="btn btn-theme float-start ms-2 me-2" onclick="ApplyFilterToDatatable();">Apply Filter</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6 float-start">
+                        <div class="col-lg-4 float-start">
+                            <div class="form-group">
+                                <label class="control-label">Search By : </label>
+                                <select class="form-select" id="searchByValue">
+                                    <option value="Transaction Id">Transaction Id</option>
+                                    <option value="Created On">Created On</option>
+                                    <option value="Company">Company</option>
+                                    <option value="Description">Description</option>
+                                    <option value="Type">Type</option>
+                                    <option value="Amount">Amount</option>
+                                    <option value="Quantity">Quantity</option>
+                                    <option value="Total Amount">Total Amount</option>
+                                    <option value="Vat(%)">Vat(%)</option>
+                                    <option value="Vat Amount">Vat Amount</option>
+                                    <option value="Grand Total">Grand Total</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 float-start">
+                            <div class="form-group ms-2">
+                                <label class="control-label">Search By : </label>
+                                <input id="searchedValue" name="searchedValue" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-lg-4 float-start" style="margin-top:28px !important;">
+                            <button class="btn btn-theme float-start ms-2 me-2" onclick="ApplyFilterToDatatable();">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <h4 class="card-title text-center">Account History</h4>
+                <hr style="height:1px;" class="text-theme" />
+                <div class="table-rep-plugin">
+                    <div class="table-responsive mb-0" data-pattern="priority-columns">
+                        <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Transaction Id
+                                    </th>
+                                    <th>
+                                        Created On
+                                    </th>
+                                    <th>
+                                        Company
+                                    </th>
+                                    <th>
+                                        Description
+                                    </th>
+                                    <th>
+                                        Type
+                                    </th>
+                                    <th>
+                                        Amount
+                                    </th>
+                                    <th>
+                                        Quantity
+                                    </th>
+                                    <th>
+                                        Total Amount
+                                    </th>
+                                    <th>
+                                        Vat(%)
+                                    </th>
+                                    <th>
+                                        Vat Amount
+                                    </th>
+                                    <th>
+                                        Grand Total
+                                    </th>
+                                    <th>
+                                        Download Receipt
+                                    </th>
+                                    <th>
+
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="EditExpense" class="modal" data-bs-keyboard="false" data-bs-backdrop="static" role="dialog">
+    @*tabindex="-1"*@
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit</h5>
+                <button type="button" class="close btn btn-theme" id="EditExpenseModalClose" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+<div id="UpdatePortalBalanceAmount" class="modal" data-bs-keyboard="false" data-bs-backdrop="static" role="dialog">
+    @*tabindex="-1"*@
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Portal Balance</h5>
+                <button type="button" class="btn btn-theme" id="UpdatePortalBalanceAmountClose" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+
+<script>
+    $("#EditExpenseModalClose").on('click', function () {
+        window.location.reload();
+    });
+
+    $("#UpdatePortalBalanceAmountClose").on("click", function () {
+        window.location.reload();
+    });
+    $(document).ready(function () {
+        $("#loader").hide();
+        var message = $("#message").val();
+        if (message != null && message != "") {
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: 'ms-3 btn btn-success',
+                    cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false
+            })
+
+            swalWithBootstrapButtons.fire({
+                title: 'Error.',
+                text: message,
+                icon: 'error'
+            }).then((result) => {
+                var url = "@Url.Action("GetHistory","AccountManagement")";
+                window.location.href = url;
+            });
+        }
+    });
+</script>
+<script>
+    function UpdateExpenses(Id,transactionId) {
+        $("#loader").show();
+        var Module = $("#Module").val();
+        $.ajax({
+            url: "@Url.Action("GetExpenseModification","AccountManagement")",
+            method: "GET",
+            data: { "Id": Id , "TransactionId": transactionId},
+            success: function (response) {
+                if (response != "" && response != null) {
+                    const swalWithBootstrapButtons = Swal.mixin({
+                        customClass: {
+                            confirmButton: 'ms-3 btn btn-success',
+                            cancelButton: 'btn btn-danger'
+                        },
+                        buttonsStyling: false
+                    })
+
+                    swalWithBootstrapButtons.fire({
+                        title: 'Error.',
+                        html: response,
+                        icon: 'error'
+                    }).then((result) => {
+                        window.location.reload();
+                    });
+                }
+                else {
+                    $.ajax({
+                        url: "@Url.Action("UpdateExpenses","AccountManagement")",
+                        method: "GET",
+                        data: { "Id": Id, "name": Module, "ActionName": "GetHistory", "Cnt": "AccountManagement" },
+                        success: function (response) {
+                            $("#loader").hide();
+                            $mymodal = $("#EditExpense");
+                            $mymodal.find("div.modal-body").html(response);
+                            $mymodal.modal("show");
+                        }
+                    });
+                }
+            }
+        });
+    }
+</script>
+<script>
+    function RemoveExpenses(Id, Amount, companyId) {
+        event.preventDefault();
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'ms-3 btn btn-success',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: false
+        })
+
+        swalWithBootstrapButtons.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true,
+            showConfirmButton: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#loader").show();
+                $.ajax({
+                    url: "@Url.Action("Delete", "AccountManagement")",
+                    method: "GET",
+                    data: { "Id": Id, "CompanyId": companyId, "Amount": Amount },
+                    success: function (response) {
+                        $("#loader").hide();
+                        if (response.startsWith("Selected Expense Deleted Successfully.")) {
+                            swalWithBootstrapButtons.fire({
+                                title: 'Deleted.',
+                                text: "Selected Expense Deleted Successfully..!!",
+                                icon: 'success'
+                            }).then((result) => {
+                                window.location.reload();
+                            });
+                        }
+                        else {
+                            swalWithBootstrapButtons.fire({
+                                title: 'Error.',
+                                html: response,
+                                icon: 'error'
+                            }).then((result) => {
+                                window.location.reload();
+                            });
+                        }
+                    }
+                });
+            }
+            else if (
+                result.dismiss === Swal.DismissReason.cancel
+            ) {
+                $("#loader").hide();
+                swalWithBootstrapButtons.fire(
+                    'Cancelled',
+                    'Cancled by User..!! :)',
+                    'error'
+                )
+            }
+        });
+    };
+
+    function UpdatePayment(Id, companyId,transactionId) {
+        $("#loader").show();
+        var module = $("#Module").val();
+        $.ajax({
+            url: "@Url.Action("GetTransactionModification","AccountManagement")",
+            method: "GET",
+            data: { "Id": Id, "CompanyId": companyId, "TransactionId": transactionId },
+            success: function (response) {
+                if (response != "" && response != null) {
+                    const swalWithBootstrapButtons = Swal.mixin({
+                        customClass: {
+                            confirmButton: 'ms-3 btn btn-success',
+                            cancelButton: 'btn btn-danger'
+                        },
+                        buttonsStyling: false
+                    })
+
+                    swalWithBootstrapButtons.fire({
+                        title: 'Error.',
+                        html: response,
+                        icon: 'error'
+                    }).then((result) => {
+                        window.location.reload();
+                    });
+                }
+                else {
+                    $.ajax({
+                        url: "@Url.Action("GetPaymentDetails","AccountManagement")",
+                        method: "GET",
+                        data: { "Id": Id, "CompanyId": companyId, "ActionName": "GetHistory", "Cnt": "AccountManagement" },
+                        success: function (response) {
+                            $("#loader").hide();
+                            $mymodal = $("#UpdatePortalBalanceAmount");
+                            $mymodal.find("div.modal-body").html(response);
+                            $mymodal.modal("show");
+                        }
+                    });
+                 }
+            }
+        });
+    };
+</script>
+<script>
+    function RemovePayment(Id, companyId, Amount) {
+        event.preventDefault();
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'ms-3 btn btn-success',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: false
+        })
+
+        swalWithBootstrapButtons.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true,
+            showConfirmButton: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#loader").show();
+                $.ajax({
+                    url: "@Url.Action("DeletePaymentDetails", "AccountManagement")",
+                    method: "GET",
+                    data: { "Id": Id, "CompanyId": companyId, "Amount": Amount },
+                    success: function (response) {
+                        $("#loader").hide();
+                        if (response.startsWith("Selected Payment Transaction Deleted Successfully.")) {
+                            swalWithBootstrapButtons.fire({
+                                title: 'Deleted.',
+                                text: "Selected Payment Transaction Deleted Successfully..!!",
+                                icon: 'success'
+                            }).then((result) => {
+                                window.location.reload();
+                            });
+                        }
+                        else {
+                            swalWithBootstrapButtons.fire({
+                                title: 'Error.',
+                                html: response,
+                                icon: 'error'
+                            }).then((result) => {
+                                window.location.reload();
+                            });
+                        }
+                    }
+                });
+            }
+            else if (
+                result.dismiss === Swal.DismissReason.cancel
+            ) {
+                $("#loader").hide();
+                swalWithBootstrapButtons.fire(
+                    'Cancelled',
+                    'Cancled by User..!! :)',
+                    'error'
+                )
+            }
+        });
+    }
+</script>
+
+<script>
+    $(document).ready(function () {
+        var url = "@Url.Action("GetDataTableData","AccountManagement")";
+        url = url + "?page=";
+
+        var table = $("#datatable").DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": false,
+            "ajax": {
+                "type": "post",
+                "datatype": "json",
+                "data": function () {
+                    var info = $('#datatable').DataTable().page.info();
+                    $('#datatable').DataTable().ajax.url(
+                        url + (info.page + 1)
+                    );
+                }
+            },
+            "responsive": true,
+            "deferRender": true,
+            "columns": [
+                { "data": "transactionId", "name": "Transaction Id" },
+                { "data": "createdOnUtc", "name": "Created On" },
+                { "data": "companyName", "name": "Company" },
+                {
+                    "data": function (data, full, meta) {
+
+                        if (data.transactionType == "Credit") {
+                            var desc = data.description;
+                            if (data.description.length > 40) {
+                                desc = desc.substring(0, 40);
+                                desc = desc + "....";
+                                return '<span title="' + data.description + '" >' + desc + '</span>';
+                            }
+                            else {
+                                return '<span title="' + data.description + '" >' + desc + '</span>';
+                            }
+                        } else {
+                            var desc = data.expensesTitle;
+                            if (data.expensesTitle.length > 40) {
+                                desc = desc.substring(0, 40);
+                                desc = desc + "....";
+                                return '<span title="' + data.expensesTitle + '" >' + desc + '</span>';
+                            }
+                            else {
+                                return '<span title="' + data.expensesTitle + '" >' + desc + '</span>';
+                            }
+                        }
+                    },
+                    "name": "Description"
+                },
+                { "data": "transactionType", "name": "Type" },
+                { "data": "expensesAmount", "name": "Amount" },
+                { "data": "quantity", "name": "Quantity" },
+                {
+                    "data": function (data, full, meta) {
+                        if (data.transactionType == "Credit") {
+                            return '<span>' + data.paymentCredit + '</span>';
+                        }
+                        else {
+                            return '<span>' + data.totalAmount + '</span>';
+                        }
+                    },
+                    "name": "Total Amount"
+                },
+                {
+                    "data": function (data, full, meta) {
+                        if (data.transactionType == "Credit") {
+                            return '<span>----</span>';
+                        }
+                        else {
+                            return '<span>' + data.vat + '</span>';
+                        }
+                    },
+                    "name": "Vat(%)"
+                },
+                {
+                    "data": function (data, full, meta) {
+                        if (data.transactionType == "Credit") {
+                            return '<span>----</span>';
+                        }
+                        else {
+                            return '<span>' + data.vatAmount + '</span>';
+                        }
+                    },
+                    "name": "Vat Amount"
+                },
+                {
+                    "data": function (data, full, meta) {
+                        if (data.transactionType == "Credit") {
+                            return '<span>' + data.paymentCredit + '</span>';
+                        }
+                        else {
+                            return '<span>' + data.grandTotal + '</span>';
+                        }
+                    },
+                    "name": "Grand Total"
+                },
+                {
+                    "data": function (data, full, meta) {
+                        if (data.expenseReceiptId != 0 && data.transactionType == "Debit") {
+                            var url = "@Url.Action("DownloadExpenseReceipt","AccountManagement")";
+                            return '<form action="' + url + '" method="get"> <input type="hidden" value= "' + data.expenseReceiptId + '" name="ReceiptId" /><input type="submit" value="Download" name= "Download Receipt" class="btn btn-theme" /></form>';
+                        }
+                        else if (data.expenseReceiptId != 0 && data.transactionType == "Credit") {
+                            var url = "@Url.Action("DownloadPaymentReceipt","AccountManagement")";
+                            return '<form action="' + url + '" method="get" target="_blank"> <input type="hidden" value= "' + data.expenseReceiptId + '" name="Id" /><input type="submit" value="Download" name= "Download Receipt" class="btn btn-theme" /></form>';
+                        }
+                        else {
+                            return '<span>----</span>';
+                        }
+                    },
+                    "name": "Download Receipt"
+                },
+                {
+                    "data": function (data, full, meta) {
+                        if (data.transactionType == "Credit") {
+                            var editButton = '<span class="btn btn-theme Update" onclick="UpdatePayment(' + data.paymentTransactionId + ',' + data.companyId + ",'" + data.transactionId + "'" + ')"><i class="fas fa-edit"></i></span>';
+                            var deleteButton = '<span class="btn btn-theme ms-2 Delete" onclick="RemovePayment(' + data.paymentTransactionId + ',' + data.companyId + ',' + data.paymentCredit + ')"><i class="fas fa-trash"></i></span>';
+                            return editButton + deleteButton;
+                        }
+                        else if (data.transactionType == "Debit") {
+                            var editButton = '<span class="btn btn-theme Update" onclick="UpdateExpenses(' + data.id + ",'" + data.transactionId + "'" + ')"><i class="fas fa-edit"></i></span>';
+                            var deleteButton = '<span class="btn btn-theme ms-2 Delete" onclick="RemoveExpenses(' + data.id + ',' + data.grandTotal + ',' + data.companyId + ')"><i class="fas fa-trash"></i></span>';
+                            return editButton + deleteButton;
+                        }
+                    },
+                    "name": ""
+                },
+            ],
+            "initComplete": function (settings, json) {
+                $(".Update").hide();
+                $(".Delete").hide();
+                $(".Details").hide();
+                var module = $("#Module").val();
+                $.ajax({
+                    url: "@Url.Action("GetRolePermissionsName", "UserPermission")",
+                    method: "GET",
+                    data: { "Module": "AccountManagement" },
+                    success: function (RoleResponse) {
+                        $("#loader").show();
+                        $.ajax({
+                            url: "@Url.Action("GetUserPermissionsName", "UserPermission")",
+                            method: "GET",
+                            data: { "Module": "AccountManagement" },
+                            success: function (UserResponse) {
+                                $("#loader").show();
+                                if (UserResponse.length > 0) {
+                                    for (let i = 0; i < UserResponse.length; i++) {
+                                        $("#" + UserResponse[i]).show();
+                                        if (UserResponse[i] == "View") {
+                                            $(".Details").show();
+                                        }
+                                        if (UserResponse[i] == "Update") {
+                                            $("." + UserResponse[i]).show();
+                                        }
+                                        if (UserResponse[i] == "Delete") {
+                                            $(".Delete").show();
+                                        }
+                                    }
+                                    $($.fn.dataTable.tables(true)).DataTable()
+                                        .columns.adjust();
+                                    $("#loader").hide();
+                                }
+                                else if (RoleResponse.length > 0) {
+                                    for (let i = 0; i < RoleResponse.length; i++) {
+                                        $("#" + RoleResponse[i]).show();
+                                        if (RoleResponse[i] == "View") {
+                                            $(".Details").show();
+                                        }
+                                        if (RoleResponse[i] == "Update") {
+                                            $("." + RoleResponse[i]).show();
+                                        }
+                                        if (RoleResponse[i] == "Delete") {
+                                            $(".Delete").show();
+                                        }
+                                    }
+                                    $($.fn.dataTable.tables(true)).DataTable()
+                                        .columns.adjust();
+                                    $("#loader").hide();
+                                }
+                            }
+                        })
+                    }
+                });
+                $("#loader").hide();
+            },
+            "drawCallback": function (settings, json) {
+                $(".Update").hide();
+                $(".Delete").hide();
+                $(".Details").hide();
+                var module = $("#Module").val();
+                $.ajax({
+                    url: "@Url.Action("GetRolePermissionsName", "UserPermission")",
+                    method: "GET",
+                    data: { "Module": "AccountManagement" },
+                    success: function (RoleResponse) {
+                        $("#loader").show();
+                        $.ajax({
+                            url: "@Url.Action("GetUserPermissionsName", "UserPermission")",
+                            method: "GET",
+                            data: { "Module": "AccountManagement" },
+                            success: function (UserResponse) {
+                                $("#loader").show();
+                                if (UserResponse.length > 0) {
+                                    for (let i = 0; i < UserResponse.length; i++) {
+                                        $("#" + UserResponse[i]).show();
+                                        if (UserResponse[i] == "View") {
+                                            $(".Details").show();
+                                        }
+                                        if (UserResponse[i] == "Update") {
+                                            $("." + UserResponse[i]).show();
+                                        }
+                                        if (UserResponse[i] == "Delete") {
+                                            $(".Delete").show();
+                                        }
+                                    }
+                                    $($.fn.dataTable.tables(true)).DataTable()
+                                        .columns.adjust();
+                                    $("#loader").hide();
+                                }
+                                else if (RoleResponse.length > 0) {
+                                    for (let i = 0; i < RoleResponse.length; i++) {
+                                        $("#" + RoleResponse[i]).show();
+                                        if (RoleResponse[i] == "View") {
+                                            $(".Details").show();
+                                        }
+                                        if (RoleResponse[i] == "Update") {
+                                            $("." + RoleResponse[i]).show();
+                                        }
+                                        if (RoleResponse[i] == "Delete") {
+                                            $(".Delete").show();
+                                        }
+                                    }
+                                    $($.fn.dataTable.tables(true)).DataTable()
+                                        .columns.adjust();
+                                    $("#loader").hide();
+                                }
+                            }
+                        })
+                    }
+                });
+                $("#loader").hide();
+            },
+            "language": {
+                'processing': '<div class="spinner-2"><div class="center-div-2"><div class="loader-circle-1"></div></div></div>'
+            },
+            paging: true,
+            pagingType: 'simple_numbers',
+            "bInfo": true,
+            ordering: false,
+            "aLengthMenu": [20, 30, 50],
+            //"aLengthMenu": [[10, 20, 30, -1], [10, 20, 30, "All"]],
+            searching: false,
+            dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+        })
+
+        $('#datatable tbody').on('click', 'td.dtr-control', function () {
+            var tr = $(this).closest('tr');
+            var row = table.row(tr);
+            if (!tr.hasClass("shown")) {
+                $("#loader").show();
+                row.child.show();
+                tr.addClass('shown');
+                $(".Update").hide();
+                $(".Delete").hide();
+                $(".Details").hide();
+                var module = $("#Module").val();
+                $.ajax({
+                    url: "@Url.Action("GetRolePermissionsName", "UserPermission")",
+                    method: "GET",
+                    data: { "Module": "AccountManagement" },
+                    success: function (RoleResponse) {
+                        $("#loader").show();
+                        $.ajax({
+                            url: "@Url.Action("GetUserPermissionsName", "UserPermission")",
+                            method: "GET",
+                            data: { "Module": "AccountManagement" },
+                            success: function (UserResponse) {
+                                $("#loader").show();
+                                if (UserResponse.length > 0) {
+                                    for (let i = 0; i < UserResponse.length; i++) {
+                                        $("#" + UserResponse[i]).show();
+                                        if (UserResponse[i] == "View") {
+                                            $(".Details").show();
+                                        }
+                                        if (UserResponse[i] == "Update") {
+                                            $("." + UserResponse[i]).show();
+                                        }
+                                        if (UserResponse[i] == "Delete") {
+                                            $(".Delete").show();
+                                        }
+                                    }
+                                    $("#loader").hide();
+                                }
+                                else if (RoleResponse.length > 0) {
+                                    for (let i = 0; i < RoleResponse.length; i++) {
+                                        $("#" + RoleResponse[i]).show();
+                                        if (RoleResponse[i] == "View") {
+                                            $(".Details").show();
+                                        }
+                                        if (RoleResponse[i] == "Update") {
+                                            $("." + RoleResponse[i]).show();
+                                        }
+                                        if (RoleResponse[i] == "Delete") {
+                                            $(".Delete").show();
+                                        }
+                                    }
+                                    $("#loader").hide();
+                                }
+                            }
+                        })
+                    }
+                });
+                $("#loader").hide();
+            }
+            else {
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+        });
+    });
+</script>
+<script>
+    function ApplyFilterToDatatable() {
+        var sortingBy = $("#sortingBy").val();
+        var sortingOrder = $("#sortingDirection").val();
+
+        var searchedValue = $("#searchedValue").val();
+        var searchByValue = $("#searchByValue").val();
+
+        var url = "@Url.Action("GetFilterwiseDataTable","AccountManagement")";
+        url = url + "?sortColumn=" + sortingBy + "&sortColumnDirection=" + sortingOrder;
+        if (searchByValue != "" && searchedValue != "") {
+            url = url + "&searchBy=" + searchByValue + "&searchedValue=" + searchedValue;
+        }
+        if ($.fn.dataTable.isDataTable('#datatable')) {
+            $('#datatable').DataTable().destroy();
+            $('#datatable').empty();
+
+            var table = $("#datatable").DataTable({
+                "processing": true,
+                "serverSide": true,
+                "filter": false,
+                "ajax": {
+                    "type": "post",
+                    "datatype": "json",
+                    "data": function () {
+                        $('#datatable').DataTable().ajax.url(
+                            url
+                        );
+                    }
+                },
+                "responsive": true,
+                "deferRender": true,
+                "columns": [
+                    { "data": "transactionId", sTitle: "Transaction Id" },
+                    { "data": "createdOnUtc", sTitle: "Created On" },
+                    { "data": "companyName", sTitle: "Company" },
+                    {
+                        "data": function (data, full, meta) {
+
+                            var desc = data.description;
+                            if (data.description.length > 40) {
+                                desc = desc.substring(0, 40);
+                                desc = desc + "....";
+                                return '<span title="' + data.description + '" >' + desc + '</span>';
+                            }
+                            else {
+                                return '<span title="' + data.description + '" >' + desc + '</span>';
+                            }
+                        },
+                        sTitle: "Description"
+                    },
+                    { "data": "transactionType", sTitle: "Type" },
+                    { "data": "expensesAmount", sTitle: "Amount" },
+                    { "data": "quantity", sTitle: "Quantity" },
+                    {
+                        "data": function (data, full, meta) {
+                            if (data.transactionType == "Credit") {
+                                return '<span>' + data.paymentCredit + '</span>';
+                            }
+                            else {
+                                return '<span>' + data.totalAmount + '</span>';
+                            }
+                        },
+                        sTitle: "Total Amount"
+                    },
+                    {
+                        "data": function (data, full, meta) {
+                            if (data.transactionType == "Credit") {
+                                return '<span>----</span>';
+                            }
+                            else {
+                                return '<span>' + data.vat + '</span>';
+                            }
+                        },
+                        sTitle: "Vat(%)"
+                    },
+                    {
+                        "data": function (data, full, meta) {
+                            if (data.transactionType == "Credit") {
+                                return '<span>----</span>';
+                            }
+                            else {
+                                return '<span>' + data.vatAmount + '</span>';
+                            }
+                        },
+                        sTitle: "Vat Amount"
+                    },
+                    {
+                        "data": function (data, full, meta) {
+                            if (data.transactionType == "Credit") {
+                                return '<span>' + data.paymentCredit + '</span>';
+                            }
+                            else {
+                                return '<span>' + data.grandTotal + '</span>';
+                            }
+                        },
+                        sTitle: "Grand Total"
+                    },
+                    {
+                        "data": function (data, full, meta) {
+                            if (data.expenseReceiptId != 0 && data.transactionType == "Debit") {
+                                var url = "@Url.Action("DownloadExpenseReceipt","AccountManagement")";
+                                return '<form action="' + url + '" method="get"> <input type="hidden" value= "' + data.expenseReceiptId + '" name="ReceiptId" /><input type="submit" value="Download" name= "Download Receipt" class="btn btn-theme" /></form>';
+                            }
+                            else if (data.expenseReceiptId != 0 && data.transactionType == "Credit") {
+                                var url = "@Url.Action("DownloadPaymentReceipt","AccountManagement")";
+                                return '<form action="' + url + '" method="get" target="_blank"> <input type="hidden" value= "' + data.expenseReceiptId + '" name="Id" /><input type="submit" value="Download" name= "Download Receipt" class="btn btn-theme" /></form>';
+                            }
+                            else {
+                                return '<span>----</span>';
+                            }
+                        },
+                        sTitle: "Download Receipt"
+                    },
+                    {
+                        "data": function (data, full, meta) {
+                            if (data.transactionType == "Credit") {
+                                var editButton = '<span class="btn btn-theme Update" onclick="UpdatePayment(' + data.paymentTransactionId + ',' + data.companyId + ",'" + data.transactionId + "'" + ')"><i class="fas fa-edit"></i></span>';
+                                var deleteButton = '<span class="btn btn-theme ms-2 Delete" onclick="RemovePayment(' + data.paymentTransactionId + ',' + data.companyId + ',' + data.paymentCredit + ')"><i class="fas fa-trash"></i></span>';
+                                return editButton + deleteButton;
+                            }
+                            else if (data.transactionType == "Debit") {
+                                var editButton = '<span class="btn btn-theme Update" onclick="UpdateExpenses(' + data.id + ",'" + data.transactionId + "'" + ')"><i class="fas fa-edit"></i></span>';
+                                var deleteButton = '<span class="btn btn-theme ms-2 Delete" onclick="RemoveExpenses(' + data.id + ',' + data.grandTotal + ',' + data.companyId + ')"><i class="fas fa-trash"></i></span>';
+                                return editButton + deleteButton;
+                            }
+                        },
+                        sTitle: ""
+                    },
+                ],
+                "initComplete": function (settings, json) {
+                    $(".Update").hide();
+                    $(".Delete").hide();
+                    $(".Details").hide();
+                    var module = $("#Module").val();
+                    $.ajax({
+                        url: "@Url.Action("GetRolePermissionsName", "UserPermission")",
+                        method: "GET",
+                        data: { "Module": "AccountManagement" },
+                        success: function (RoleResponse) {
+                            $("#loader").show();
+                            $.ajax({
+                                url: "@Url.Action("GetUserPermissionsName", "UserPermission")",
+                                method: "GET",
+                                data: { "Module": "AccountManagement" },
+                                success: function (UserResponse) {
+                                    $("#loader").show();
+                                    if (UserResponse.length > 0) {
+                                        for (let i = 0; i < UserResponse.length; i++) {
+                                            $("#" + UserResponse[i]).show();
+                                            if (UserResponse[i] == "View") {
+                                                $(".Details").show();
+                                            }
+                                            if (UserResponse[i] == "Update") {
+                                                $("." + UserResponse[i]).show();
+                                            }
+                                            if (UserResponse[i] == "Delete") {
+                                                $(".Delete").show();
+                                            }
+                                        }
+                                        $($.fn.dataTable.tables(true)).DataTable()
+                                            .columns.adjust();
+                                        $("#loader").hide();
+                                    }
+                                    else if (RoleResponse.length > 0) {
+                                        for (let i = 0; i < RoleResponse.length; i++) {
+                                            $("#" + RoleResponse[i]).show();
+                                            if (RoleResponse[i] == "View") {
+                                                $(".Details").show();
+                                            }
+                                            if (RoleResponse[i] == "Update") {
+                                                $("." + RoleResponse[i]).show();
+                                            }
+                                            if (RoleResponse[i] == "Delete") {
+                                                $(".Delete").show();
+                                            }
+                                        }
+                                        $($.fn.dataTable.tables(true)).DataTable()
+                                            .columns.adjust();
+                                        $("#loader").hide();
+                                    }
+                                }
+                            })
+                        }
+                    });
+                    $("#loader").hide();
+                },
+                "drawCallback": function (settings, json) {
+                    $(".Update").hide();
+                    $(".Delete").hide();
+                    $(".Details").hide();
+                    var module = $("#Module").val();
+                    $.ajax({
+                        url: "@Url.Action("GetRolePermissionsName", "UserPermission")",
+                        method: "GET",
+                        data: { "Module": "AccountManagement" },
+                        success: function (RoleResponse) {
+                            $("#loader").show();
+                            $.ajax({
+                                url: "@Url.Action("GetUserPermissionsName", "UserPermission")",
+                                method: "GET",
+                                data: { "Module": "AccountManagement" },
+                                success: function (UserResponse) {
+                                    $("#loader").show();
+                                    if (UserResponse.length > 0) {
+                                        for (let i = 0; i < UserResponse.length; i++) {
+                                            $("#" + UserResponse[i]).show();
+                                            if (UserResponse[i] == "View") {
+                                                $(".Details").show();
+                                            }
+                                            if (UserResponse[i] == "Update") {
+                                                $("." + UserResponse[i]).show();
+                                            }
+                                            if (UserResponse[i] == "Delete") {
+                                                $(".Delete").show();
+                                            }
+                                        }
+                                        $($.fn.dataTable.tables(true)).DataTable()
+                                            .columns.adjust();
+                                        $("#loader").hide();
+                                    }
+                                    else if (RoleResponse.length > 0) {
+                                        for (let i = 0; i < RoleResponse.length; i++) {
+                                            $("#" + RoleResponse[i]).show();
+                                            if (RoleResponse[i] == "View") {
+                                                $(".Details").show();
+                                            }
+                                            if (RoleResponse[i] == "Update") {
+                                                $("." + RoleResponse[i]).show();
+                                            }
+                                            if (RoleResponse[i] == "Delete") {
+                                                $(".Delete").show();
+                                            }
+                                        }
+                                        $($.fn.dataTable.tables(true)).DataTable()
+                                            .columns.adjust();
+                                        $("#loader").hide();
+                                    }
+                                }
+                            })
+                        }
+                    });
+                    $("#loader").hide();
+                },
+                "language": {
+                    'processing': '<div class="spinner-2"><div class="center-div-2"><div class="loader-circle-1"></div></div></div>'
+                },
+                paging: true,
+                pagingType: 'simple_numbers',
+                "bInfo": true,
+                ordering: false,
+                "aLengthMenu": [20,30,50],
+                searching: false,
+                dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+            });
+
+            $('#datatable tbody').on('click', 'td.dtr-control', function () {
+                var tr = $(this).closest('tr');
+                var row = table.row(tr);
+                if (!tr.hasClass("shown")) {
+                    $("#loader").show();
+                    row.child.show();
+                    tr.addClass('shown');
+                    $(".Update").hide();
+                    $(".Delete").hide();
+                    $(".Details").hide();
+                    var module = $("#Module").val();
+                    $.ajax({
+                        url: "@Url.Action("GetRolePermissionsName", "UserPermission")",
+                        method: "GET",
+                        data: { "Module": "AccountManagement" },
+                        success: function (RoleResponse) {
+                            $("#loader").show();
+                            $.ajax({
+                                url: "@Url.Action("GetUserPermissionsName", "UserPermission")",
+                                method: "GET",
+                                data: { "Module": "AccountManagement" },
+                                success: function (UserResponse) {
+                                    $("#loader").show();
+                                    if (UserResponse.length > 0) {
+                                        for (let i = 0; i < UserResponse.length; i++) {
+                                            $("#" + UserResponse[i]).show();
+                                            if (UserResponse[i] == "View") {
+                                                $(".Details").show();
+                                            }
+                                            if (UserResponse[i] == "Update") {
+                                                $("." + UserResponse[i]).show();
+                                            }
+                                            if (UserResponse[i] == "Delete") {
+                                                $(".Delete").show();
+                                            }
+                                        }
+                                        $("#loader").hide();
+                                    }
+                                    else if (RoleResponse.length > 0) {
+                                        for (let i = 0; i < RoleResponse.length; i++) {
+                                            $("#" + RoleResponse[i]).show();
+                                            if (RoleResponse[i] == "View") {
+                                                $(".Details").show();
+                                            }
+                                            if (RoleResponse[i] == "Update") {
+                                                $("." + RoleResponse[i]).show();
+                                            }
+                                            if (RoleResponse[i] == "Delete") {
+                                                $(".Delete").show();
+                                            }
+                                        }
+                                        $("#loader").hide();
+                                    }
+                                }
+                            })
+                        }
+                    });
+                    $("#loader").hide();
+                }
+                else {
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+            });
+        }
+
+    };
+
+    function ClearFilterToDatatable() {
+        window.location.reload();
+    }
+</script>
+<script>
+    $("#searchByValue").on('change', function () {
+        var selectedValue = $("#searchByValue").val();
+        if (selectedValue == "Created On") {
+            $("#searchedValue").val("");
+            $("#searchedValue").datepicker({
+                format: 'dd-mm-yyyy',
+                changeMonth: true,
+                changeYear: true,
+                autoclose: true,
+                todayHighlight: true,
+            })
+            $("#searchedValue").attr("readonly", "readonly");
+        }
+        else {
+            $("#searchedValue").datepicker("destroy");
+            $("#searchedValue").removeAttr("readonly");
+            $("#searchedValue").val("");
+        }
+    });
+</script>
+<script>
+    $(function () {
+        $("#Insert").hide();
+        $(".View").hide();
+        $("#View1").hide();
+        $(".Update").hide();
+        $(".Delete").hide();
+        $(".Details").hide();
+    });
+</script>
+<script>
+    $(function () {
+        var module = $("#Module").val();
+        $("#loader").show();
+        $.ajax({
+            url: "@Url.Action("GetRolePermissionsName", "UserPermission")",
+            method: "GET",
+            data: { "Module": "AccountManagement" },
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (RoleResponse) {
+
+                $.ajax({
+                    url: "@Url.Action("GetUserPermissionsName", "UserPermission")",
+                    method: "GET",
+                    data: { "Module": "AccountManagement" },
+                    async: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (UserResponse) {
+
+                        if (UserResponse.length > 0) {
+                            for (let i = 0; i < UserResponse.length; i++) {
+                                if (UserResponse[i] == "PermissionCount") {
+                                    alert("You don't have any permission for this module.");
+                                    var url = "@Url.Action("Index","Home")";
+                                    url = url + "?name=HomePage";
+                                    window.location.href = url;
+                                } else {
+                                    $("#" + UserResponse[i]).show();
+                                    if (UserResponse[i] == "View") {
+                                        $(".Details").show();
+                                        $("#View1").show();
+                                    }
+                                    if (UserResponse[i] == "Update") {
+                                        $("." + UserResponse[i]).show();
+                                    }
+                                    if (UserResponse[i] == "Delete") {
+                                        $("." + UserResponse[i]).show();
+                                    }
+                                }
+
+                            }
+                            $("#loader").hide();
+                        } else if (RoleResponse.length > 0) {
+                            for (let i = 0; i < RoleResponse.length; i++) {
+                                if (RoleResponse[i] == "PermissionCount") {
+                                    alert("You don't have any permission for this module.");
+                                    var url = "@Url.Action("Index","Home")";
+                                    url = url + "?name=HomePage";
+                                    window.location.href = url;
+                                }
+                                else {
+                                    $("#" + RoleResponse[i]).show();
+                                    if (RoleResponse[i] == "View") {
+                                        $(".Details").show();
+                                        $("#View1").show();
+                                    }
+                                    if (RoleResponse[i] == "Update") {
+                                        $("." + RoleResponse[i]).show();
+                                    }
+                                    if (RoleResponse[i] == "Delete") {
+                                        $("." + RoleResponse[i]).show();
+                                    }
+                                }
+
+                            }
+                            $("#loader").hide();
+
+                        } else {
+                            alert("You don't have any permission for this module.");
+                            $("#loader").hide();
+                        }
+                    }
+                })
+            }
+        });
+    });
+</script>
+<script>
+    $(window).resize(function () {
+        var allRows = $('#datatable tbody tr');
+        allRows.each(function () {
+            var tr = $(this).closest('tr');
+            var row = $($.fn.dataTable.tables(true)).DataTable().row(tr);
+            if (tr.hasClass("shown")) {
+                row.child.hide();
+                tr.removeClass('shown');
+                tr.removeClass('parent');
+            }
+        });
+    });
+</script>

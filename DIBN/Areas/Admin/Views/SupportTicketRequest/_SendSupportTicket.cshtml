@@ -1,0 +1,52 @@
+﻿@model DIBN.Areas.Admin.Models.SupportTicketRequest
+
+<div class="row">
+
+    <form asp-action="SendResponseBody" asp-area="Admin" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="TrackingNumber" class="control-label"></label>
+            <input asp-for="TrackingNumber" class="form-control" id="TrackingNumber" oninvalid="this.setCustomValidity('Please Enter Title for your Employee Service Request.')" oninput="this.setCustomValidity('')" required readonly/> 
+            <span asp-validation-for="TrackingNumber" class="text-danger" ></span> 
+        </div>
+        <div class="form-group">
+            <label asp-for="TicketStatusId" class="control-label"></label>
+            <p class="p-2">
+                <input asp-for="TicketStatusId" class="form-check-input" type="radio" value="1"/> Open  
+                <input asp-for="TicketStatusId" class="form-check-input" type="radio" value="2"/> Closed  
+            </p>
+            <span asp-validation-for="TicketStatusId" class="text-danger" ></span> 
+        </div>
+        <div class="form-group">
+            <label asp-for="Description" class="control-label"></label>
+            <textarea asp-for="Description" class="form-control" oninvalid="this.setCustomValidity('Please Enter Description for your Employee Service Request.')" oninput="this.setCustomValidity('')" required rows="5" cols="20">
+
+            </textarea>
+            <span asp-validation-for="Description" class="text-danger" ></span> 
+        </div>
+        <div class="form-group">
+            <label asp-for="FormFile" class="control-label"></label>
+            <input name="FormFile" class="form-control m-2" type="file" id="FormFile" multiple/>
+            <span asp-validation-for="FormFile" class="text-danger" ></span> 
+        </div>
+        <input type="hidden" name="Module" id="Module" value="@Model.Module" />
+        <input type="hidden" asp-for="CompanyId" />
+        <input type="hidden" asp-for="UserId" />
+        <input type="hidden" asp-for="ParentId" value="0" />
+        
+        <div class="modal-footer">
+            <div class="form-group">
+                <input type="submit" value="Send" class="btn btn-theme" />
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    $('form').submit(function () {
+        alert("Please Wait for a while,We are currently submitting Your Response.");
+        $('input[type="submit"]').attr('disabled', 'disabled');
+    });
+</script>

@@ -1,0 +1,426 @@
+﻿@model DIBN.Areas.Admin.Models.MainCompanyServiceViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+@if (Model.allowedModule.Contains("Insert"))
+{
+    <div class="row">
+        <div class="col-lg-12">
+            <button type="button" class="btn btn-theme pull-right Insert" style="float:right;margin-bottom:15px;" onclick="AddNew();">Create</button>
+        </div>
+    </div>
+}
+@if (Model.allowedModule.Contains("View"))
+{
+    <div class="row" id="View">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-center">Company Service(s) - MAINLAND</h4>
+                    <hr class="text-theme" style="height:1.5px;" />
+                    <div class="table-rep-plugin">
+                        <div class="table-responsive mb-0" data-pattern="priority-columns">
+                            <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            #
+                                        </th>
+                                        <th>
+                                            Service Name
+                                        </th>
+                                        <th>
+                                            Company Type
+                                        </th>
+                                        <th>
+                                            Status
+                                        </th>
+                                        <th>
+
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        var i = 0;
+                                        string[] service = { };
+                                        string serviceName = null;
+                                    }
+                                    @foreach (var item in Model.companyServices)
+                                    {
+                                        if (@item.ServiceName != null && @item.CompanyTypeName == "Dubai Mainland")
+                                        {
+                                            <tr>
+                                                <td>@(i + 1)</td>
+                                                <td>
+                                                    @item.ServiceName
+                                                </td>
+                                                <td>
+                                                    @item.CompanyTypeName
+                                                </td>
+                                                <td>
+                                                    @if (item.IsActive)
+                                                    {
+                                                        <span>Active</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>De-Actived</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if(Model.allowedModule.Contains("Update"))
+                                                    {
+                                                        <span class="btn btn-theme Update" onclick="Update(@item.ID)">
+                                                            <i class="fas fa-edit"></i>
+                                                        </span>
+                                                    }
+                                                    @if (Model.allowedModule.Contains("Delete"))
+                                                    {
+                                                        <span class="btn btn-theme Delete" onclick="Remove(@item.ID)">
+                                                            <i class="fas fa-trash"></i>
+                                                        </span>
+                                                    }
+                                                    @if (item.ParentId != 0)
+                                                    {
+                                                        service = @item.ServiceName.Split(">>");
+                                                        serviceName = service[1];
+                                                        <span class="btn btn-theme Details" onclick="GetformDetails(@item.ID,true,false,'@serviceName')">
+                                                            Form
+                                                        </span>
+                                                    }
+                                                </td>
+                                            </tr>
+                                            i++;
+                                        }
+
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-center">Company Service(s) - FREEZONE</h4>
+                    <hr class="text-theme" style="height:1.5px;" />
+                    <div class="table-rep-plugin">
+                        <div class="table-responsive mb-0" data-pattern="priority-columns">
+                            <table id="datatable-1" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            #
+                                        </th>
+                                        <th>
+                                            Service Name
+                                        </th>
+                                        <th>
+                                            Company Type
+                                        </th>
+                                        <th>
+                                            Status
+                                        </th>
+                                        <th>
+
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        var j = 0;
+                                    }
+                                    @foreach (var item in Model.companyServices)
+                                    {
+                                        if (@item.ServiceName != null && @item.CompanyTypeName == "Freezone")
+                                        {
+                                            <tr>
+                                                <td>@(j + 1)</td>
+                                                <td>
+                                                    @item.ServiceName
+                                                </td>
+                                                <td>
+                                                    @item.CompanyTypeName
+                                                </td>
+                                                <td>
+                                                    @if (item.IsActive)
+                                                    {
+                                                        <span>Active</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>De-Actived</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (Model.allowedModule.Contains("Update"))
+                                                    {
+                                                        <span class="btn btn-theme Update" onclick="Update(@item.ID)">
+                                                            <i class="fas fa-edit"></i>
+                                                        </span>
+                                                    }
+                                                    @if (Model.allowedModule.Contains("Delete"))
+                                                    {
+                                                        <span class="btn btn-theme Delete" onclick="Remove(@item.ID)">
+                                                            <i class="fas fa-trash"></i>
+                                                        </span>
+                                                    }
+                                                    @if (item.ParentId != 0)
+                                                    {
+                                                        service = @item.ServiceName.Split(">>");
+                                                        serviceName = service[1];
+                                                        <span class="btn btn-theme Details" onclick="GetformDetails(@item.ID,true,false,'@serviceName')">
+                                                            Form
+                                                        </span>
+                                                    }
+                                                </td>
+                                            </tr>
+                                            j++;
+                                        }
+
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<input type="hidden" asp-for="@Model.Module" name="Module" id="Module" />
+<!--Create New Service-->
+
+<div id="CreateNewService" class="modal" role="dialog" aria-hidden="true" data-bs-keyboard="false" data-bs-backdrop="static"> @*tabindex="-1"*@
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create</h5>
+                <button type="button" class="close btn btn-theme" id="CreateNewServiceModalClose" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--Edit Employee Service-->
+
+<div id="EditService" class="modal" role="dialog" aria-hidden="true" data-bs-keyboard="false" data-bs-backdrop="static"> @*tabindex="-1"*@
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit</h5>
+                <button type="button" class="close btn btn-theme" id="EditServiceModalClose" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="ServiceForm" class="modal" role="dialog" aria-hidden="true" tabindex="-1" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create Form</h5>
+                <button type="button" class="close btn btn-theme" id="ServiceFormModalClose" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form asp-action="CreateForm" asp-controller="ServiceForm" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group">
+                            <label class="control-label">Form:</label>
+                            <input name="FormName" type="text" class="form-control" oninvalid="this.setCustomValidity('Please Enter Name of Form.')" oninput="this.setCustomValidity('')" id="FormName" required/> 
+                            <input name="FormserviceId" class="form-control" id="FormserviceId" type="hidden"/> 
+                        </div>
+                        <div class="modal-footer">
+                            <div class="form-group">
+                                <input type="submit" value="Create" class="btn btn-theme" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+
+<script>
+    var flag=false;
+    var table = $('#datatable').DataTable({
+        responsive:true,
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    });
+
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>
+<script>
+    var flag = false;
+    var table1 =$('#datatable-1').DataTable({
+        responsive:true,
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    });
+
+    $("#CreateNewServiceModalClose").on("click",function(){
+        window.location.reload();
+    });
+    $("#EditServiceModalClose").on("click",function(){
+        window.location.reload();
+    });
+    $("#ServiceFormModalClose").on("click",function(){
+        window.location.reload();
+    });
+</script>
+<script>
+    function AddNew(){
+        var module = $("#Module").val();
+        $.ajax({
+            url: "@Url.Action("Create","CompanyServices")",
+            method: "GET",
+            data:{"name":module},
+            success: function (response) {
+                $mymodal = $("#CreateNewService");
+                $mymodal.find("div.modal-body").html(response);
+                $mymodal.modal("show");
+            }
+        });
+    };
+    function Update(Id){
+        var module = $("#Module").val();
+        $.ajax({
+            url: "@Url.Action("Edit","CompanyServices")",
+            method: "GET",
+            data:{"name":module,"Id":Id},
+            success: function (response) {
+                $mymodal = $("#EditService");
+                $mymodal.find("div.modal-body").html(response);
+                $mymodal.modal("show");
+            }
+        });
+    };
+</script>
+<script>
+    function Remove(Id){
+        event.preventDefault();
+        const swalWithBootstrapButtons = Swal.mixin({
+          customClass: {
+            confirmButton: 'ms-3 btn btn-success',
+            cancelButton: 'btn btn-danger'
+          },
+          buttonsStyling: false
+        })
+
+        swalWithBootstrapButtons.fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, delete it!',
+          cancelButtonText: 'No, cancel!',
+          reverseButtons: true,
+          showConfirmButton: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#loader").show();
+                $.ajax({
+                    url: "@Url.Action("Delete", "CompanyServices")",
+                    method: "GET",
+                    data:{"Id":Id},
+                    success: function (response) {
+                        $("#loader").hide();
+                        swalWithBootstrapButtons.fire({
+                          title: 'Deleted.',
+                          text: "Service Deleted Successfully..!!",
+                          icon: 'success'
+                        }).then((result) => {
+                            window.location.reload();
+                        });
+                    }
+                });
+            }
+            else if (
+                result.dismiss === Swal.DismissReason.cancel
+              ) {
+                $("#loader").hide();
+                swalWithBootstrapButtons.fire(
+                  'Cancelled',
+                  'Cancled by User..!! :)',
+                  'error'
+                )
+              }
+        });
+    }
+</script>
+<script>
+    function GetformDetails(Id,IsCompanyService,IsEmployeeService,serviceName){
+        $("#loader").show();
+        $.ajax({
+            url: "@Url.Action("GetServiceFormDetails", "ServiceForm")",
+            method: "GET",
+            data:{"ServiceId":Id,"IsCompanyService":IsCompanyService,"IsEmployeeService":IsEmployeeService},
+            success: function (response) {
+                $("#loader").hide();
+                if(response.countOfFields==0&&response.formId==0){
+                    $("#FormName").val(serviceName);
+                    $("#FormserviceId").val(response.serviceFormId);
+                    $mymodal = $("#ServiceForm");
+                    $mymodal.modal("show");
+                }
+                else{
+                    var url = "@Url.Action("Index","ServiceForm")";
+                    url = url +"?ServiceId="+response.serviceFormId+"&FormId="+response.formId+"&service=company";
+                    window.location.href = url;
+                }
+            }
+        });
+    }
+</script>

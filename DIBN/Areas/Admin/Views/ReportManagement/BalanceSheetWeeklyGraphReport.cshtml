@@ -1,0 +1,212 @@
+﻿@model DIBN.Areas.Admin.Models.BalanceSheetWeeklyReportModel
+@{
+    ViewData["Title"] = "Balance Sheet Weekly Graph Report";
+}
+<style>
+    .canvasHeight {
+        height: 680px !important;
+    }
+</style>
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <a href="@Url.Action("MainBalanceSheetReport","ReportManagement")" class="btn btn-theme float-end me-2 mb-2">Back</a>
+    </div>
+</div>
+<div class="row" id="View">
+    <div class="col-md-12 col-xl-12 col-sm-12 col" id="PieChart">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="mb-4 text-center front-text-theme"><strong>Balance Sheet Weekly Report's Graph Representation from @Model.FromDate - @Model.ToDate</strong></h3>
+                <input name="year" id="fromDate" value="@Model.FromDates" type="hidden" />
+                <input name="year" id="toDate" value="@Model.ToDates" type="hidden" />
+                
+                <div class="col-md-12">
+                    <div class="col-md-9 col-sm-12 float-start">
+                        <div class="chart-container" id="PieFinanceChartInfo">
+                            <canvas class="mb-3" id="PieFinanceChart">
+                            </canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-12 float-start">
+                        <table class="table table-bordered table-striped" style="border:1px solid #000;">
+                            <thead>
+                                <tr>
+                                    <th colspan="2" class="text-center fw-bolder fs-5 bg-blue text-white">
+                                        Total(s)
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="fw-bolder fs-6">Total Debit (AED)</td>
+                                    <td class="fw-bolder fs-6 text-danger">@Html.Raw("-")@Model.TotalDebit AED</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bolder fs-6">Total Credit (AED)</td>
+                                    <td class="fw-bolder fs-6" style="color:#008000 !important;">@Model.TotalCredit AED</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bolder fs-6">Total Balance (AED)</td>
+                                    <td class="fw-bolder fs-6">
+                                        @if (Model.TotalBalance.StartsWith("-"))
+                                        {
+                                            <span class="text-danger">@Model.TotalBalance AED</span>
+                                        }
+                                        else
+                                        {
+                                            <span style="color:#008000 !important;">@Model.TotalBalance AED</span>
+                                        }
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script src="~/charts/Chart.min.js"></script>
+<script src="~/charts/Chart.bundle.min.js"></script>
+<script src="~/charts/chart-2.8.0.js"></script>
+<script src="~/charts/hammerjs-2.8.0.js"></script>
+<script src="~/charts/chartjs-plugin-zoom-0.7.3.js"></script>
+<script>
+    $(function () {
+        $("#loader").show();
+        LoadProfitLossPieChart();
+    });
+
+    function LoadProfitLossPieChart() {
+        $("#loader").show();
+        var fromDate = $("#fromDate").val();
+        var toDate = $("#toDate").val();
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("BalanceSheetWeeklyReportPieGraphData","ReportManagement")",
+            data: { "fromDate": fromDate, "toDate": toDate },
+            success: function (response) {
+                var ctx = document.getElementById("PieFinanceChart").getContext("2d");
+                var _values = eval(response);
+                var _dataValues = new Array();
+                var _background = new Array();
+                var _lables = new Array();
+
+                for (var i = 0; i < _values.length; i++) {
+                    _dataValues.push(_values[i].value);
+                    _background.push(_values[i].color);
+                    _lables.push(_values[i].text);
+                }
+                var data = {
+                    labels: _lables,
+                    datasets: [{
+                        data: _dataValues,
+                        backgroundColor: _background
+                    }]
+                };
+
+                var options = {
+                    animation: {
+                        easing: 'easeInOutQuart',
+                        duration: 1000
+                    }
+                };
+                var myPieChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: data,
+                    options: options
+                });
+
+                $("#loader").hide();
+            },
+            failure: function (response) {
+                alert('There was an error.');
+                $("#loader").hide();
+            }
+        });
+    };
+</script>
+
+<script>
+    $(function () {
+        $("#Insert").hide();
+        $("#View").hide();
+        $(".Update").hide();
+        $(".Delete").hide();
+        $(".Details").hide();
+    });
+</script>
+<script>
+    $(function () {
+        $("#loader").show();
+        var module = $("#Module").val();
+        $.ajax({
+            url: "@Url.Action("GetRolePermissionsName", "Permission")",
+            method: "GET",
+            data: { "Module": "ReportManagement" },
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (RoleResponse) {
+                $("#loader").show();
+                $.ajax({
+                    url: "@Url.Action("GetUserPermissionsName", "Permission")",
+                    method: "GET",
+                    data: { "Module": "ReportManagement" },
+                    async: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (UserResponse) {
+                        $("#loader").show();
+                        if (UserResponse.length > 0) {
+                            for (let i = 0; i < UserResponse.length; i++) {
+                                $("#" + UserResponse[i]).show();
+                                if (UserResponse[i] == "View") {
+                                    $(".Details").show();
+                                }
+                                if (UserResponse[i] == "Update") {
+                                    $("." + UserResponse[i]).show();
+                                }
+                                if (UserResponse[i] == "Delete") {
+                                    $("." + UserResponse[i]).show();
+                                }
+                            }
+                            $("#loader").hide();
+                        }
+                        else if (RoleResponse.length > 0) {
+                            for (let i = 0; i < RoleResponse.length; i++) {
+                                $("#" + RoleResponse[i]).show();
+                                if (RoleResponse[i] == "View") {
+                                    $(".Details").show();
+                                }
+                                if (RoleResponse[i] == "Update") {
+                                    $("." + RoleResponse[i]).show();
+                                }
+                                if (RoleResponse[i] == "Delete") {
+                                    $("." + RoleResponse[i]).show();
+                                }
+                            }
+                            $("#loader").hide();
+
+                        } else {
+                            alert("You don't have any permission for this module.");
+                            $("#loader").hide();
+                        }
+                    }
+                })
+            }
+        });
+        $("#loader").hide();
+    });
+</script>

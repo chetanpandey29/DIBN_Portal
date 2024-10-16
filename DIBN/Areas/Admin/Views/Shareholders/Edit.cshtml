@@ -1,0 +1,277 @@
+﻿@model DIBN.Areas.Admin.Models.ShareholderViewModel
+@{
+    ViewData["Title"] = "Edit";
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <h4 class="card-title">Edit Details of Shareholder/Director</h4>
+    </div>
+    <div class="col-md-6">
+        <a href="@Url.Action("Index","Shareholders",new{name=Model.Module})" class="btn btn-theme float-end" style="margin-bottom:15px;">Back to List</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Edits" asp-area="admin" method="post" id="shareholderEditForm">
+                    <div class="row">
+                        @Html.ValidationSummary("", new { @class = "text-danger" })
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="CompanyId" class="control-label"></label> <span class="text-danger">*</span>
+                            @Html.DropDownListFor(w => w.CompanyId, Model.Companies, "Select Company", new { @class = "form-control form-select single-line", @id = "Companies", @onchange = "CompanyChange(this.value);",required = (string)null })
+                            <span asp-validation-for="CompanyId" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="FirstName" class="control-label"></label> <span class="text-danger">*</span>
+                            <input asp-for="FirstName" class="form-control" />
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="LastName" class="control-label"></label> <span class="text-danger">*</span>
+                            <input asp-for="LastName" class="form-control" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="Nationality" class="control-label"></label> <span class="text-danger">*</span>
+                            @Html.DropDownListFor(w => w.Nationality, Model.Countries, new { @class = "form-control form-select single-line select-box", required = (string)null })
+                            <span asp-validation-for="Nationality" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="Designation" class="control-label"></label> <span class="text-danger">*</span>
+                            <input asp-for="Designation" class="form-control" />
+                            <span asp-validation-for="Designation" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="PassportNumber" class="control-label"></label> <span class="text-danger">*</span>
+                            <input asp-for="PassportNumber" class="form-control" />
+                            <span asp-validation-for="PassportNumber" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="PassportExpiryDate" class="control-label"></label> <span style="font-weight:bold;">(eg. 2022-01-31)</span>  <span class="text-danger">*</span>
+                            <input asp-for="PassportExpiryDate" class="form-control" id="PassportExpiryDate" data-toggle="datepicker" placeholder="yyyy-mm-dd" readonly />
+                            <span asp-validation-for="PassportExpiryDate" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="VisaExpiryDate" class="control-label"></label> <span style="font-weight:bold;">(eg. 2022-01-31)</span>  <span class="text-danger">*</span>
+                            <input asp-for="VisaExpiryDate" class="form-control" id="VisaExpiryDate" data-toggle="datepicker" placeholder="yyyy-mm-dd" readonly />
+                            <span asp-validation-for="VisaExpiryDate" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="InsuranceCompany" class="control-label"></label> <span class="text-danger">*</span>
+                            <input asp-for="InsuranceCompany" class="form-control" />
+                            <span asp-validation-for="InsuranceCompany" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="InsuranceExpiryDate" class="control-label"></label> <span style="font-weight:bold;">(eg. 2022-01-31)</span>  <span class="text-danger">*</span>
+                            <input asp-for="InsuranceExpiryDate" class="form-control" id="InsuranceExpiryDate" data-toggle="datepicker" placeholder="yyyy-mm-dd" readonly />
+                            <span asp-validation-for="InsuranceExpiryDate" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="SharePercentage" class="control-label"></label> <span class="text-danger">*</span>
+                            <input asp-for="SharePercentage" type="number" class="form-control" id="SharePercentage" onkeypress="ValidTextLength(this)" onkeyup="ValidAlphabet(this)" onfocusout="ValidAlphabet(this)" />
+                            <input asp-for="PreviousShare" type="hidden" name="PreviousShare" class="form-control" id="SharePercentageBack" />
+                            <span asp-validation-for="SharePercentage" class="text-danger"></span>
+                        </div>
+                        <div class="form-group form-check float-start ms-3 me-3 mt-2" id="IsActiveBlock">
+                            <label class="form-check-label">
+                                <input class="form-check-input" asp-for="IsActive" type="checkbox" /> @Html.DisplayNameFor(model => model.IsActive)
+                            </label>
+                        </div>
+                        <input type="hidden" name="Module" id="Module" value="@Model.Module" />
+                        <input type="hidden" id="RemainingSharePercentage" asp-for="RemainingSharePercentage" />
+                        <input type="hidden" asp-for="ID" />
+                        <div class="form-group m-3">
+                            <input type="submit" id="btnSubmit" value="Update" class="btn btn-theme" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<link href="~/select2/select2.min.css" rel="stylesheet" />
+<script src="~/select2/select2.min.js"></script>
+<script>
+    function ValidAlphabet(data) {
+        var code = (event.which) ? event.which : event.keyCode;
+        if (!(code >= 48 && code <= 57) || !(code >= 96 && code <= 105) || code == 54 || code == 189 || code == 219 || code == 57) {
+            if (code != 32 && code != 190) {
+                var digits = $(data).val();
+                var lastValue = digits.substring(digits.length - 1);
+                digits = digits.replace(/[^(\.\s)[^0-9-]/g, '');
+                if (lastValue == "^" || lastValue == "-" || lastValue == "(" || lastValue == ")" || lastValue == "[") {
+                    var lastIndex = digits.indexOf(lastValue);
+                    var currentText = digits.substring(0, lastIndex);
+                    digits = currentText;
+                    digits = digits.replace(lastValue, '');
+                }
+                else if (digits.includes("-") || digits.includes("^") || digits.includes("(") || digits.includes(")") || digits.includes("[")) {
+                    if (digits.includes("-")) {
+                        var lastIndex = digits.lastIndexOf("-");
+                        var currentText = digits.substring(lastIndex + 1, digits.length);
+                        digits = currentText;
+                    }
+                    else if (digits.includes("^")) {
+                        var lastIndex = digits.lastIndexOf("^");
+                        var currentText = digits.substring(lastIndex + 1, digits.length);
+                        digits = currentText;
+                    }
+                    else if (digits.includes("(")) {
+                        var lastIndex = digits.lastIndexOf("(");
+                        var currentText = digits.substring(lastIndex + 1, digits.length);
+                        digits = currentText;
+                    }
+                    else if (digits.includes(")")) {
+                        var lastIndex = digits.lastIndexOf(")");
+                        var currentText = digits.substring(lastIndex + 1, digits.length);
+                        digits = currentText;
+                    }
+                    else if (digits.includes("[")) {
+                        var lastIndex = digits.lastIndexOf("[");
+                        var currentText = digits.substring(lastIndex + 1, digits.length);
+                        digits = currentText;
+                    }
+                }
+                else if (digits.replace(/[^.]/g, "").length > 1) {
+                    lastValue = digits.substring(digits.length - 1);
+                    var lastIndex = digits.indexOf(lastValue);
+                    var currentText = digits.substring(lastIndex, digits.length);
+                    if (currentText.replace(/[^.]/g, "").length > 1) {
+                        var currentDigits1 = digits.slice(0, lastIndex + 1);
+                        digits = currentDigits1;
+                    }
+                    else {
+                        var currentDigits = digits.slice(0, lastIndex);
+                        digits = currentDigits;
+                    }
+
+                }
+                $(data).val(digits);
+            }
+            else if (digits.replace(/[^.]/g, "").length > 1) {
+                lastValue = digits.substring(digits.length - 1);
+                var lastIndex = digits.indexOf(lastValue);
+                var currentText = digits.substring(lastIndex, digits.length);
+                if (currentText.replace(/[^.]/g, "").length > 1) {
+                    var currentDigits1 = digits.slice(0, lastIndex + 1);
+                    digits = currentDigits1;
+                }
+                else {
+                    var currentDigits = digits.slice(0, lastIndex);
+                    digits = currentDigits;
+                }
+
+                $(data).val(digits);
+            }
+        }
+    }
+</script>
+<script>
+    jQuery('#shareholderEditForm').on('submit', function () {
+        if (jQuery(this).data('form_is_invalid')) {
+            jQuery(this).data('form_is_invalid', false);
+        } else {
+            jQuery(this).find('#btnSubmit').prop('disabled', true);
+        }
+    }).on('invalid-form.validate', function () {
+        jQuery(this).data('form_is_invalid', true);
+    });
+</script>
+
+<script>
+    function ValidTextLength(data) {
+
+        var digits = $(data).val();
+        if (digits.length >= 3) {
+            event.preventDefault();
+        }
+    };
+
+    $(document).ready(function () {
+        $("#loader").hide();
+        $("#btnShareholderUpdate").hide();
+    });
+
+</script>
+
+<script>
+    $(function () {
+        $("#VisaExpiryDate").datepicker({
+            format: 'yyyy-mm-dd',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            todayHighlight: true,
+        });
+        $("#InsuranceExpiryDate").datepicker({
+            format: 'yyyy-mm-dd',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            todayHighlight: true,
+        });
+        $("#PassportExpiryDate").datepicker({
+            format: 'yyyy-mm-dd',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            todayHighlight: true,
+        });
+    });
+    ////// Open Selection dropdown on focus                                     -- Yashasvi TBC (09-02-2023)
+    $(document).on('focus', '.select2.select2-container', function (e) {
+        if (e.originalEvent && $(this).find(".select2-selection--single").length > 0) {
+            $(this).siblings('select').select2('open');
+        }
+    });
+
+    $(function () {
+        $('.select-box').select2();
+    });
+</script>
+<script>
+    function CompanyChange(Id) {
+        $.ajax({
+            url: "@Url.Action("GetRemainingShare", "Shareholders")",
+            method: "GET",
+            data: { "CompanyId": Id },
+            success: function (response) {
+                if (response == -1) {
+                    $("#RemainingSharePercentage").val(0);
+                } else {
+                    $("#RemainingSharePercentage").val(response);
+                }
+
+            }
+        });
+    }
+</script>
+<script>
+    $("#SharePercentage").keyup(function () {
+        
+        var remaining = $("#RemainingSharePercentage").val();
+        var enteredShare = $("#SharePercentage").val();
+        var previous = $("#SharePercentageBack").val();
+        if (remaining != 0) {
+            var difference = 100 - (parseInt(remaining) - parseInt(previous));
+            var getRemainingShare = 100 - (parseInt(remaining));
+            if (parseInt(difference) < 0) {
+                alert("You have already use all 100% share.");
+            }
+            else if (parseInt(enteredShare) > parseInt(difference)) {
+                alert("You have only left " + difference + " share to add.");
+            }
+        }
+    });
+</script>

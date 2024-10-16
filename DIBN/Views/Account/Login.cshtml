@@ -1,0 +1,195 @@
+﻿@model DIBN.Models.AccountViewModel.LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title | DIBN - Admin & Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- App favicon -->
+    <link rel="icon" href="~/favicons/dibn_250.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="~/favicons/DIBN_Logo.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="~/favicons/dibn_32.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="~/favicons/dibn_16.ico">
+
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+    <!-- Bootstrap Css -->
+    <link href="@Url.Content("~/assets/css/bootstrap.min.css")" rel="stylesheet" />
+    <!-- Icons Css -->
+    <link href="@Url.Content("~/assets/css/icons.min.css")" rel="stylesheet" />
+    <!-- App Css-->
+    <link href="@Url.Content("~/assets/css/app.min.css")" rel="stylesheet" />
+
+    <link href="@Url.Content("~/assets/css/LoaderPage.css")" rel="stylesheet" />
+    <style>
+        .middle-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-right: -50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .card-width {
+            width: 375px !important;
+            box-shadow: 0 2px 4px #243c7ca8 !important;
+            border: 1px solid #243c7c !important;
+        }
+
+        .form-control:focus {
+            border-color: #9cc5f0 !important;
+        }
+
+        .form-control {
+            border: 1px solid #243c7c !important;
+        }
+
+        .form-check-input:checked {
+            background-color: #243c7c !important;
+            border-color: #243c7c !important;
+        }
+
+        .form-check-input[type=checkbox] {
+            border-color: #243c7c !important;
+        }
+
+        .carousel-control-next-icon {
+            color: #243c7c !important;
+        }
+    </style>
+</head>
+<body class="authentication-bg" style="background-color:white;">
+    <div id="loader">
+        <div class="spinner-1">
+            <div class="center-div-1">
+                <div class="loader-circle-75">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="account-pages middle-container">
+        <div class="container">
+            <div class="row col-lg-12">
+                <div class="d-flex justify-content-center">
+                    <div class="card card-width">
+                        <div class="card-body p-4">
+                            <div class="text-center">
+                                <a href="https://dibnbusiness.com/" class="d-block align-items-center justify-content-end">
+                                    <img src="~/DIBN_Logo.png" alt="" height="125" width="250" class="socialImg marginSocial">
+                                </a>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-muted">Login to Your Account of DIBN E-Portal</p>
+                            </div>
+                            <div class="p-2">
+                                <form asp-action="UserLogin" asp-controller="Account" method="post">
+                                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                                    <div class="mb-3">
+                                        <label class="form-label" for="username">Username</label>
+                                        <input type="text" class="form-control" id="Email" asp-for="Email" placeholder="Enter username">
+                                        <span class="form-label">e.DIBN1901</span>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="float-end">
+                                            <a href=@Url.Action("ForgotPassword", "Account") class="text-muted">Forgot password?</a>
+                                        </div>
+                                        <div class="form-group">
+                                            <label asp-for="Password" class="control-label"></label> <span class="text-danger">*</span>
+                                            <div class="input-group">
+                                                <input asp-for="Password" type="password" placeholder="Enter Your Password" class="form-control" value="@Model.Password" />
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text btn btn-theme" id="show_password" style="border-radius:0rem 0.25rem 0.25em 0rem;"><i class="fas fa-eye-slash icon"></i></span>
+                                                </div>
+                                                <span asp-validation-for="Password" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3 text-end">
+                                        <input class="btn btn-theme w-sm waves-effect waves-light" id="btnSubmit" type="submit" value="Log In">
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+            <!-- end row -->
+        </div>
+        <!-- end container -->
+    </div>
+    <!-- JAVASCRIPT -->
+    <script src="@Url.Content("~/lib/jquery/dist/jquery.min.js")"></script>
+    <script src="@Url.Content("~/assets/libs/bootstrap/js/bootstrap.bundle.min.js")"></script>
+    <script src="@Url.Content("~/assets/libs/metismenu/metisMenu.min.js")"></script>
+    <script src="@Url.Content("~/assets/libs/simplebar/simplebar.min.js")"></script>
+    <script src="@Url.Content("~/assets/libs/node-waves/waves.min.js")"></script>
+    <script src="@Url.Content("~/assets/libs/waypoints/lib/jquery.waypoints.min.js")"></script>
+    <!-- App js -->
+    <script src="@Url.Content("~/assets/js/app.js")"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="~/bootstrap.min.js"></script>
+    <script>
+        document.onkeypress = function (event) {
+            event = (event || window.event);
+            if (event.keyCode == 123) {
+                return false;
+            }
+        }
+        document.onmousedown = function (event) {
+            event = (event || window.event);
+            if (event.keyCode == 123) {
+                return false;
+            }
+        }
+        document.onkeydown = function (event) {
+            event = (event || window.event);
+            if (event.keyCode == 123) {
+                return false;
+            }
+        }
+    </script>
+    <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());  // To disable right click
+
+        $('#carousel-example-1z').carousel({
+            interval: 3000
+        })
+
+        $(document).ready(function () {
+            $("#loader").hide();
+        });
+
+        $("#btnSubmit").click(function () {
+            $("#loader").show();
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#show_password').on("click", function () {
+                if ($('.icon').hasClass("fas fa-eye-slash")) {
+                    $('#Password').attr('type', 'text');
+                    $('.icon').removeClass('fas fa-eye-slash').addClass('fas fa-eye');
+                }
+                else {
+                    $('#Password').attr('type', 'password');
+                    $('.icon').removeClass('fas fa-eye').addClass('fas fa-eye-slash');
+                }
+            });
+        });
+    </script>
+</body>
+
+
+</html>

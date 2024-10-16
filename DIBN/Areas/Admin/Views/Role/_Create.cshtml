@@ -1,0 +1,55 @@
+﻿@model DIBN.Areas.Admin.Models.RoleViewModel
+<div class="row">
+    <form asp-action="Creates" method="post" id="createRole">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="RoleName" class="control-label"></label>
+            <input asp-for="RoleName" class="form-control" id="roleName" oninvalid="this.setCustomValidity('Please Enter Role Name.')" oninput="this.setCustomValidity('')" maxlength="100" required />
+            <span asp-validation-for="RoleName" class="text-danger" ></span> 
+        </div>
+        <div class="form-group form-check">
+            <label class="form-check-label">
+                <input class="form-check-input" asp-for="IsActive" /> @Html.DisplayNameFor(model => model.IsActive)
+            </label>
+        </div>
+        <input type="hidden" name="Module" id="Module" value="@Model.Module" />
+        <div class="modal-footer">
+            <div class="form-group">
+                <input type="button" value="Create" id="btnCreate" class="btn btn-theme" />
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    jQuery('#createRole').on('submit', function () {
+        if (jQuery(this).data('form_is_invalid')) {
+            jQuery(this).data('form_is_invalid', false);
+        } else {
+            jQuery(this).find('#btnCreate').prop('disabled', true);
+        }
+    }).on('invalid-form.validate', function () {
+        jQuery(this).data('form_is_invalid', true);
+    });
+
+    $("#btnCreate").on("click", function () {
+        jQuery(this).find('#btnCreate').prop('disabled', true);
+        var roleName = $("#roleName").val();
+        $.ajax({
+            url: "@Url.Action("CheckExistanceOfRole", "Role")",
+            method: "GET",
+            data: { "Name": roleName },
+            success: function (response) {
+                if (parseInt(response) == -1) {
+                    alert(roleName + " role already exists.!!");
+                    return false;
+                }
+                else {
+                    $("#btnCreate").attr("type", "submit");
+                    $('#createRole').submit();
+                    return true;
+                }
+            }
+        });
+    });
+</script>
+

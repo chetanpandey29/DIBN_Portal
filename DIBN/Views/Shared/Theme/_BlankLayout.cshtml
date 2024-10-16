@@ -1,0 +1,69 @@
+﻿<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title | DIBN - Admin & Dashboard Template</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    <!-- App favicon -->
+    <link rel="icon" href="~/dibn_business_image/favicon/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="~/dibn_business_image/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="~/dibn_business_image/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="~/dibn_business_image/favicon/favicon-16x16.png">
+    
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+    <!-- Bootstrap Css -->
+    <link href="@Url.Content("~/assets/css/bootstrap.min.css")" rel="stylesheet" />
+    <!-- Icons Css -->
+    <link href="@Url.Content("~/assets/css/icons.min.css")" rel="stylesheet" />
+    <!-- App Css-->
+    <link href="@Url.Content("~/assets/css/app.min.css")" rel="stylesheet" />
+
+    @RenderSection("styles", required: false)
+
+</head>
+
+<body class="authentication-bg" style="background-color:white;">
+    @RenderBody()
+
+    <!-- JAVASCRIPT -->
+    <script src="@Url.Content("~/lib/jquery/dist/jquery.min.js")"></script>
+    <script src="@Url.Content("~/assets/libs/bootstrap/js/bootstrap.bundle.min.js")"></script>
+    <script src="@Url.Content("~/assets/libs/metismenu/metisMenu.min.js")"></script>
+    <script src="@Url.Content("~/assets/libs/simplebar/simplebar.min.js")"></script>
+    <script src="@Url.Content("~/assets/libs/node-waves/waves.min.js")"></script>
+    <script src="@Url.Content("~/assets/libs/waypoints/lib/jquery.waypoints.min.js")"></script>
+
+    @RenderSection("scripts", required: false)
+    <!-- App js -->
+    <script src="@Url.Content("~/assets/js/app.js")"></script>
+
+    <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());  // To disable right click
+    </script>
+    <script>
+        document.onkeypress = function (event) {
+            event = (event || window.event);
+            if (event.keyCode == 123) {
+                return false;
+            }
+        }
+        document.onmousedown = function (event) {
+            event = (event || window.event);
+            if (event.keyCode == 123) {
+                return false;
+            }
+        }
+        document.onkeydown = function (event) {
+            event = (event || window.event);
+            if (event.keyCode == 123) {
+                return false;
+            }
+        }
+    </script>
+</body>
+</html>

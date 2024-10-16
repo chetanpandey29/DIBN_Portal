@@ -1,0 +1,626 @@
+﻿@model DIBN.Areas.Admin.Models.SupportTicketRequest
+@{
+    ViewData["Title"] = "Index";
+}
+<input type="hidden" id="Module" asp-for="@Model.Module" />
+
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+<div id="View">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-3 col-lg-2 col-sm-6 float-end">
+                <div class="card p-0">
+                    <div class="card-body p-2">
+
+                        <div class="d-flex justify-content-evenly">
+                            <h6 class="float-end col-md-6 mt-2 ms-2"><b>Filter :</b></h6>
+                            <select class="float-end col-md-6" id="ServiceStatus" asp-for="@Model.SelectedStatus" onchange="showRequest();">
+                                <option value="">All</option>
+                                <option value="1">Open</option>
+                                <option value="2">Closed</option>
+                            </select>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-center">Support Tickets</h4>
+                    <hr style="height:1px;" class="text-theme" />
+                    <div class="table-rep-plugin">
+                        <div class="table-responsive mb-0" data-pattern="priority-columns">
+                            <table id="datatable-1" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th class="align-middle text-center">
+                                            TR No.
+                                        </th>
+                                        <th class="align-middle text-center">
+                                            Created By
+                                        </th>
+                                        <th class="align-middle text-center">
+                                            Created Date
+                                        </th>
+                                        <th class="align-middle text-center">
+                                            Assigned Date
+                                        </th>
+                                        <th class="align-middle text-center">
+                                            Company
+                                        </th>
+                                        <th class="align-middle text-center">
+                                            Title
+                                        </th>
+                                        <th class="align-middle text-center">
+                                            Assigned User
+                                        </th>
+                                        <th class="align-middle text-center">
+                                            Status
+                                        </th>
+                                        <th>
+
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="SupportTicketRequest" class="modal" tabindex="-1" data-bs-keyboard="false" data-bs-backdrop="static" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Service Request</h5>
+                <button type="button" class="close btn btn-theme" id="SupportTicketModalClose" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="AssignSupportTicket" class="modal" tabindex="-1" data-bs-keyboard="false" data-bs-backdrop="static" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Assign Request</h5>
+                <button type="button" class="close btn btn-theme" id="AssignSupportTicketModalClose" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+
+<!-- Select 2-->
+<link href="~/select2/select2.min.css" rel="stylesheet" />
+<script src="~/select2/select2.min.js"></script>
+
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+<script src="~/bootstrap.min.js"></script>
+<script>
+    $(function () {
+        $("#Insert").hide();
+        $("#View").hide();
+        $(".Update").hide();
+        $(".Delete").hide();
+        $(".Details").hide();
+    });
+</script>
+<script>
+    $(function () {
+        $("#loader").show();
+        var module = $("#Module").val();
+        $.ajax({
+            url: "@Url.Action("GetRolePermissionsName", "Permission")",
+            method: "GET",
+            data: { "Module": "SupportTickets" },
+            success: function (RoleResponse) {
+                $("#loader").show();
+                $.ajax({
+                    url: "@Url.Action("GetUserPermissionsName", "Permission")",
+                    method: "GET",
+                    data: { "Module": "SupportTickets" },
+                    success: function (UserResponse) {
+                        $("#loader").show();
+                        if (UserResponse.length > 0) {
+                            for (let i = 0; i < UserResponse.length; i++) {
+                                $("#" + UserResponse[i]).show();
+                                if (UserResponse[i] == "View") {
+                                    $(".Details").show();
+                                }
+                                if (UserResponse[i] == "Update") {
+                                    $("." + UserResponse[i]).show();
+                                }
+                                if (UserResponse[i] == "Delete") {
+                                    $("." + UserResponse[i]).show();
+                                }
+                            }
+                            $("#loader").hide();
+                        }
+                        else if (RoleResponse.length > 0) {
+                            for (let i = 0; i < RoleResponse.length; i++) {
+                                $("#" + RoleResponse[i]).show();
+                                if (RoleResponse[i] == "View") {
+                                    $(".Details").show();
+                                }
+                                if (RoleResponse[i] == "Update") {
+                                    $("." + RoleResponse[i]).show();
+                                }
+                                if (RoleResponse[i] == "Delete") {
+                                    $("." + RoleResponse[i]).show();
+                                }
+                            }
+                            $("#loader").hide();
+
+                        } else {
+                            alert("You don't have any permission for this module.");
+                            $("#loader").hide();
+                        }
+                    }
+                })
+            }
+        });
+        $("#loader").hide();
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        
+        var flag = false;
+        var status = $("#ServiceStatus").val();
+        
+        var url = "@Url.Action("GetAllSupportTicketsWithPagination","SupportTicketRequest")";
+
+        if (status != null && status != "") {
+            url = url + "?status=" + status + "&page=";
+        }
+        else {
+            url = url + "?page=";
+        }
+
+        var table = $('#datatable-1').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "ajax": {
+                "type": "post",
+                "datatype": "json",
+                "data": function () {
+                    var info = $('#datatable-1').DataTable().page.info();
+                    $('#datatable-1').DataTable().ajax.url(
+                        url + (info.page + 1)
+                    );
+                    console.log(url);
+                }
+            },
+            "responsive": true,
+            "deferRender": true,
+            "language": {
+                'processing': '<div class="spinner-2"><div class="center-div-2"><div class="loader-circle-1"></div></div></div>'
+            },
+            "columns": [
+                { "data": "trackingNumber", "name": "TR No." },
+                { "data": "username", "name": "Created By" },
+                { "data": "createdOn", "name": "Created Date" },
+                { "data": "assignedOn", "name": "Assigned Date" },
+                { "data": "companyName", "name": "Company" },
+                { "data": "title", "name": "Title" },
+                { "data": "assignedUser", "name": "Assigned User" },
+                { "data": "ticketStatus", "name": "Status" },
+                {
+                    "data": function (data, full, meta) {
+                        var url = "@Url.Action("TrackYourTicket","SupportTicketRequest")";
+                        url = url + "?Id=" + data.trackingNumber + "&name=SupportTickets";
+
+                        var assignUser = "AssignSupportTicketToUser('" + data.trackingNumber + "')";
+
+                        var removeTicket = "RemoveSupportTicket('" + data.trackingNumber + "')";
+
+                        return '<a href="' + url + '" class="btn btn-theme Details">Track</a><a role="button" class="btn btn-theme ms-1 Update" onclick=' + assignUser + '>Assign Support Ticket</a><a role="button" class="btn btn-theme ms-1 Delete" onclick=' + removeTicket + '>Remove</a>';
+                    },
+                    "name": ""
+                },
+            ],
+            "initComplete": function (settings, json) {
+                $(".Update").hide();
+                $(".Delete").hide();
+                $(".Details").hide();
+                var module = $("#Module").val();
+                $.ajax({
+                    url: "@Url.Action("GetRolePermissionsName", "Permission")",
+                    method: "GET",
+                    data: { "Module": "SupportTickets" },
+                    success: function (RoleResponse) {
+                        $.ajax({
+                            url: "@Url.Action("GetUserPermissionsName", "Permission")",
+                            method: "GET",
+                            data: { "Module": "SupportTickets" },
+                            success: function (UserResponse) {
+                                if (UserResponse.length > 0) {
+                                    for (let i = 0; i < UserResponse.length; i++) {
+                                        $("#" + UserResponse[i]).show();
+                                        if (UserResponse[i] == "View") {
+                                            $(".Details").show();
+                                        }
+                                        if (UserResponse[i] == "Update") {
+                                            $("." + UserResponse[i]).show();
+                                        }
+                                        if (UserResponse[i] == "Delete") {
+                                            $(".Delete").show();
+                                        }
+                                    }
+                                    $($.fn.dataTable.tables(true)).DataTable()
+                                        .columns.adjust();
+                                    $("#loader").hide();
+                                }
+                                else if (RoleResponse.length > 0) {
+                                    for (let i = 0; i < RoleResponse.length; i++) {
+                                        $("#" + RoleResponse[i]).show();
+                                        if (RoleResponse[i] == "View") {
+                                            $(".Details").show();
+                                        }
+                                        if (RoleResponse[i] == "Update") {
+                                            $("." + RoleResponse[i]).show();
+                                        }
+                                        if (RoleResponse[i] == "Delete") {
+                                            $(".Delete").show();
+                                        }
+                                    }
+                                    $($.fn.dataTable.tables(true)).DataTable()
+                                        .columns.adjust();
+                                    $("#loader").hide();
+                                }
+                            }
+                        })
+                    }
+                });
+                $("#loader").hide();
+            },
+            "drawCallback": function (settings, json) {
+                $(".Update").hide();
+                $(".Delete").hide();
+                $(".Details").hide();
+                var module = $("#Module").val();
+                $.ajax({
+                    url: "@Url.Action("GetRolePermissionsName", "Permission")",
+                    method: "GET",
+                    data: { "Module": "SupportTickets" },
+                    success: function (RoleResponse) {
+                        $.ajax({
+                            url: "@Url.Action("GetUserPermissionsName", "Permission")",
+                            method: "GET",
+                            data: { "Module": "SupportTickets" },
+                            success: function (UserResponse) {
+                                if (UserResponse.length > 0) {
+                                    for (let i = 0; i < UserResponse.length; i++) {
+                                        $("#" + UserResponse[i]).show();
+                                        if (UserResponse[i] == "View") {
+                                            $(".Details").show();
+                                        }
+                                        if (UserResponse[i] == "Update") {
+                                            $("." + UserResponse[i]).show();
+                                        }
+                                        if (UserResponse[i] == "Delete") {
+                                            $(".Delete").show();
+                                        }
+                                    }
+                                    $($.fn.dataTable.tables(true)).DataTable()
+                                        .columns.adjust();
+                                    $("#loader").hide();
+                                }
+                                else if (RoleResponse.length > 0) {
+                                    for (let i = 0; i < RoleResponse.length; i++) {
+                                        $("#" + RoleResponse[i]).show();
+                                        if (RoleResponse[i] == "View") {
+                                            $(".Details").show();
+                                        }
+                                        if (RoleResponse[i] == "Update") {
+                                            $("." + RoleResponse[i]).show();
+                                        }
+                                        if (RoleResponse[i] == "Delete") {
+                                            $(".Delete").show();
+                                        }
+                                    }
+                                    $($.fn.dataTable.tables(true)).DataTable()
+                                        .columns.adjust();
+                                    $("#loader").hide();
+                                }
+                            }
+                        })
+                    }
+                });
+                $("#loader").hide();
+            },
+            paging: true,
+            pagingType: 'simple_numbers',
+            ordering: true,
+            searching: true,
+            "aLengthMenu": [20, 50, 70],
+            dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>"
+        });
+
+        $('#datatable-1 tbody').on('click', 'td.dtr-control', function () {
+            var tr = $(this).closest('tr');
+            var row = table.row(tr);
+            if (!tr.hasClass("shown")) {
+                row.child.show();
+                tr.addClass('shown');
+                $(".Update").hide();
+                $(".Delete").hide();
+                $(".Details").hide();
+                var module = $("#Module").val();
+                $.ajax({
+                    url: "@Url.Action("GetRolePermissionsName", "Permission")",
+                    method: "GET",
+                    data: { "Module": "SupportTickets" },
+                    success: function (RoleResponse) {
+                        $.ajax({
+                            url: "@Url.Action("GetUserPermissionsName", "Permission")",
+                            method: "GET",
+                            data: { "Module": "SupportTickets" },
+                            success: function (UserResponse) {
+                                if (UserResponse.length > 0) {
+                                    for (let i = 0; i < UserResponse.length; i++) {
+                                        $("#" + UserResponse[i]).show();
+                                        if (UserResponse[i] == "View") {
+                                            $(".Details").show();
+                                        }
+                                        if (UserResponse[i] == "Update") {
+                                            $("." + UserResponse[i]).show();
+                                        }
+                                        if (UserResponse[i] == "Delete") {
+                                            $(".Delete").show();
+                                        }
+                                    }
+                                    $($.fn.dataTable.tables(true)).DataTable()
+                                        .columns.adjust();
+                                    $("#loader").hide();
+                                }
+                                else if (RoleResponse.length > 0) {
+                                    for (let i = 0; i < RoleResponse.length; i++) {
+                                        $("#" + RoleResponse[i]).show();
+                                        if (RoleResponse[i] == "View") {
+                                            $(".Details").show();
+                                        }
+                                        if (RoleResponse[i] == "Update") {
+                                            $("." + RoleResponse[i]).show();
+                                        }
+                                        if (RoleResponse[i] == "Delete") {
+                                            $(".Delete").show();
+                                        }
+                                    }
+                                    $($.fn.dataTable.tables(true)).DataTable()
+                                        .columns.adjust();
+                                    $("#loader").hide();
+                                }
+                            }
+                        })
+                    }
+                });
+                $("#loader").hide();
+            }
+            else {
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+        });
+
+        //setInterval(function () {
+
+        //    if (flag == false) {
+        //        rezieFunction1();
+        //    }
+
+        //}, 800);
+
+        //function rezieFunction1() {
+
+        //    table.columns.adjust().draw();
+        //    flag = true;
+        //}
+    });
+</script>
+<script>
+    jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+        "date-dmy-pre": function (a) {
+            if (a == null || a == "") {
+                return 0;
+            }
+            var date = a.split('-');
+            return (date[2] + date[1] + date[0]) * 1;
+        },
+
+        "date-dmy-asc": function (a, b) {
+            return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+        },
+
+        "date-dmy-desc": function (a, b) {
+            return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+        }
+    });
+</script>
+<script>
+    ////// Open Selection dropdown on focus                                     -- Yashasvi TBC (09-02-2023)
+    $(document).on('focus', '.select2.select2-container', function (e) {
+        if (e.originalEvent && $(this).find(".select2-selection--single").length > 0) {
+            $(this).siblings('select').select2('open');
+        }
+    });
+    $("#SupportTicketModalClose").on("click", function () {
+        window.location.reload();
+    });
+    $("#AssignSupportTicketModalClose").on("click", function () {
+        window.location.reload();
+    });
+    $(function () {
+        $('#ServiceStatus').select2();
+    });
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>
+<script>
+    function CreateSupportTicket() {
+
+        var module = $("#Module").val();
+        $.ajax({
+            url: "@Url.Action("CreateNewSupportTicket","SupportTicketRequest")",
+            method: "GET",
+            data: { "name": module },
+            success: function (response) {
+                $mymodal = $("#SupportTicketRequest");
+                $mymodal.find("div.modal-body").html(response);
+                $mymodal.modal("show");
+            }
+        });
+    };
+</script>
+<script>
+    function AssignSupportTicketToUser(TrackingNumber) {
+        $("#loader").show();
+        var module = $("#Module").val();
+        $.ajax({
+            url: "@Url.Action("GetEmployeesToAssign","SupportTicketRequest")",
+            method: "GET",
+            data: { "TrackingNumber": TrackingNumber, "Module": module },
+            success: function (response) {
+                $("#loader").hide();
+                $mymodal = $("#AssignSupportTicket");
+                $mymodal.find("div.modal-body").html(response);
+                $mymodal.modal("show");
+            }
+        });
+    }
+</script>
+<script>
+    function RemoveSupportTicket(TrackingNumber) {
+        event.preventDefault();
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'ms-3 btn btn-success',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: false
+        })
+
+        swalWithBootstrapButtons.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true,
+            showConfirmButton: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#loader").show();
+                $.ajax({
+                    url: "@Url.Action("Delete", "SupportTicketRequest")",
+                    method: "GET",
+                    data: { "TrackingNumber": TrackingNumber },
+                    success: function (response) {
+                        $("#loader").hide();
+                        if (response < 0) {
+                            swalWithBootstrapButtons.fire({
+                                title: 'Error.',
+                                text: "Something Went Wrong Please Try Again.",
+                                icon: 'error'
+                            }).then((result) => {
+                                window.location.reload();
+                            });
+                        }
+                        else {
+                            swalWithBootstrapButtons.fire({
+                                title: 'Deleted.',
+                                text: "Support Ticket Deleted Successfully..!!",
+                                icon: 'success'
+                            }).then((result) => {
+                                window.location.reload();
+                            });
+                        }
+                    }
+                });
+            }
+            else if (
+                result.dismiss === Swal.DismissReason.cancel
+            ) {
+                $("#loader").hide();
+                swalWithBootstrapButtons.fire(
+                    'Cancelled',
+                    'Cancled by User..!! :)',
+                    'error'
+                )
+            }
+        });
+    };
+</script>
+<script>
+    function showRequest() {
+
+        var _selectedValue = $("#ServiceStatus").val();
+        if (_selectedValue != "") {
+            var url = "@Url.Action("Index","SupportTicketRequest")";
+            url = url + "?name=SupportTickets&Status=" + _selectedValue;
+            window.location.href = url;
+        }
+        else {
+            var url = "@Url.Action("Index","SupportTicketRequest")";
+            url = url + "?name=SupportTickets";
+            window.location.href = url;
+        }
+    }
+</script>
+<script>
+    $(window).resize(function () {
+        var allRows = $('#datatable-1 tbody tr');
+        allRows.each(function () {
+            var tr = $(this).closest('tr');
+            var row = $($.fn.dataTable.tables(true)).DataTable().row(tr);
+            if (tr.hasClass("shown")) {
+                row.child.hide();
+                tr.removeClass('shown');
+                tr.removeClass('parent');
+            }
+        });
+    });
+</script>

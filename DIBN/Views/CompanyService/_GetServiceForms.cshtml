@@ -1,0 +1,92 @@
+﻿@model DIBN.Models.ServiceFormFieldModel 
+@{
+    int index = 0;
+    string _FormConstrains = null;
+    string[] FormName = { };
+}
+@{
+    _FormConstrains = @Model.FormConstrains;
+    if (!_FormConstrains.Contains("N/A"))
+    {
+        FormName = _FormConstrains.Split("-");
+    }
+}
+@if (@Model.HasMultipleForms == true)
+{
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        @if(FormName!=null && FormName.Count() > 0)
+                        {
+                            @for(int i = 1; i <= FormName.Count(); i++)
+                            {
+                                int j = i - 1;
+                                <input name="SelectedType" id="SelectedType" class="form-check-input" type="radio" value="@FormName[j]"/> @FormName[j]
+                            }
+                        }
+                                
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<input type="hidden" id="companyType" value="@Model.CompanyType" />
+
+<input type="hidden" asp-for="Module" name="Module" id="Module" />
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+
+<script>
+    $(function(){
+        var module = $("#Module").val();
+        var companyType = $("#companyType").val();
+        $('input[type="radio"]').click(function(){
+            
+            if ($(this).is(':checked')) {
+                $.ajax({
+                    url: "@Url.Action("GetServiceId", "CompanyService")",
+                    method: "GET",
+                    data:{"CompanyType":companyType,"Service":$(this).val()},
+                    success: function (response) {
+                        $.ajax({
+                            url: "@Url.Action("GetServiceFormDetail", "CompanyService")",
+                            method: "GET",
+                            data:{"ServiceId":response,"IsCompanyService":true,"IsEmployeeService":false},
+                            success: function (response) {
+                                if(response.countOfFields==0&&response.formId==0){
+                                    const swalWithBootstrapButtons = Swal.mixin({
+                                        customClass: {
+                                        confirmButton: 'ms-3 btn btn-success',
+                                        cancelButton: 'btn btn-danger'
+                                        },
+                                        buttonsStyling: false
+                                    })
+                                    swalWithBootstrapButtons.fire(
+                                        'Error',
+                                        "Something went wrong.Please try after sometime.!",
+                                        'error'
+                                    )
+                                }
+                                else{
+                                    var url = "@Url.Action("GetServiceForm","CompanyService")";
+                                    url = url +"?ServiceId="+response.serviceFormId+"&FormId="+response.formId+"&name="+module;
+                                    window.location.href = url;
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    });
+
+</script>

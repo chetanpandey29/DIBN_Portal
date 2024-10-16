@@ -1,0 +1,260 @@
+﻿@model DIBN.Areas.Admin.Models.MainRoleViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+@if (Model.allowedModule.Contains("Insert"))
+{
+    <div class="row">
+        <div class="col-lg-12">
+            <button type="button" class="btn btn-theme pull-right" style="float:right;margin-bottom:15px;" onclick="AddNew();" id="Insert">Create</button>
+        </div>
+    </div>
+}
+@if (Model.allowedModule.Contains("View"))
+{
+    <div class="row" id="View">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-center">Role(s)</h4>
+                    <hr style="height:1px;" class="text-theme" />
+                    <div class="table-rep-plugin">
+                        <div class="table-responsive mb-0" data-pattern="priority-columns">
+                            <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            #
+                                        </th>
+                                        <th>
+                                            Role
+                                        </th>
+                                        <th>
+                                            Status
+                                        </th>
+                                        <th>
+
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        var i = 0;
+                                    }
+                                    @foreach (var item in Model.roles)
+                                    {
+                                        <tr>
+                                            <td>@(i + 1)</td>
+                                            <td>
+                                                @item.RoleName
+                                            </td>
+                                            <td>
+                                                @if (item.IsActive)
+                                                {
+                                                    <span>Active</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>De-Actived</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                
+                                                @if (item.RoleName != "DIBN" && item.RoleName != "RM Team" && item.RoleName != "Sales Person")
+                                                {
+                                                    @if (Model.allowedModule.Contains("Update"))
+                                                    {
+                                                        <span class="btn btn-theme Update" onclick="UpdateRoleDetail(@item.RoleID)">
+                                                            <i class="fas fa-edit"></i>
+                                                        </span>
+                                                    }
+                                                    @if (Model.allowedModule.Contains("Delete"))
+                                                    {
+                                                        <span class="btn btn-theme Delete" onclick="RemoveRole(@item.RoleID)">
+                                                            <i class="fas fa-trash"></i>
+                                                        </span>
+                                                    }
+
+                                                }
+                                                <input type="hidden" name="Module" id="Module" value="@item.Module" />
+                                            </td>
+                                        </tr>
+
+                                        i++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!--Create New Role-->
+
+<div id="CreateRole" class="modal" tabindex="-1" data-bs-keyboard="false" data-bs-backdrop="static" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create Role</h5>
+                <button type="button" class="close btn btn-theme" id="CreateRoleModalClose" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Edit New Role-->
+
+<div id="EditRole" class="modal" tabindex="-1" data-bs-keyboard="false" data-bs-backdrop="static" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Role</h5>
+                <button type="button" class="close btn btn-theme" id="EditRoleModalClose" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/bootstrap.min.js"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+<script>
+    $("#status").on("click",function(){
+        $("#IsActive").attr("value",true);
+    });
+    $(document).ready(function(){
+        $("#loader").hide();
+    })
+</script>
+<script>
+    var table = $('#datatable').DataTable({
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    });
+</script>
+<script>
+    $("#CreateRoleModalClose").on("click",function(){
+        $('#CreateRole').modal('hide');
+    });
+    $("#EditRoleModalClose").on("click",function(){
+        $('#EditRole').modal('hide');
+    });
+</script>
+<script>
+    function AddNew(){
+        var module = $("#Module").val();
+        $.ajax({
+            url: "@Url.Action("Create","Role")",
+            method: "GET",
+            data:{"name":module},
+            success: function (response) {
+                $mymodal = $("#CreateRole");
+                $mymodal.find("div.modal-body").html(response);
+                $mymodal.modal("show");
+            }
+        });
+    }
+</script>
+<script>
+    function UpdateRoleDetail(Id){
+        var module = $("#Module").val();
+        $.ajax({
+            url: "@Url.Action("Edit","Role")",
+            method: "GET",
+            data:{"Id":Id,"name":module},
+            success: function (response) {
+                $mymodal = $("#EditRole");
+                $mymodal.find("div.modal-body").html(response);
+                $mymodal.modal("show");
+            }
+        });
+    }
+</script>
+<script>
+    function RemoveRole(Id){
+        event.preventDefault();
+        const swalWithBootstrapButtons = Swal.mixin({
+          customClass: {
+            confirmButton: 'ms-3 btn btn-success',
+            cancelButton: 'btn btn-danger'
+          },
+          buttonsStyling: false
+        })
+
+        swalWithBootstrapButtons.fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, delete it!',
+          cancelButtonText: 'No, cancel!',
+          reverseButtons: true,
+          showConfirmButton: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#loader").show();
+                $.ajax({
+                    url: "@Url.Action("Delete", "Role")",
+                    method: "GET",
+                    data:{"Id":Id},
+                    success: function (response) {
+                        $("#loader").hide();
+                        swalWithBootstrapButtons.fire({
+                          title: 'Deleted.',
+                          text: "Role Deleted Successfully..!!",
+                          icon: 'success'
+                        }).then((result) => {
+                            window.location.reload();
+                        });
+                    }
+                });
+            }
+            else if (
+                result.dismiss === Swal.DismissReason.cancel
+              ) {
+                $("#loader").hide();
+                swalWithBootstrapButtons.fire(
+                  'Cancelled',
+                  'Cancled by User..!! :)',
+                  'error'
+                )
+              }
+        });
+    }
+</script>

@@ -1,0 +1,189 @@
+﻿@model IEnumerable<DIBN.Areas.Admin.Models.GetAccountHistory>
+
+@{
+    ViewData["Title"] = "GetAccountHistory";
+}
+<div class="row" id="View">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title text-center">Account History</h4>
+                <hr style="height:1px;" class="text-theme"/>
+                <div class="table-rep-plugin">
+                    <div class="table-responsive mb-0" data-pattern="priority-columns">
+                        <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        #
+                                    </th>
+                                    <th>
+                                        Transaction Id
+                                    </th>
+                                    <th>
+                                        Company
+                                    </th>
+                                    <th>
+                                        Description
+                                    </th>
+                                    <th>
+                                        Amount
+                                    </th>
+                                    <th>
+                                        Quantity
+                                    </th>
+                                    <th>
+                                        Vat
+                                    </th>
+                                    <th>
+                                        Vat Amount
+                                    </th>
+                                    <th>
+                                        Total Amount
+                                    </th>
+                                    <th>
+                                        Transaction Date
+                                    </th>
+                                    <th>
+                                        Transaction Created By
+                                    </th>
+                                    <th>
+                                        Created On
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var j = 0;
+                                }
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@(j+1)</td>
+                                        <td>
+                                            @item.TransactionId
+                                        </td>
+                                        <td class="text-wrap">
+                                            @item.CompanyName
+                                        </td>
+                                        <td class="text-wrap">
+                                            @item.Description
+                                        </td>
+                                        <td>
+                                            @item.Amount
+                                        </td>
+                                        <td>
+                                            @item.Quantity
+                                        </td>
+                                        <td>
+                                            @item.Vat
+                                        </td>
+                                        <td>
+                                            @item.VatAmount
+                                        </td>
+                                        <td>
+                                            @if (item.ExpenseType == "Credit")
+                                            {
+                                                @item.TotalAmount
+                                            }
+                                            else
+                                            {
+                                                @item.GrandTotal
+                                            }
+                                        </td>
+                                        <td>
+                                            @item.TransactionDate
+                                        </td>
+                                        <td>
+                                            @item.Username
+                                        </td>
+                                        <td>
+                                            @item.CreatedOn
+                                        </td>
+                                    </tr>
+                                    j++;
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+
+<script>
+    $('#datatable').DataTable({
+        paging: true,
+        ordering: true,
+        searching: true
+    });
+</script>
+
+<script>
+    $(function () {
+        $("#Insert").hide();
+        $("#View").hide();
+        $(".Update").hide();
+        $(".Delete").hide();
+        $(".Details").hide();
+    });
+
+    $(function () {
+        $.ajax({
+            url: "@Url.Action("GetRolePermissionsName", "Permission")",
+            method: "GET",
+            data: { "Module": "AccountManagement" },
+            success: function (RoleResponse) {
+                $.ajax({
+                    url: "@Url.Action("GetUserPermissionsName", "Permission")",
+                    method: "GET",
+                    data: { "Module": "AccountManagement" },
+                    success: function (UserResponse) {
+                        if (UserResponse.length > 0) {
+                            for (let i = 0; i < UserResponse.length; i++) {
+                                $("#" + UserResponse[i]).show();
+                                if (UserResponse[i] == "View") {
+                                    $(".Details").show();
+                                }
+                                if (UserResponse[i] == "Update") {
+                                    $("." + UserResponse[i]).show();
+                                }
+                                if (UserResponse[i] == "Delete") {
+                                    $("." + UserResponse[i]).show();
+                                }
+                            }
+                        }
+                        else if (RoleResponse.length > 0) {
+                            for (let i = 0; i < RoleResponse.length; i++) {
+                                $("#" + RoleResponse[i]).show();
+                                if (RoleResponse[i] == "View") {
+                                    $(".Details").show();
+                                }
+                                if (RoleResponse[i] == "Update") {
+                                    $("." + RoleResponse[i]).show();
+                                }
+                                if (RoleResponse[i] == "Delete") {
+                                    $("." + RoleResponse[i]).show();
+                                }
+                            }
+
+                        } else {
+                            alert("You don't have any permission for this module.");
+                        }
+                    }
+                })
+            }
+        });
+    });
+</script>
+

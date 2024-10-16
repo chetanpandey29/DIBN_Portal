@@ -1,0 +1,130 @@
+﻿@model DIBN.Models.UserEmployeeViewModel
+@{
+    ViewData["Title"] = "UserDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" name="Module" id="Module" value="@Model.Module" />
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="card-title">
+                        <h5 class="text-dark">@Html.DisplayFor(model => model.FirstName) @Html.Raw(" ") @Html.DisplayFor(model => model.LastName)'s Detail</h5>
+                    </div>
+                    <hr />
+                </div>
+                <dl class="row">
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.AccountNumber)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.AccountNumber)
+                    </dd>
+                    <dt class="col-sm-4">
+                        Employee Name
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.FirstName) @Html.Raw(" ") @Html.DisplayFor(model => model.LastName)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Nationality)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Nationality)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.PassportNumber)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.PassportNumber)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Designation)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Designation)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.VisaExpiryDate)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.VisaExpiryDate)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.InsuranceCompany)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.InsuranceCompany)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.InsuranceExpiryDate)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.InsuranceExpiryDate)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.EmailID)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.EmailID)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.PhoneNumber)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.PhoneNumber)
+                    </dd>
+                    @*<dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.CountryOfRecidence)
+                    </dt>
+                    <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.CountryOfRecidence)
+                    </dd>*@
+                </dl>
+
+                <div>
+                    <a class="text-white btn btn-theme" href="@Url.Action("Index","User",new{name=@Model.Module})">Back to List</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function RemoveUser(Id) {
+        var message = confirm("Are you sure, you want to delete this user?");
+        if (message) {
+            $.ajax({
+                url: "@Url.Action("Delete", "User")",
+                method: "GET",
+                data: { "Id": Id },
+                success: function (response) {
+                    alert("User Deleted Successfully..!");
+                    window.location.reload();
+                }
+            });
+        }
+    }
+    function UpdateUser(Id) {
+        var module = $("#Module").val();
+
+        var url = "@Url.Action("Edit","User")";
+        window.location.href = url + "?Id=" + Id + "&name=" + module;
+    }
+
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>

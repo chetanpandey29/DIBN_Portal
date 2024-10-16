@@ -1,0 +1,390 @@
+﻿@model DIBN.Areas.Admin.Models.NewCompanyInvoiceModel
+@{
+    ViewData["Title"] = "Add New Invoice Details";
+}
+<div class="spinner-1">
+    <div class="center-div-1">
+        @* <div class="loader-1">
+            <span><img src="~/DIBN_Logo.png" width="100" height="50"/></span>
+        </div> *@
+        <div class="loader-circle-75">
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <h6 class="text-theme float-start">Add New Invoice Details</h6>
+        <form class="float-end mb-2" asp-action="GetInvoiceDetails" method="get" asp-controller="GeneratePI">
+            <input type="hidden" asp-for="InvoiceNumber" />
+            <input type="hidden" asp-for="Module" name="name" />
+            <input class="btn btn-theme" value="Back To List" type="submit" />
+        </form>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="CreatenewData" asp-controller="GeneratePI" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input asp-for="Id" class="form-control" type="hidden" />
+                    <div class="form-group">
+                        <label class="control-label">Description</label> <span class="text-danger">*</span>
+                        <textarea asp-for="ProductName" class="form-control text-wrap" maxlength="200" required rows="3" cols="30" id="txtTaskArea"></textarea>
+                        <span asp-validation-for="ProductName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Amount</label> <span class="text-danger">*</span>
+                        <input asp-for="Amount" type="text" class="form-control" id="txtAmount" maxlength="10" onkeyup="ValidAlphabet(this)" onfocusout="ValidAlphabet(this)" onkeypress="ValidTextLength(this)" step=".01" />
+                        <span asp-validation-for="Amount" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Quantity</label> <span class="text-danger">*</span>
+                        <div class="product-cart-touchspin" style="width: 110px;">
+                            <input data-toggle="touchspin" type="number" value="@Model.Quantity" id="txtQuantity" name="Quantity" required readonly/>
+                        </div>
+                        <span asp-validation-for="Amount" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Total Amount</label> <span class="text-danger">*</span>
+                        <input asp-for="TotalAmount" type="text" class="form-control" id="txtTotalAmount" step=".01" readonly/>
+                        <span asp-validation-for="TotalAmount" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">VAT(%)</label> <span class="text-danger">*</span>
+                        <input asp-for="Vat" type="text" class="form-control" id="txtVat" maxlength="4" onkeyup="ValidAlphabet(this)" onfocusout="ValidAlphabet(this)" onkeypress="ValidTextLength(this)" value="0" step=".01" />
+                        <span asp-validation-for="Vat" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Vat Amount</label> <span class="text-danger">*</span>
+                        <input asp-for="VatAmount" type="text" step=".01" class="form-control" id="txtVatAmount" value="0" readonly/>
+                        <span asp-validation-for="VatAmount" class="text-danger"></span>
+                    </div>
+                    <input type="hidden" asp-for="InvoiceNumber"/>
+                    <input type="hidden" asp-for="CompanyName"/>
+                    <input type="hidden" asp-for="CompanyAddress"/>
+                    <input type="hidden" asp-for="CompanyCity"/>
+                    <input type="hidden" asp-for="ContactNumber"/>
+                    <input type="hidden" asp-for="Module" id="Module"/>
+                    <input type="hidden" asp-for="CompanyCountry"/>
+                    <input type="hidden" asp-for="Service"/>
+                    <input type="hidden" asp-for="InvoiceDate"/>
+                    <input type="hidden" asp-for="GrandTotal" id="GrandTotal"/>
+                    <div class="form-group m-3">
+                        <input type="submit" value="Save" class="btn btn-theme" id="btnUpdate"/>
+                        <span id="btnPaymentDetailsMessage" class="text-danger">Please Wait While We Are Saving Invoice Details.</span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+<!-- Bootrstrap touchspin -->
+<link href="~/assets/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css" rel="stylesheet" />
+<script src="~/assets/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js"></script>
+
+<link href="~/select2/select2.min.css" rel="stylesheet" />
+<script src="~/select2/select2.min.js"></script>
+
+<script src="~/bootstrap.min.js"></script>
+<script>
+    $("#txtQuantity").TouchSpin({
+        min: 1,
+        max: 20,
+        boostat: 5,
+        maxboostedstep: 10
+    });
+
+    $(document).ready(function() {
+        $("#btnPaymentDetailsMessage").hide();
+        $(".spinner-1").hide();
+    });
+</script>
+<script>
+    function ValidAlphabet(data) {
+        var code = (event.which) ? event.which : event.keyCode;  
+        if (!(code>= 48 && code <=57) || !(code >=96 && code <=105) || code == 54 || code == 189 || code == 219 || code==57) {
+            if (code != 32 && code != 190) {
+                var digits = $(data).val();
+                var lastValue = digits.substring(digits.length - 1);
+                digits = digits.replace(/[^(\.\s)[^0-9-]/g, '');
+                if (lastValue == "^" || lastValue == "-" || lastValue == "(" || lastValue == ")" || lastValue == "[") {
+                    var lastIndex = digits.indexOf(lastValue);
+                    var currentText = digits.substring(0, lastIndex);
+                    digits = currentText;
+                    digits = digits.replace(lastValue, '');
+                }
+                else if (digits.includes("-") || digits.includes("^") || digits.includes("(")|| digits.includes(")")|| digits.includes("[")) {
+                    if (digits.includes("-")) {
+                        var lastIndex = digits.lastIndexOf("-");
+                        var currentText = digits.substring(lastIndex+1, digits.length);
+                        digits = currentText;
+                    }
+                    else if (digits.includes("^")) {
+                        var lastIndex = digits.lastIndexOf("^");
+                        var currentText = digits.substring(lastIndex+1, digits.length);
+                        digits = currentText;
+                    }
+                    else if (digits.includes("(")) {
+                        var lastIndex = digits.lastIndexOf("(");
+                        var currentText = digits.substring(lastIndex+1, digits.length);
+                        digits = currentText;
+                    }
+                    else if (digits.includes(")")) {
+                        var lastIndex = digits.lastIndexOf(")");
+                        var currentText = digits.substring(lastIndex+1, digits.length);
+                        digits = currentText;
+                    }
+                    else if (digits.includes("[")) {
+                        var lastIndex = digits.lastIndexOf("[");
+                        var currentText = digits.substring(lastIndex+1, digits.length);
+                        digits = currentText;
+                    }
+                }
+                else if (digits.replace(/[^.]/g, "").length > 1) {
+                    lastValue = digits.substring(digits.length - 1);
+                    var lastIndex = digits.indexOf(lastValue);
+                    var currentText = digits.substring(lastIndex, digits.length);
+                    if (currentText.replace(/[^.]/g, "").length > 1) {
+                        var currentDigits1 = digits.slice(0, lastIndex+1);
+                        digits = currentDigits1;
+                    }
+                    else {
+                        var currentDigits = digits.slice(0,lastIndex);
+                        digits = currentDigits;
+                    }
+
+                }
+                $(data).val(digits);
+            }
+            else if (digits.replace(/[^.]/g, "").length > 1) {
+               lastValue = digits.substring(digits.length - 1);
+                    var lastIndex = digits.indexOf(lastValue);
+                    var currentText = digits.substring(lastIndex, digits.length);
+                    if (currentText.replace(/[^.]/g, "").length > 1) {
+                        var currentDigits1 = digits.slice(0, lastIndex+1);
+                        digits = currentDigits1;
+                    }
+                    else {
+                        var currentDigits = digits.slice(0,lastIndex);
+                        digits = currentDigits;
+                    }
+
+                $(data).val(digits);
+            }
+        }
+    } 
+     function ValidTextLength(data) {
+        
+        var digits = $(data).val();
+         var currentDigits = digits.split(".");
+        if (digits.includes(".") == true) {
+            if (currentDigits[1].length >= 2) {
+                event.preventDefault();
+            }
+        }
+    }
+</script>
+<script>
+    $("#txtAmount").on("keyup",function(){
+        $("#txtTotalAmount").val(0);
+        var amount = $("#txtAmount").val();
+        var quantity = $("#txtQuantity").val();
+        var totalAmount = 0,vatPercentage=0;
+        totalAmount = $("#txtTotalAmount").val();
+        vatPercentage = $("#txtVat").val();
+        if(isNaN(totalAmount)){
+            totalAmount = 0;
+        }
+        if(parseInt(vatPercentage)!=0){
+            totalAmount = ((parseFloat(amount) * quantity));
+            vatAmount = parseFloat(totalAmount) * parseFloat(vatPercentage) / 100;
+            if(isNaN(vatAmount)){
+                totalAmount = 0;
+            }
+            $("#txtVatAmount").val(parseFloat(vatAmount).toFixed(2));
+        }
+        else{
+            totalAmount = ((parseFloat(amount) * quantity));
+        }
+        if(isNaN(totalAmount)){
+            totalAmount = 0;
+        }
+        $("#txtTotalAmount").val(parseFloat(totalAmount).toFixed(2));
+
+    });
+
+    $("#txtQuantity").on("change",function(){
+        var amount = $("#txtAmount").val();
+        var quantity = $("#txtQuantity").val();
+        var totalAmount = 0,vatPercentage=0;
+        totalAmount = $("#txtTotalAmount").val();
+        vatPercentage = $("#txtVat").val();
+        if(isNaN(totalAmount)){
+            totalAmount = 0;
+        }
+        if(parseInt(vatPercentage)!=0){
+            totalAmount = ((parseFloat(amount) * quantity));
+            vatAmount = parseFloat(totalAmount) * parseFloat(vatPercentage) / 100;
+            if(isNaN(vatAmount)){
+                totalAmount = 0;
+            }
+            $("#txtVatAmount").val(parseFloat(vatAmount).toFixed(2));
+        }
+        else{
+            totalAmount = ((parseFloat(amount) * quantity));
+        }
+        if(isNaN(totalAmount)){
+            totalAmount = 0;
+        }
+        $("#txtTotalAmount").val(parseFloat(totalAmount).toFixed(2));
+    });
+
+    $("#txtVat").on("keyup",function(){
+        var totalAmount = $("#txtTotalAmount").val();
+        var vatPercentage = $("#txtVat").val();
+        var vatAmount = (parseFloat(totalAmount) * parseFloat(vatPercentage))/100;
+        if(isNaN(vatAmount)){
+            vatAmount = 0;
+        }
+        $("#txtVatAmount").val(parseFloat(vatAmount).toFixed(2));
+    });
+
+    $("#txtAmount").on("focus", function () {
+        $("#txtTotalAmount").val(0);
+        var amount = $("#txtAmount").val();
+        var quantity = $("#txtQuantity").val();
+        var totalAmount = 0, vatPercentage = 0;
+        totalAmount = $("#txtTotalAmount").val();
+        vatPercentage = $("#txtVat").val();
+        if (isNaN(totalAmount)) {
+            totalAmount = 0;
+        }
+        if (parseInt(vatPercentage) != 0) {
+            totalAmount = ((parseFloat(amount) * quantity));
+            vatAmount = parseFloat(totalAmount) * parseFloat(vatPercentage) / 100;
+            if (isNaN(vatAmount)) {
+                totalAmount = 0;
+            }
+            $("#txtVatAmount").val(parseFloat(vatAmount).toFixed(2));
+        }
+        else {
+            totalAmount = ((parseFloat(amount) * quantity));
+        }
+        if (isNaN(totalAmount)) {
+            totalAmount = 0;
+        }
+        $("#txtTotalAmount").val(parseFloat(totalAmount).toFixed(2));
+
+    });
+
+    $("#txtQuantity").on("focus", function () {
+        var amount = $("#txtAmount").val();
+        var quantity = $("#txtQuantity").val();
+        var totalAmount = 0, vatPercentage = 0;
+        totalAmount = $("#txtTotalAmount").val();
+        vatPercentage = $("#txtVat").val();
+        if (isNaN(totalAmount)) {
+            totalAmount = 0;
+        }
+        if (parseInt(vatPercentage) != 0) {
+            totalAmount = ((parseFloat(amount) * quantity));
+            vatAmount = parseFloat(totalAmount) * parseFloat(vatPercentage) / 100;
+            if (isNaN(vatAmount)) {
+                totalAmount = 0;
+            }
+            $("#txtVatAmount").val(parseFloat(vatAmount).toFixed(2));
+        }
+        else {
+            totalAmount = ((parseFloat(amount) * quantity));
+        }
+        if (isNaN(totalAmount)) {
+            totalAmount = 0;
+        }
+        $("#txtTotalAmount").val(parseFloat(totalAmount).toFixed(2));
+    });
+
+    $("#txtVat").on("focus", function () {
+        var totalAmount = $("#txtTotalAmount").val();
+        var vatPercentage = $("#txtVat").val();
+        var vatAmount = (parseFloat(totalAmount) * parseFloat(vatPercentage)) / 100;
+        if (isNaN(vatAmount)) {
+            vatAmount = 0;
+        }
+        $("#txtVatAmount").val(parseFloat(vatAmount).toFixed(2));
+    });
+</script>
+
+<script>
+    $("#btnUpdate").on("click",function(){
+        var amount = $("#txtAmount").val();
+        var quantity = $("#txtQuantity").val();
+        var totalAmount = ((parseFloat(amount) * parseInt(quantity)));
+        $("#txtTotalAmount").val(parseFloat(totalAmount).toFixed(2));
+
+        var vatPercentage = $("#txtVat").val();
+        var vatAmount = (parseFloat(totalAmount) * parseFloat(vatPercentage)) / 100;
+        $("#txtVatAmount").val(parseFloat(vatAmount).toFixed(2));
+
+        var prevAmount = $("#prevAmount").val();
+        var currentAmount = $("#txtAmount").val();
+
+        var prevTotalAmount = $("#prevTotalAmount").val();
+        var currentTotalAmount = $("#txtTotalAmount").val();
+
+        var prevVatAmount = $("#prevVatAmount").val();
+        var currentVatAmount = $("#txtVatAmount").val();
+        var previousGrandTotal = $("#GrandTotal").val();
+
+        var currentVat = $("#txtVat").val();
+
+        if ($("#txtTaskArea").val() == null || $("#txtTaskArea").val() == "") {
+            alert("Please Provide Description.");
+            return false;
+        }
+        if (currentAmount == '' || currentAmount=="0"|| currentAmount=="0.0") {
+            alert("Please Provide Valid Amount.");
+            return false;
+        }
+
+        if (isNaN(parseFloat(currentAmount)) || isNaN(parseFloat(currentVat))) {
+            if (isNaN(parseFloat(currentAmount))) {
+                alert("Please Provide Valid Amount.");
+                $("#txtAmount").val(0);
+                return false;
+            }
+            else if (isNaN(parseFloat(currentVat))) {
+                alert("Please Provide Valid Vat.");
+                $("#txtVat").val(0);
+                $("#txtVatAmount").val(0);
+                return false;
+            }
+        }
+        else {
+            $("#txtAmount").val(parseFloat(currentAmount).toFixed(2));
+            $("#txtTotalAmount").val(parseFloat($("#txtTotalAmount").val()).toFixed(2));
+            $("#txtVat").val(parseFloat($("#txtVat").val()).toFixed(2));
+            var grandTotal = $("#GrandTotal").val();
+            grandTotal = parseFloat(grandTotal) + parseFloat(currentTotalAmount) + parseFloat(currentVatAmount);
+            $("#GrandTotal").val(grandTotal);
+            var CurrentGrandTotal = $("#GrandTotal").val();
+
+            if (parseFloat(previousGrandTotal) == parseFloat(CurrentGrandTotal)) {
+                alert("Something Went Wrong Please Try Again.!");
+                return false;
+            }
+            else {
+                $("#txtAmount").val(parseFloat(currentAmount).toFixed(2));
+                $("#btnUpdate").hide();
+                $("#btnPaymentDetailsMessage").show();
+            }
+        }
+    });
+</script>

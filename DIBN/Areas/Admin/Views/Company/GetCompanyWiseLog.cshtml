@@ -1,0 +1,126 @@
+﻿@model DIBN.Areas.Admin.Models.GetCompanyLogDetails
+@{
+    ViewData["Title"] = "Get Company Wise Log";
+}
+<div class="row">
+    <div class="col-md-12">
+        <h4 class="card-title float-start">Company Activity Log(s)</h4>
+        <a href="javascript:history.go(-1);" class="btn btn-theme float-end" style="margin-bottom:15px;">Back to List</a>
+    </div>
+</div>
+<div class="row" id="View">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="col-md-12">
+                    <div class="table-rep-plugin">
+                        <div class="table-responsive mb-0" data-pattern="priority-columns">
+                            <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            #
+                                        </th>
+                                        <th>
+                                            Message
+                                        </th>
+                                        <th>
+                                            Created By
+                                        </th>
+                                        <th>
+                                            Created Date
+                                        </th>
+                                        <th>
+                                            Amendment By
+                                        </th>
+                                        <th>
+                                            Amendment Date
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        var i = 0;
+                                    }
+                                    @foreach (var item in Model.logs)
+                                    {
+                                        <tr>
+                                            <td>@(i + 1)</td>
+                                            <td class="text-wrap">
+                                                @Html.Raw(@item.LogMessage)
+                                            </td>
+                                            <td class="text-wrap">
+                                                @if (item.CreatedBy != "N/A" && item.CreatedBy != null)
+                                                {
+                                                    @item.CreatedBy
+                                                }
+                                                else
+                                                {
+                                                    @Html.Raw("---")
+                                                }
+                                            </td>
+                                            <td class="text-wrap">
+                                                @if (item.CreatedOnDate != "N/A" && item.CreatedOnDate != null)
+                                                {
+                                                    @item.CreatedOnDate @Html.Raw(" ") @item.CreatedOnTime
+                                                }
+                                                else
+                                                {
+                                                    @Html.Raw("---")
+                                                }
+                                            </td>
+                                            <td class="text-wrap">
+                                                @if (item.ModifyBy != "N/A" && item.ModifyBy != null)
+                                                {
+                                                    @item.ModifyBy
+                                                }
+                                                else
+                                                {
+                                                    @Html.Raw("---")
+                                                }
+                                            </td>
+                                            <td class="text-wrap">
+                                                @if (item.ModifyOnDate != "N/A" && item.ModifyOnDate != null)
+                                                {
+                                                    @item.ModifyOnDate @Html.Raw(" ") @item.ModifyOnTime
+                                                }
+                                                else
+                                                {
+                                                    @Html.Raw("---")
+                                                }
+                                            </td>
+                                        </tr>
+                                        i++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+
+<script>
+    $('#datatable').dataTable({
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    });
+</script>

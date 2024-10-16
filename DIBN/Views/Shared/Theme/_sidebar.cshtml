@@ -1,0 +1,135 @@
+﻿    <!-- ========== Left Sidebar Start ========== -->
+<div class="vertical-menu">
+    <!-- LOGO -->
+    <div class="navbar-brand-box" style="padding:5px;">
+        <a href=@Url.Action("Index", "Home",new{name="HomePage"}) class="logo logo-dark text-center mt-2">
+            <span class="logo-sm">
+                <img src="~/DIBN_Logo.png" alt="" height="35" width="60">
+            </span>
+            <span class="logo-lg" style="margin-right:25px;">
+                <img src="~/DIBN_Logo.png" alt="" height="75" width="140">
+            </span>
+        </a>
+
+        <a href=@Url.Action("Index", "Home",new{name="HomePage"}) class="logo logo-light text-center mt-2">
+            <span class="logo-sm">
+                <img src="~/DIBN_Logo.png" alt="" height="35" width="60">
+            </span>
+            <span class="logo-lg" style="margin-right:25px;">
+                <img src="~/DIBN_Logo.png" alt="" height="75" width="140">
+            </span>
+        </a>
+    </div>
+
+    <button type="button" class="btn btn-sm px-3 font-size-16 header-item waves-effect vertical-menu-btn" id="sidebarMenuToggle">
+        <i class="fas fa-fw fa-bars"></i>
+    </button>
+
+    <div data-simplebar class="sidebar-menu-scroll">
+
+        <!--- Sidemenu -->
+        <div id="sidebar-menu">
+            <!-- Left Menu Start -->
+            <ul class="metismenu p-0 list-unstyled" id="side-menu">
+                <li class="menu-title mt-3" style="color:#243c7c;">Menu</li>
+
+                
+            </ul>
+        </div>
+        <!-- Sidebar -->
+    </div>
+</div>
+<style>
+    .table-bg-color {
+        background-color: azure;
+    }
+</style>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="~/bootstrap.min.js"></script>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $("#main-loader").show();
+        $.ajax({
+            url: "@Url.Action("GetLoggedInRole", "Home")",
+            method: "GET",
+            async: false,
+            success: function (role) {
+                $.ajax({
+                    url: "@Url.Action("GetAllowedModuleList", "Home")",
+                    method: "GET",
+                    success: function (response) {
+                        if (response.length > 0) {
+                            if (response.includes("HomePage")) {
+                                $("#side-menu").append('<li id="HomePage"><a href=@Url.Action("Index", "Home", new { name = "HomePage" })><i class="uil-home-alt"></i><span class="text-wrap">Dashboard</span></a></li>');
+                            }
+                            if (response.includes("Company")) {
+                                $("#side-menu").append('<li id="Company"><a href="@Url.Action("Index", "Company", new { name = "Company" })"><i class="fas fa-city"></i><span class="text-wrap">My Company</span></a></li>');
+                            }
+                            if (response.includes("CompanyServices") || response.includes("EmployeeServices") || response.includes("MyRequests")) {
+                                if (role == "Sales Person" || role == "RM Team") {
+                                    if (response.includes("MyRequests")) {
+                                        var appendStr = '<li id="Services" onclick="showServiceSubMenu()"><a href="javascript: void(0);" class="has-arrow waves-effect"><i class="fas fa-cogs"></i><span class="text-wrap">Services</span></a><ul class="sub-menu mm-collapse" id="showServiceSubMenu" aria-expanded="true">';
+                                        appendStr = appendStr + '<li id="MyRequests"><a href="@Url.Action("Index", "ServiceRequests", new { name = "MyRequests" })"><i class="fas fa-rocket"></i><span class="text-wrap">Service Request(s)</span></a></li>';
+                                        appendStr = appendStr + '</ul></li>';
+                                        $("#side-menu").append(appendStr);
+                                    }
+                                }
+                                else{
+                                    var appendStr = '<li id="Services" onclick="showServiceSubMenu()"><a href="javascript: void(0);" class="has-arrow waves-effect"><i class="fas fa-cogs"></i><span class="text-wrap">Services</span></a><ul class="sub-menu mm-collapse" id="showServiceSubMenu" aria-expanded="true">';
+                                    if (response.includes("CompanyServices")) {
+                                        appendStr = appendStr + '<li id="CompanyServices"><a href="@Url.Action("Index", "CompanyService", new { name = "CompanyServices" })"><i class="fas fa-users"></i> <span class="text-wrap">Company Services</span></a></li>';
+                                    }
+                                    if (response.includes("EmployeeServices")) {
+                                        appendStr = appendStr + '<li id="EmployeeServices"><a href="@Url.Action("Index", "EmployeeService", new { name = "EmployeeServices" })"><i class="fas fa-user-tie"></i> <span class ="text-wrap">Employee Services</span></a></li>';
+                                    }
+                                    if (response.includes("MyRequests")) {
+                                        appendStr = appendStr + '<li id="MyRequests"><a href="@Url.Action("Index", "ServiceRequests", new { name = "MyRequests" })"><i class="fas fa-rocket"></i><span class="text-wrap">Service Request(s)</span></a></li>';
+                                    }
+                                    appendStr = appendStr + '</ul></li>';
+                                    $("#side-menu").append(appendStr);
+                                }
+                            }
+                            if (response.includes("DocumentChecklist")) {
+                                $("#side-menu").append('<li id="DocumentChecklist"><a href="@Url.Action("Index", "Document", new { name = "DocumentChecklist" })"><i class="fas fa-check-square"></i><span class="text-wrap">Document Checklist</span></a></li>');
+                            }
+                        }
+                        $("#main-loader").hide();
+                    }
+                })
+            }
+        })
+        $("#main-loader").hide();
+    });
+
+    function showServiceSubMenu() {
+        if ($("#showServiceSubMenu").hasClass("mm-collapse")) {
+            $("#showServiceSubMenu").removeClass("mm-collapse");
+        }
+        else { $("#showServiceSubMenu").addClass("mm-collapse"); }
+    }
+</script>
+<script>
+    //// Check whether logged in user has permission to login or has is active allowed and not deleted                  -- Yashasvi (22-05-2023)
+    $(function () {
+        $.ajax({
+            url: "@Url.Action("GetLoggedInUserStatus", "Home")",
+            method: "POST",
+            async: false,
+            success: function (response) {
+                var url = "@Url.Action("Logout","Account")";
+                if(parseInt(response.isDelete)==1){
+                    window.location.href=url;
+                }
+                else if (parseInt(response.isActive) == 1) {
+                    window.location.href = url;
+                }
+                else if (parseInt(response.isLoggedIn) == 1) {
+                    window.location.href = url;
+                }
+            }
+        })
+    })
+</script>

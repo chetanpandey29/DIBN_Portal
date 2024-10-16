@@ -1,0 +1,382 @@
+﻿@model DIBN.Areas.Admin.Models.BalanceSheetCustomReportByCompanyIdModel
+@{
+    ViewData["Title"] = "Balance Sheet Custom Report of Company";
+}
+<style>
+    .wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      color: #333333;
+      border: none;
+      background: transparent;
+      font-size: 1rem;
+      line-height: 1.5rem;
+      padding: 1rem 2rem;
+    }
+
+    button > svg {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    button > svg > rect {
+      fill: none;
+      stroke: #333333;
+      stroke-width: 2px;
+      stroke-dasharray: 240 160 240 160;
+      stroke-dashoffset: 0;
+      animation: pathRect 2s linear infinite;
+      width: calc(100% - 2px);
+      height: calc(100% - 2px);
+    }
+
+    @@keyframes pathRect {
+      25% {
+        stroke-dashoffset: 100;
+      }
+
+      50% {
+        stroke-dashoffset: 200;
+      }
+
+      75% {
+        stroke-dashoffset: 300;
+      }
+
+      100% {
+        stroke-dashoffset: 400;
+      }
+    }
+</style>
+<div class="row">
+    <div class="col-lg-12">
+        <a href="@Url.Action("CompanyBalanceSheetReport","ReportManagement",new{companyId=Model.CompanyId})" class="btn btn-theme float-end me-2 mb-2">Back</a>
+        <a role="button" class="btn btn-theme float-end me-2 mb-2 Details" onclick="ExportAsExcel('@Model.FromDates','@Model.ToDates',@Model.CompanyId);">Export Excel</a>
+        <a role="button" class="btn btn-theme float-end me-2 mb-2 Details" onclick="ExportAsPdf('@Model.FromDates','@Model.ToDates',@Model.CompanyId);">Export PDF</a>
+    </div>
+</div>
+
+<div class="row Details">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="text-center front-text-theme fw-bold">Balance Sheet Custom Report From @Model.FromDate till @Model.ToDate of @Model.CompanyName</h4>
+                <input type="hidden" name="fromDate" id="fromDate" value="@Model.FromDates" />
+                <input type="hidden" name="toDate" id="toDate" value="@Model.ToDates" />
+                <input type="hidden" name="companyId" id="companyId" value="@Model.CompanyId" />
+               
+                <div class="row col-md-12 mt-4 mb-3">
+                    <div class="float-left text-center">
+                        <span class="text-center float-left front-text-theme h6 fw-bold">Total Credit :</span><span class="text-center float-left text-success h6 fw-bold"> @Model.TotalCredit AED</span>
+                        <span class="text-center float-left front-text-theme h6 fw-bold">||</span>
+                        <span class="text-center float-left front-text-theme h6 fw-bold">Total Debit : </span><span class="text-center float-left text-danger h6 fw-bold">-@Model.TotalDebit AED</span>
+                    </div>
+                </div>
+
+                <div class="row col-md-12 mt-4 mb-3">
+                    <div class="float-left text-center">
+                        @if (!Model.TotalBalance.StartsWith("-"))
+                        {
+                            <span class="text-center float-left front-text-theme h6 fw-bold">Total Balance :</span>
+
+                            <span class="text-center float-left text-success h6 fw-bold"> @Model.TotalBalance AED </span>
+                        }
+                        else
+                        {
+                            <span class="text-center float-left front-text-theme h6 fw-bold">Total Balance :</span>
+
+                            <span class="text-center float-left text-danger h6 fw-bold"> @Model.TotalBalance AED </span>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-rep-plugin">
+                    <div class="table-responsive mb-0" data-pattern="priority-columns">
+                        <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse:collapse; border-spacing:0; width:100%;">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Transaction Id
+                                    </th>
+                                    <th data-sort='YYYYMMDD'>
+                                        Transaction Date
+                                    </th>
+                                    <th>
+                                        Company
+                                    </th>
+                                    <th>
+                                        Description
+                                    </th>
+                                    <th>
+                                        Credit(AED)
+                                    </th>
+                                    <th>
+                                        Debit(AED)
+                                    </th>
+                                    <th>
+                                        Balance(AED)
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-example-modal" id="multipleDownloadErrorModal" role="dialog" data-bs-keyboard="false" data-bs-backdrop="static" style="z-index:10000 !important;">
+    <div class="modal-dialog modal-dialog-centered modal" role="document">
+        <div class="modal-content">
+            <div class="modal-body pt-0">
+                <div class="d-flex justify-content-center align-items-center">
+                    <div class="mt-5">
+                        <div class='wrapper'>
+                            <button>
+                                <span class="fw-bolder fs-5">Downloading...</span>
+                                <svg>
+                                    <rect x="1" y="1"></rect>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 mt-5">
+                    <p class="text-center fw-bolder fs-5">Please wait for while , your report (PDF/Excel) file is currently downloading..</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $.fn.dataTable.ext.errMode = 'none';
+
+        var fromDate = $("#fromDate").val();
+        var toDate = $("#toDate").val();
+        var companyId = $("#companyId").val();
+
+        var url = "@Url.Action("BalanceSheetCompanyCustomPaginationReport","ReportManagement")";
+        url = url + "?fromDate=" + fromDate + "&toDate=" + toDate + "&companyId=" + companyId;
+
+        $("#datatable").DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": false,
+            "ajax": {
+                "type": "post",
+                "datatype": "json",
+                "data": function () {
+                    var info = $('#datatable').DataTable().page.info();
+                    $('#datatable').DataTable().ajax.url(
+                        url
+                    );
+                }
+            },
+            "columns": [
+                { "data": "transactionId", "name": "Transaction Id" },
+                { "data": "date", "name": "Transaction Date" },
+                { "data": "companyName", "name": "Company" },
+                { "data": "description", "name": "Description" },
+                {
+                    "data": function (data, full, meta) {
+                        if (data.type == "Credit") {
+                            return '<span class="text-success">' + data.grandTotal + '</span>';
+                        }
+                        else {
+                            return '---';
+                        }
+                    },
+                    "name": "Credit(AED)"
+                },
+                {
+                    "data": function (data, full, meta) {
+                        if (data.type == "Debit") {
+                            return '<span class="text-danger">-' + data.grandTotal + '</span>';
+                        }
+                        else {
+                            return '---';
+                        }
+                    },
+                    "name": "Debit(AED)"
+                },
+                { "data": "balanceTotal", "name": "Balance(AED)" },
+            ],
+            "language": {
+                'processing': '<div class="spinner-2"><div class="center-div-2"><div class="loader-circle-1"></div></div></div>'
+            },
+            responsive: true,
+            paging: true,
+            pagingType: 'simple_numbers',
+            "bInfo": true,
+            ordering: true,
+            "aLengthMenu": [20, 30, 50],
+            searching: true,
+            'columnDefs': [{
+                'targets': [6],
+                'orderable': false,
+            }],
+            dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+        });
+    });
+</script>
+<script>
+    function ExportAsExcel(fromDate, toDate, companyId) {
+        $mymodal = $("#multipleDownloadErrorModal");
+        $mymodal.find("div.modal-body");
+        $mymodal.modal("show");
+        
+        $.ajax({
+            url: '@Url.Action("BalanceSheetCompanyCustomReportExcel", "ReportManagement")',
+            type: 'GET',
+            data: { 'fromDate': fromDate, 'toDate': toDate, 'companyId': companyId },
+            success: function (result) {
+                $mymodal = $("#multipleDownloadErrorModal");
+                $mymodal.find("div.modal-body");
+                $mymodal.modal("hide");
+
+                if (result == "Success") {
+                    var url = "@Url.Action("DownloadBalanceSheetCompanyCustomReportExcel","ReportManagement")";
+                    url = url + "?fromDate=" + fromDate + "&toDate=" + toDate + "&companyId=" + companyId;
+                    window.location.href = url;
+
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 2000);
+                }
+            },
+            error: function () {
+                alert("Something went wrong please try again after sometimes.");
+                setTimeout(function () {
+                    window.location.reload();
+                }, 2000);
+            }
+        });
+    };
+
+    function ExportAsPdf(fromDate, toDate, companyId) {
+        $mymodal = $("#multipleDownloadErrorModal");
+        $mymodal.find("div.modal-body");
+        $mymodal.modal("show");
+        
+        $.ajax({
+            url: '@Url.Action("BalanceSheetCompanyCustomReportPdf", "ReportManagement")',
+            type: 'GET',
+            data: { 'fromDate': fromDate, 'toDate': toDate, 'companyId': companyId },
+            success: function (result) {
+                $mymodal = $("#multipleDownloadErrorModal");
+                $mymodal.find("div.modal-body");
+                $mymodal.modal("hide");
+
+                if (result == "Success") {
+                    var url = "@Url.Action("DownloadBalanceSheetCompanyCustomReportPdf","ReportManagement")";
+                    url = url + "?fromDate=" + fromDate + "&toDate=" + toDate + "&companyId=" + companyId;
+                    window.location.href = url;
+
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 2000);
+                }
+            },
+            error: function () {
+                alert("Something went wrong please try again after sometimes.");
+                setTimeout(function () {
+                    window.location.reload();
+                }, 2000);
+            }
+        });
+    };
+</script>
+<script>
+    $(function () {
+        $("#Insert").hide();
+        $("#View").hide();
+        $(".Update").hide();
+        $(".Delete").hide();
+        $(".Details").hide();
+    });
+</script>
+<script>
+    $(function () {
+        $("#loader").show();
+        var module = $("#Module").val();
+        $.ajax({
+            url: "@Url.Action("GetRolePermissionsName", "Permission")",
+            method: "GET",
+            data: { "Module": "ReportManagement" },
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (RoleResponse) {
+                $("#loader").show();
+                $.ajax({
+                    url: "@Url.Action("GetUserPermissionsName", "Permission")",
+                    method: "GET",
+                    data: { "Module": "ReportManagement" },
+                    async: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (UserResponse) {
+                        $("#loader").show();
+                        if (UserResponse.length > 0) {
+                            for (let i = 0; i < UserResponse.length; i++) {
+                                $("#" + UserResponse[i]).show();
+                                if (UserResponse[i] == "View") {
+                                    $(".Details").show();
+                                }
+                                if (UserResponse[i] == "Update") {
+                                    $("." + UserResponse[i]).show();
+                                }
+                                if (UserResponse[i] == "Delete") {
+                                    $("." + UserResponse[i]).show();
+                                }
+                            }
+                            $("#loader").hide();
+                        }
+                        else if (RoleResponse.length > 0) {
+                            for (let i = 0; i < RoleResponse.length; i++) {
+                                $("#" + RoleResponse[i]).show();
+                                if (RoleResponse[i] == "View") {
+                                    $(".Details").show();
+                                }
+                                if (RoleResponse[i] == "Update") {
+                                    $("." + RoleResponse[i]).show();
+                                }
+                                if (RoleResponse[i] == "Delete") {
+                                    $("." + RoleResponse[i]).show();
+                                }
+                            }
+                            $("#loader").hide();
+
+                        } else {
+                            alert("You don't have any permission for this module.");
+                            $("#loader").hide();
+                        }
+                    }
+                })
+            }
+        });
+        $("#loader").hide();
+    });
+</script>

@@ -1,0 +1,328 @@
+﻿@model IEnumerable<DIBN.Areas.Admin.Models.GetRequestsModel>
+@{
+    ViewData["Title"] = "Employee Service Request(s)";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="col-md-3 col-lg-2 col-sm-6 float-end">
+            <div class="card p-0">
+                <div class="card-body p-2">
+                    @foreach (var item in Model)
+                    {
+                        <div class="d-flex justify-content-evenly">
+                            <h6 class="float-end col-md-6 mt-2 ms-2"><b>Filter :</b></h6>
+                            <select class="float-end col-md-6" id="ServiceStatus" asp-for="@item.SelectedStatus" onchange="showRequest();">
+                                <option value="">All</option>
+                                <option value="0">Open</option>
+                                <option value="3">Closed</option>
+                                <option value="4">Rejected</option>
+                            </select>
+                        </div>
+
+                        break;
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" id="View">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title text-center">Employee Service Request(s)</h4>
+                <hr style="height:1px;" class="text-theme" />
+                <div class="table-rep-plugin">
+                    <div class="table-responsive mb-0" data-pattern="priority-columns">
+                        <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th class="align-middle text-center">
+                                        #
+                                    </th>
+                                    <th class="align-middle text-center">
+                                        Created By
+                                    </th>
+                                    <th class="align-middle text-center">
+                                        Created Date
+                                    </th>
+                                    <th class="align-middle text-center">
+                                        Assigned Date
+                                    </th>
+                                    <th class="align-middle text-center">
+                                        Company Name
+                                    </th>
+                                    <th class="align-middle text-center">
+                                        Service Request Type
+                                    </th>
+                                    <th class="align-middle text-center">
+                                        Applicant Name
+                                    </th>
+                                    <th class="align-middle text-center">
+                                        Status
+                                    </th>
+                                    <th class="align-middle text-center">
+                                        Assigned User(s)
+                                    </th>
+                                    <th>
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var i = 0;
+                                }
+                                @foreach (var item in Model)
+                                {
+                                    @if (item.SerialNumber != "N/A" && item.SerialNumber != null)
+                                    {
+                                        <tr>
+                                            <td class="align-middle text-center">
+                                                @item.SerialNumber
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                @item.RequestedBy
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                @item.CreatedOn
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                @item.AssignedOn
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                @item.CompanyName
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                @item.RequestedService
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                @item.ApplicantName
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                @item.Status
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                @item.AssignedUser
+                                            </td>
+                                            <td>
+                                                <a href="@Url.Action("TrackServiceRequest","ServiceRequests",new{SerialNumber=@item.SerialNumber,Status=@item.SelectedStatus,area="Admin"})" class="btn btn-theme">
+                                                    View
+                                                </a>
+                                                <a role="button" class="btn btn-theme" onclick="AssignRequestToUser('@item.SerialNumber',@item.ServiceId);">
+                                                    Assign Request
+                                                </a>
+                                                <a role="button" class="btn btn-theme" onclick="RemoveService('@item.SerialNumber',@item.ServiceId);">
+                                                    Remove
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        i++;
+                                    }
+
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="ServiceRequest" class="modal" tabindex="-1" data-bs-keyboard="false" data-bs-backdrop="static" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Assign Request</h5>
+                <button type="button" class="close btn btn-theme" id="ServiceRequestModalClose" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+
+<link href="~/select2/select2.min.css" rel="stylesheet" />
+<script src="~/select2/select2.min.js"></script>
+
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script>
+    ////// Open Selection dropdown on focus                                     -- Yashasvi TBC (09-02-2023)
+    $(document).on('focus', '.select2.select2-container', function (e) {
+        if (e.originalEvent && $(this).find(".select2-selection--single").length > 0) {
+            $(this).siblings('select').select2('open');
+        }
+    });
+    $("#RejectServiceModalClose").on("click", function() {
+        window.location.reload();
+    });
+    $("#ServiceRequestModalClose").on("click", function() {
+        window.location.reload();
+    });
+    $(function() {
+        $('#ServiceStatus').select2();
+    });
+</script>
+
+<script>
+    jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+        "date-dmy-pre": function(a) {
+            if (a == null || a == "") {
+                return 0;
+            }
+            var date = a.split('-');
+            return (date[2] + date[1] + date[0]) * 1;
+        },
+
+        "date-dmy-asc": function(a, b) {
+            return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+        },
+
+        "date-dmy-desc": function(a, b) {
+            return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+        }
+    });
+</script>
+
+
+<script>
+    $('#datatable1').dataTable({
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+        "aoColumnDefs": [
+            { "sType": "date-dmy", "aTargets": [2, 3] }
+        ]
+    });
+    $('#datatable').dataTable({
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+        "aoColumnDefs": [
+            { "sType": "date-dmy", "aTargets": [2, 3] }
+        ]
+    });
+</script>
+
+
+<script>
+    function AssignRequestToUser(serialNumber, ServiceId) {
+        $.ajax({
+            url: "@Url.Action("GetEmployeesToAssign","ServiceRequests")",
+            method: "GET",
+            data: { "serialNumber": serialNumber, "ServiceId": ServiceId },
+            success: function(response) {
+                $mymodal = $("#ServiceRequest");
+                $mymodal.find("div.modal-body").html(response);
+                $mymodal.modal("show");
+            }
+        });
+    };
+
+    function showRequest() {
+
+        var _selectedValue = $("#ServiceStatus").val();
+        if (_selectedValue != "") {
+            var url = "@Url.Action("EmployeeServiceRequest","ServiceRequests")";
+            url = url + "?name=MyRequests&Status=" + _selectedValue;
+            window.location.href = url;
+        }
+        else {
+            var url = "@Url.Action("EmployeeServiceRequest","ServiceRequests")";
+            url = url + "?name=MyRequests";
+            window.location.href = url;
+        }
+    }
+</script>
+<script>
+    function RemoveService(serialNumber, ServiceId) {
+        event.preventDefault();
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'ms-3 btn btn-success',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: false
+        })
+
+        swalWithBootstrapButtons.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true,
+            showConfirmButton: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "@Url.Action("Delete", "ServiceRequests")",
+                    method: "GET",
+                    data: { "serialNumber": serialNumber, "ServiceId": ServiceId },
+                    success: function(response) {
+
+                        if (response < 0) {
+                            swalWithBootstrapButtons.fire({
+                                title: 'Error.',
+                                text: "Something Went Wrong Please Try Again.",
+                                icon: 'error'
+                            }).then((result) => {
+                                window.location.reload();
+                            });
+                        }
+                        else {
+                            swalWithBootstrapButtons.fire({
+                                title: 'Deleted.',
+                                text: "Service Request Deleted Successfully..!!",
+                                icon: 'success'
+                            }).then((result) => {
+                                window.location.reload();
+                            });
+                        }
+                    }
+                });
+            }
+            else if (
+                result.dismiss === Swal.DismissReason.cancel
+            ) {
+                swalWithBootstrapButtons.fire(
+                    'Cancelled',
+                    'Cancled by User..!! :)',
+                    'error'
+                )
+            }
+        });
+    };
+</script>
+
+
+

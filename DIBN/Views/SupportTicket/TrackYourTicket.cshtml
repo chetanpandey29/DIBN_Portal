@@ -1,0 +1,508 @@
+﻿@model IEnumerable<DIBN.Models.SupportTicketViewModel>
+@{
+    ViewData["Title"] = "TrackYourTicket";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    var lastStatus = 0;
+    var companyId = 0;
+
+    foreach (var item in Model)
+    {
+        lastStatus = @item.TicketStatusId;
+        companyId = @item.CurrentCompany;
+    }
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-12">
+        <h4 class="text-theme">
+            @foreach (var title in Model)
+            {
+                <strong>@title.Title</strong>
+                <input type="hidden" name="TrackingNumber" id="TrackingNumber" value="@title.TrackingNumber" />
+                <input type="hidden" name="Module" id="Module" value="@title.Module" />
+                <a href="@Url.Action("Index","SupportTicket",new{name=@title.Module})" class="btn btn-theme float-end mb-2">
+                    Back
+                </a>
+                break;
+            }
+        </h4>
+    </div>
+</div>
+
+@foreach (var data in Model)
+{
+    @if (data.getResponseByParentIds.Count == 0)
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-title btn-theme p-2 px-3">
+                        <div class="col-md-12">
+                            <span class="col-md-7 float-start clearfix">
+                                @Html.Raw("#")@data.TrackingNumber  @Html.Raw("|")
+                                @if (@data.NewTicketStatus != null && @data.NewTicketStatus != "")
+                                {
+                                    <span class="badge font-size-13" style="background-color:#F4F3EA;color:#333D51;">@data.ChangedRequestStatus[0]</span>
+                                    @Html.Raw("->")
+                                    <span class="badge font-size-13" style="background-color:#333D51;color:#F4F3EA;">@data.ChangedRequestStatus[1]</span>
+                                }
+                                else
+                                {
+                                    @if (@data.TicketStatusId == 1)
+                                    {
+                                        <span class="badge font-size-13" style="background-color:#F4F3EA;color:#333D51;">@data.TicketStatus</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge font-size-13" style="background-color:#F4F3EA;color:#333D51;">@data.TicketStatus</span>
+                                    }
+                                }
+                            </span>
+                            <div class="col-md-5 float-start">
+                                <span class="float-start text-light">
+                                    @if (@data.Username != "" && @data.Username != "N/A")
+                                        @data.Username
+                                    else
+                                        @data.SalesPersonName
+
+                                    </span>
+                                    <span class="float-start ms-2 me-2">|</span>
+                                    <span class="float-start text-light ">
+                                        Date : @data.CreatedOn
+                                    </span>
+                                    <span class="float-start ms-2 me-2">|</span>
+                                    <span class="float-start text-light ">
+                                        @data.CreatedTime
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="card-body">
+                            <div class="col-md-12">
+                                <p class="ms-3 mt-3 me-3 justify-content-between">
+                                    @Html.Raw(data.Description)
+                                </p>
+                            </div>
+                        @if (data.DocumentList.Count > 0)
+                        {
+                            <div class="col-md-12 pt-2 mt-2 row">
+                                <hr class="text-theme" />
+                                <div class="ms-3 me-3 float-start d-flex text-theme">
+                                    <div>
+                                        <strong>Documents</strong>
+                                    </div>
+                                    @Html.Raw(": ")
+
+                                    @foreach (var document in data.DocumentList)
+                                    {
+                                        <p class="ms-1 float-start text-theme">
+                                            <a class="text-break" href="@Url.Action("GetSupportTicketRequestDocument","SupportTicket",new{Id=@document.ID})">
+                                                @document.FileName@document.Extension
+                                            </a>
+                                        </p>
+                                    }
+
+                                </div>
+                                <hr class="col-12 text-theme" />
+                            </div>
+
+                        }
+                        @if (lastStatus != 2 || companyId == 1)
+                        {
+                            <div class="col-md-12">
+                                <button onclick="AddReplyTo(@data.ID);" class="btn btn-theme mb-1 float-end Insert">
+                                    Reply
+                                </button>
+                            </div>
+                        }
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    @foreach (var reply in data.getResponseByParentIds)
+                    {
+                        <div class="card-title btn-theme p-2 px-3 clearfix">
+                            <div class="col-md-12">
+                                <span class="col-md-7 float-start ps-3">
+                                    @Html.Raw("#")@data.TrackingNumber @Html.Raw("|")
+                                    @if (@data.NewTicketStatus != null && @data.NewTicketStatus != "")
+                                    {
+                                        <span class="badge bg-pill font-size-13" style="background-color:#F4F3EA;color:#333D51;">@data.ChangedRequestStatus[0]</span>
+                                        @Html.Raw("->")
+                                        <span class="badge bg-pill font-size-13" style="background-color:#333D51;color:#F4F3EA;">@data.ChangedRequestStatus[1]</span>
+                                    }
+                                    else
+                                    {
+                                        @if (@data.TicketStatusId == 1)
+                                        {
+                                            <span class="badge bg-pill font-size-13" style="background-color:#F4F3EA;color:#333D51;">@data.TicketStatus</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-pill font-size-13" style="background-color:#F4F3EA;color:#333D51;">@data.TicketStatus</span>
+                                        }
+                                    }
+                                </span>
+                                <div class="col-md-5 float-start ps-3 clearfix">
+                                    <span class="float-start text-light clearfix">
+                                        @if (@reply.Username != "" && @reply.Username != "N/A")
+                                            @reply.Username
+                                        else
+                                            @reply.SalesPersonName
+
+                                        </span>
+                                        <span class="float-start ms-2 me-2"> | </span>
+                                        <span class="float-start text-light clearfix">
+                                            @reply.CreatedOn
+                                        </span>
+                                        <span class="float-start ms-2 me-2">|</span>
+                                        <span class="float-start text-light ">
+                                            @data.CreatedTime
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        break;
+                    }
+                    <div class="card-body ">
+                        <div class="border-solid-blue pt-2 mt-2 row">
+                            <div class="col-md-12 ms-3 float-start ps-3 clearfix">
+                                <p>
+                                    @Html.Raw(data.Username)
+                                </p>
+                                <p>
+                                    @Html.Raw(data.CreatedOn)
+                                </p>
+                                <div class="mt-3 me-3 justify-content-between">
+                                    <p>
+                                        @Html.Raw(data.Description)
+                                    </p>
+                                </div>
+                            </div>
+
+                            @if (data.DocumentList.Count > 0)
+                            {
+                                <div class="col-md-12">
+                                    <hr class="text-theme" />
+                                    <div class="ms-3 me-3 float-start d-flex justify-content-between">
+                                        <div>
+                                            <strong>Documents</strong>
+                                        </div>
+                                        @Html.Raw(": ")
+                                        <div>
+                                            @foreach (var document in data.DocumentList)
+                                            {
+                                                <p class="ms-1 float-start text-theme">
+                                                    <a class="text-break" href="@Url.Action("GetSupportTicketRequestDocument","SupportTicket",new{Id=@document.ID,RequestId=@data.TrackingNumber,@data.Module})">
+                                                        @document.FileName@document.Extension @Html.Raw("|")
+                                                    </a>
+                                                </p>
+                                            }
+                                        </div>
+                                    </div>
+                                    <hr class="col-12 text-theme" />
+                                </div>
+                            }
+                        </div>
+
+
+                        @foreach (var responses in data.getResponseByParentIds)
+                        {
+                            <div class="border-dashed-blue pt-2 mt-2 row">
+                                <div class="col-md-12">
+                                    <p class="ms-3 mt-3 me-3 justify-content-between">
+                                        @Html.Raw(responses.Description)
+                                    </p>
+                                </div>
+                                @if (responses.DocumentList.Count > 0)
+                                {
+                                    <div class="col-md-12 px-3 mb-2">
+                                        <hr class="text-theme" />
+                                        <div class="ms-3 me-3 float-start d-flex justify-content-between">
+                                            <div>
+                                                <strong>Documents</strong>
+                                            </div>
+                                            @Html.Raw(": ")
+                                            <div>
+                                                @foreach (var document in responses.DocumentList)
+                                                {
+                                                    <p class="ms-1 float-start">
+                                                        <a class="text-break" href="@Url.Action("GetSupportTicketRequestDocument","SupportTicket",new{Id=@document.ID,RequestId=@data.TrackingNumber,@data.Module})">
+                                                            @document.FileName@document.Extension
+
+                                                        </a>
+                                                        @Html.Raw("|")
+                                                    </p>
+                                                }
+                                            </div>
+                                        </div>
+                                        <hr class="col-12 text-theme" />
+                                    </div>
+
+                                }
+                            </div>
+                        }
+                        @if (lastStatus != 2 || companyId == 1)
+                        {
+                            <div class="mt-2 col-md-12">
+                                <button onclick="AddReplyTo(@data.ID);" class="btn btn-theme mb-1 float-end Insert">
+                                    Reply
+                                </button>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@if (lastStatus != 2 || companyId == 1)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <button onclick="AddResponse();" class="btn btn-theme mb-3 Insert">
+                New Comment
+            </button>
+        </div>
+    </div>
+}
+
+
+<div id="ServiceRequest" class="modal" tabindex="-1" data-bs-keyboard="false" data-bs-backdrop="static" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Response To Support Ticket</h5>
+                <button type="button" class="close btn btn-theme" id="ServiceRequestModalClose" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+<div id="ServiceResponse" class="modal" tabindex="-1" data-bs-keyboard="false" data-bs-backdrop="static" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Response To Support Ticket</h5>
+                <button type="button" class="close btn btn-theme" id="ServiceResponseModalClose" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/bootstrap.min.js"></script>
+<script>
+    $(function () {
+        $(".Insert").hide();
+        $("#View").hide();
+        $("#View1").hide();
+        $(".Update").hide();
+        $(".Delete").hide();
+        $(".Details").hide();
+    });
+</script>
+<script>
+    $(function () {
+        $("#loader").show();
+        var module = $("#Module").val();
+        $.ajax({
+            url: "@Url.Action("GetRolePermissionsName", "UserPermission")",
+            method: "GET",
+            data: { "Module": "SupportTickets" },
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (RoleResponse) {
+
+                $.ajax({
+                    url: "@Url.Action("GetUserPermissionsName", "UserPermission")",
+                    method: "GET",
+                    data: { "Module": "SupportTickets" },
+                    async: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (UserResponse) {
+
+                        if (UserResponse.length > 0) {
+                            
+                            for (let i = 0; i < UserResponse.length; i++) {
+                                if (UserResponse[i] == "PermissionCount") {
+                                    alert("You don't have any permission for this module.");
+                                    var url = "@Url.Action("Index","Home")";
+                                    url = url + "?name=HomePage";
+                                    window.location.href = url;
+                                } else {
+                                    $("#" + UserResponse[i]).show();
+                                    if (UserResponse[i] == "View") {
+                                        $(".Details").show();
+                                        $("#View1").show();
+                                    }
+                                    if (UserResponse[i] == "Update") {
+                                        $("." + UserResponse[i]).show();
+                                    }
+                                    if (UserResponse[i] == "Delete") {
+                                        $("." + UserResponse[i]).show();
+                                    }
+                                    if (UserResponse[i] == "Insert") {
+                                        $("." + UserResponse[i]).show();
+                                    }
+                                }
+
+                            }
+                            $("#loader").hide();
+                        }
+                        else if (RoleResponse.length > 0) {
+                            for (let i = 0; i < RoleResponse.length; i++) {
+                                if (RoleResponse[i] == "PermissionCount") {
+                                    alert("You don't have any permission for this module.");
+                                    var url = "@Url.Action("Index","Home")";
+                                    url = url + "?name=HomePage";
+                                    window.location.href = url;
+                                }
+                                else {
+                                    $("#" + RoleResponse[i]).show();
+                                    if (RoleResponse[i] == "View") {
+                                        $(".Details").show();
+                                        $("#View1").show();
+                                    }
+                                    if (RoleResponse[i] == "Update") {
+                                        $("." + RoleResponse[i]).show();
+                                    }
+                                    if (RoleResponse[i] == "Delete") {
+                                        $("." + RoleResponse[i]).show();
+                                    }
+                                    if (RoleResponse[i] == "Insert") {
+                                        $("." + RoleResponse[i]).show();
+                                    }
+                                }
+
+                            }
+                            $("#loader").hide();
+                        } else {
+                            alert("You don't have any permission for this module.");
+                            $("#loader").hide();
+                        }
+                    }
+                })
+
+            }
+        });
+    });
+</script>
+<script>
+    $("#ServiceRequestModalClose").on("click", function () {
+        window.location.reload();
+    });
+    $("#ServiceResponseModalClose").on("click", function () {
+        window.location.reload();
+    });
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>
+<script>
+    function AddResponse() {
+        $("#loader").show();
+        var module = $("#Module").val();
+        var TrackingNumber = $("#TrackingNumber").val();
+        $.ajax({
+            url: "@Url.Action("SendSupportTicket","SupportTicket")",
+            method: "GET",
+            data: { "name": module, "TrackingNumber": TrackingNumber },
+            success: function (response) {
+                $("#loader").hide();
+                $mymodal = $("#ServiceRequest");
+                $mymodal.find("div.modal-body").html(response);
+                $mymodal.modal("show");
+            }
+        });
+    };
+    function AddReplyTo(Id) {
+        $("#loader").show();
+        var module = $("#Module").val();
+        var TrackingNumber = $("#TrackingNumber").val();
+        $.ajax({
+            url: "@Url.Action("SendSupportTicketResponse","SupportTicket")",
+            method: "GET",
+            data: { "name": module, "TrackingNumber": TrackingNumber, "ParentId": Id },
+            success: function (response) {
+                $("#loader").hide();
+                $mymodal = $("#ServiceResponse");
+                $mymodal.find("div.modal-body").html(response);
+                $mymodal.modal("show");
+            }
+        });
+    };
+</script>
+<script>
+    $(function () {
+
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'ms-3 btn btn-success',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: false
+        })
+        var message = '@ViewData["Message"]';
+        var Module = $("#Module").val();
+        var RequestNumber = $("#TrackingNumber").val();
+        var url = "@Url.Action("TrackYourTicket","SupportTicket")";
+        if (message != "") {
+            if (message.startsWith("Your Response")) {
+                swalWithBootstrapButtons.fire({
+                    title: 'Success.',
+                    text: message,
+                    icon: 'success'
+                }).then((result) => {
+                    message = "";
+                    window.location.href = url + "?Id=" + RequestNumber + "&name=" + Module;
+                });
+            } else {
+                swalWithBootstrapButtons.fire({
+                    title: 'Failed.',
+                    text: message,
+                    icon: 'error'
+                }).then((result) => {
+                    message = "";
+                    window.location.href = url + "?Id=" + RequestNumber + "&name=" + Module;
+                });
+            }
+        }
+
+    });
+</script>

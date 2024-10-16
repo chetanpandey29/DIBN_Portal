@@ -1,0 +1,45 @@
+﻿@model DIBN.Areas.Admin.Models.ImportReminderNotification
+
+<div class="row">
+    <form asp-action="UpdateNotificationDays" method="post" id="updateNotificationDays">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="ID" name="Id"/>
+        <div class="form-group">
+            <label class="control-label">Send Notification After(Days)</label>
+            <input asp-for="SendNotificationAfter" class="form-control" name="Days" onkeyup="ValidAlphabet(this)" required/>
+            <span asp-validation-for="SendNotificationAfter" class="text-danger"></span>
+        </div>
+        <div class="modal-footer">
+            <div class="form-group">
+                <input type="submit" value="Save Changes" id="btnUpdateNotification" class="btn btn-theme" />
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    jQuery('#updateNotificationDays').on('submit', function () {
+        if (jQuery(this).data('form_is_invalid')) {
+            jQuery(this).data('form_is_invalid', false);
+        } else {
+            jQuery(this).find('#btnUpdateNotification').prop('disabled', true);
+        }
+    }).on('invalid-form.validate', function () {
+        jQuery(this).data('form_is_invalid', true);
+    });
+</script>
+<script>
+    function ValidAlphabet(data) {    
+	    var code = (event.which) ? event.which : event.keyCode;    
+	    if (!(code>= 48 && code <=57) || !(code >=96 && code <=105) || code == 54 || code == 189 || code == 219 || code==57) {
+		    if (code != 32 && code != 190) {
+			    var digits = $(data).val();
+			    var lastValue = digits.substring(digits.length - 1);
+			    digits = digits.replace(/[^(\+\s)[^0-9-]/g, '');
+			    if (lastValue == "^" || lastValue == "-" || lastValue == "(" || lastValue == ")" || lastValue == "[") {
+				    digits = digits.replace(lastValue, '');
+			    }
+			    $(data).val(digits);
+		    }
+	    }
+    }
+</script>

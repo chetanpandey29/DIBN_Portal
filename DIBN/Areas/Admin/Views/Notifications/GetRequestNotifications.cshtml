@@ -1,0 +1,386 @@
+﻿@model DIBN.Areas.Admin.Models.MainRequestNotificationModel
+@{
+    ViewData["Title"] = "Notification";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@if (Model.allowedModule.Contains("View"))
+{
+    <div class="row" id="View">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="col-lg-12 text-center">
+                        <span style="font-size:18px;font-weight:bold;text-align:center !important;" class="text-theme text-center">Previous Notification(s)</span>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-2 float-start">
+                            <div class="form-group">
+                                <label class="control-label">From Date : </label>
+                                <input name="StartDate" class="form-control" data-toggle="datepicker" id="FromDate" placeholder="yyyy-mm-dd" readonly />
+                            </div>
+                        </div>
+                        <div class="col-lg-2 float-start">
+                            <div class="form-group ms-2">
+                                <label class="control-label">To Date : </label>
+                                <input name="EndDate" class="form-control" data-toggle="datepicker" id="ToDate" placeholder="yyyy-mm-dd" readonly />
+                            </div>
+                        </div>
+                        <div class="col-lg-8 float-end mt-3">
+                            <button class="btn btn-theme pull-right ms-2" style="float:right;margin-bottom:15px;" onclick="ClearNotification();">Clear</button>
+                            <button class="btn btn-theme pull-right ms-2" style="float:right;margin-bottom:15px;" onclick="ShowNotification();">Show Notification</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-center">Notification(s)</h4>
+                    <hr style="height:1px;" class="text-theme" />
+                    <div class="table-rep-plugin">
+                        <div class="table-responsive mb-0" data-pattern="priority-columns">
+                            <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            #
+                                        </th>
+                                        <th>
+                                            Date
+                                        </th>
+                                        <th>
+                                            Message
+                                        </th>
+                                        <th>
+                                            Mark As Read
+                                        </th>
+                                        <th>
+
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        var i = 0;
+                                    }
+                                    @foreach (var item in Model.notifications)
+                                    {
+                                        @if (item.Type != null)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @(i + 1)
+                                                </td>
+                                                <td>
+                                                    @item.CreatedOn
+                                                </td>
+                                                <td>
+                                                    @if (@item.Type == "Service Request")
+                                                    {
+                                                        @if (@item.AssignedById == 0 && @item.Description == "N/A" && @item.ResponseType == "Created")
+                                                        {
+                                                            @if (item.FormName != null)
+                                                            {
+                                                                @if (!@item.FormName.Contains("N/A"))
+                                                                {
+                                                                    @if (@item.ServiceCreatedBy != "N/A")
+                                                                    {
+                                                                        @Html.Raw("New Service Request ") @item.SerialNumber @Html.Raw(" From ") @item.ServiceCreatedBy @Html.Raw(" For ") @item.FormName @Html.Raw(" is Requested On ") @item.RequestCreatedOn @Html.Raw(".")
+                                                                    }
+                                                                    else if (item.ServiceCreatedBySalesPerson != "N/A")
+                                                                    {
+                                                                        @Html.Raw("New Service Request ") @item.SerialNumber @Html.Raw(" From ") @item.ServiceCreatedBySalesPerson @Html.Raw(" For ") @item.FormName @Html.Raw(" is Requested On ") @item.RequestCreatedOn @Html.Raw(".")
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        @Html.Raw("New Service Request ") @item.SerialNumber @Html.Raw(" From ") @item.ServiceCreatedByRMTeam @Html.Raw(" For ") @item.FormName @Html.Raw(" is Requested On ") @item.RequestCreatedOn @Html.Raw(".")
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    @if (@item.ServiceCreatedBy != "N/A")
+                                                                    {
+                                                                        @Html.Raw("New Service Request ") @item.SerialNumber @Html.Raw(" From ") @item.ServiceCreatedBy @Html.Raw(" For ") @item.Title @Html.Raw(" is Requested On ") @item.RequestCreatedOn @Html.Raw(".")
+                                                                    }
+                                                                    else if (item.ServiceCreatedBySalesPerson != "N/A")
+                                                                    {
+                                                                        @Html.Raw("New Service Request ") @item.SerialNumber @Html.Raw(" From ") @item.ServiceCreatedBySalesPerson @Html.Raw(" For ") @item.FormName @Html.Raw(" is Requested On ") @item.RequestCreatedOn @Html.Raw(".")
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        @Html.Raw("New Service Request ") @item.SerialNumber @Html.Raw(" From ") @item.ServiceCreatedByRMTeam @Html.Raw(" For ") @item.FormName @Html.Raw(" is Requested On ") @item.RequestCreatedOn @Html.Raw(".")
+                                                                    }
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                @if (@item.ServiceCreatedBy != "N/A")
+                                                                {
+                                                                    @Html.Raw("New Service Request ") @item.SerialNumber @Html.Raw(" From ") @item.ServiceCreatedBy @Html.Raw(" For ") @item.Title @Html.Raw(" is Requested On ") @item.RequestCreatedOn @Html.Raw(".")
+                                                                }
+                                                                else if (item.ServiceCreatedBySalesPerson != "N/A")
+                                                                {
+                                                                    @Html.Raw("New Service Request ") @item.SerialNumber @Html.Raw(" From ") @item.ServiceCreatedBySalesPerson @Html.Raw(" For ") @item.FormName @Html.Raw(" is Requested On ") @item.RequestCreatedOn @Html.Raw(".")
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.Raw("New Service Request ") @item.SerialNumber @Html.Raw(" From ") @item.ServiceCreatedByRMTeam @Html.Raw(" For ") @item.FormName @Html.Raw(" is Requested On ") @item.RequestCreatedOn @Html.Raw(".")
+                                                                }
+                                                            }
+                                                        }
+                                                        else
+                                                        @if (@item.AssignedById != 0 && @item.Description != "N/A")
+                                                        {
+                                                            @Html.Raw("Service Request ") @item.SerialNumber @Html.Raw(" is assigned by ") @item.AssignedBy @Html.Raw(" to ") @item.AssignedUser @Html.Raw(".")
+                                                        }
+                                                        else @if (@item.AssignedById == 0 && @item.Description != "N/A" && @item.ResponseType == "Response")
+                                                        {
+                                                            @if (@item.ServiceCreatedBy != "N/A")
+                                                            {
+                                                                @Html.Raw("New Response for ") @item.SerialNumber @Html.Raw(" is added by ") @item.ServiceCreatedBy
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.Raw("New Response for ") @item.SerialNumber @Html.Raw(" is added by ") @item.ServiceCreatedBySalesPerson
+                                                            }
+                                                        }
+                                                    }
+                                                    else @if (@item.Type == "Support Ticket")
+                                                    {
+                                                        @if (@item.AssignedById == 0 && @item.Description != "N/A" && @item.ResponseType == "Created")
+                                                        {
+                                                            @if (@item.TicketCreatedBy != "N/A")
+                                                            {
+                                                                @Html.Raw("New Support Ticket Request ") @item.TrackingNumber @Html.Raw(" From ") @item.TicketCreatedBy @Html.Raw("is  Requested On ") @item.RequestCreatedOn @Html.Raw(".")
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.Raw("New Support Ticket Request ") @item.TrackingNumber @Html.Raw(" From ") @item.SupportTicketCreatedBySalesPerson @Html.Raw("is  Requested On ") @item.RequestCreatedOn @Html.Raw(".")
+                                                            }
+                                                        }
+                                                        else @if (@item.AssignedById != 0 && @item.Description != "N/A")
+                                                        {
+                                                            @Html.Raw("Support Ticket Request ") @item.TrackingNumber @Html.Raw(" is assigned by ") @item.AssignedBy @Html.Raw(" to ") @item.AssignedUser @Html.Raw(".")
+                                                        }
+                                                        else @if (@item.AssignedById == 0 && @item.Description != "N/A" && @item.ResponseType == "Response")
+                                                        {
+                                                            @if (@item.TicketCreatedBy != "N/A")
+                                                            {
+                                                                @Html.Raw("New Response for ") @item.TrackingNumber @Html.Raw(" is added by ") @item.TicketCreatedBy
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.Raw("New Response for ") @item.TrackingNumber @Html.Raw(" is added by ") @item.SupportTicketCreatedBySalesPerson
+                                                            }
+                                                        }
+                                                    }
+                                                    else @if (@item.Type == "Enquiry Request")
+                                                    {
+                                                        @if (@item.AssignedById == 0 && @item.Description != "N/A" && @item.ResponseType == "Created")
+                                                        {
+                                                            @Html.Raw("New Enquiry Request ") @item.EnquiryNumber @Html.Raw(" For ") @item.Title @Html.Raw("is  Requested On ") @item.RequestCreatedOn @Html.Raw(".")
+                                                        }
+                                                        else @if (@item.AssignedById != 0 && @item.Description != "N/A")
+                                                        {
+                                                            @Html.Raw("Enquiry Request ") @item.EnquiryNumber @Html.Raw(" is assigned by ") @item.AssignedBy @Html.Raw(" to ") @item.AssignedUser @Html.Raw(".")
+                                                        }
+                                                        else @if (@item.AssignedById == 0 && @item.Description != "N/A" && @item.ResponseType == "Response")
+                                                        {
+                                                            @Html.Raw("New Response for ") @item.EnquiryNumber @Html.Raw(" is added by ") @item.EnquiryResponseCreatedBy
+                                                        }
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (@item.MarkAsRead == false)
+                                                    {
+                                                        <span class="btn btn-theme" onclick="MakeMarkAsRead(@item.Id)">
+                                                            Mark As Read
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.Raw("---")
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <span class="btn btn-theme Delete" onclick="RemoveNotification(@item.Id)">
+                                                        <i class="fas fa-trash"></i>
+                                                    </span>
+                                                </td>
+                                            </tr>
+
+                                            i++;
+                                        }
+
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<input type="hidden" asp-for="@Model.Module" id="Module" />
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+
+<script>
+    $(function () {
+        $("#FromDate").datepicker({
+            format: 'yyyy-mm-dd',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            todayHighlight: true,
+        }).on('changeDate', function (selected) {
+            var minDate = new Date(selected.date);
+            minDate.setDate(minDate.getDate() + 1);
+            $('#ToDate').datepicker('setStartDate', minDate);
+        });
+        $("#ToDate").datepicker({
+            format: 'yyyy-mm-dd',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            todayHighlight: true,
+        }).on('changeDate', function (selected) {
+            var minDate = new Date(selected.date);
+            minDate.setDate(minDate.getDate() - 1);
+            $('#FromDate').datepicker('setEndDate', minDate);
+        });
+    });
+</script>
+
+<script>
+    $('#datatable').dataTable({
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    });
+</script>
+
+<script>
+    function RemoveNotification(Id) {
+        event.preventDefault();
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'ms-3 btn btn-success',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: false
+        })
+
+        swalWithBootstrapButtons.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true,
+            showConfirmButton: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "@Url.Action("ChangeRequestStatus", "Notifications")",
+                    method: "POST",
+                    data: { "Status": 2, "Id": Id },
+                    success: function (response) {
+                        swalWithBootstrapButtons.fire({
+                            title: 'Deleted.',
+                            text: "Notification Deleted Successfully..!!",
+                            icon: 'success'
+                        }).then((result) => {
+                            window.location.reload();
+                        });
+                    }
+                });
+            }
+            else if (
+                /* Read more about handling dismissals below */
+                result.dismiss === Swal.DismissReason.cancel
+            ) {
+                swalWithBootstrapButtons.fire(
+                    'Cancelled',
+                    'Cancled by User..!! :)',
+                    'error'
+                )
+            }
+        });
+    };
+
+
+    function ShowNotification() {
+        var url = "@Url.Action("GetRequestNotifications", "Notifications")";
+        var startDate = $("#FromDate").val();
+        var endDate = $("#ToDate").val();
+        var today = new Date();
+        var dd = String(today.getDate() + 1).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
+
+        today = yyyy + '-' + mm + '-' + dd;
+        if (startDate != "" && endDate == "") {
+            alert("Please select End Date.");
+        }
+        else if (startDate == "" && endDate != "") {
+            alert("Please select Start Date.");
+        }
+
+
+        if (!/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(startDate) || !/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(endDate)) {
+            alert("Please Enter Valid Date Format for Start and End Date.");
+            if (!/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(startDate)) {
+                $("#FromDate").datepicker("setDate", 0);
+                $("#FromDate").focus();
+            }
+            else if (!/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(endDate)) {
+                $("#ToDate").datepicker("setDate", 0);
+                $("#ToDate").focus();
+            }
+            return false;
+        }
+        else if (startDate != "" && endDate != "") {
+            url = url + "?StartDate=" + startDate + "&EndDate=" + endDate;
+            window.location.href = url;
+        }
+
+    };
+
+    function ClearNotification() {
+        var url = "@Url.Action("GetRequestNotifications", "Notifications")";
+        url = url + "?name=Notification";
+        window.location.href = url;
+    }
+
+    function MakeMarkAsRead(Id) {
+        $.ajax({
+            url: "@Url.Action("ChangeRequestStatus", "Notifications")",
+            method: "POST",
+            data: { "Status": 1, "Id": Id },
+            success: function (response) {
+                window.location.reload();
+            }
+        });
+    }
+</script>

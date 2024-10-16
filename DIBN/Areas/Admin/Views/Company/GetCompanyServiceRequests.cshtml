@@ -1,0 +1,360 @@
+﻿@model DIBN.Areas.Admin.Models.GetServiceRequestForCompany
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+@if (Model.allowedModule.Contains("View"))
+{
+    <div class="row">
+        <div class="col-lg-12">
+            <h6 class="text-theme float-start">@Model.Company</h6>
+            <a href="@Url.Action("Index","Company",new{name="Company"})" class="btn btn-theme float-end" style="margin-bottom:15px;">Back to List</a>
+            <input asp-for="@Model.companyId" type="hidden" id="companyId" />
+        </div>
+    </div>
+    <div class="row" id="View">
+        <div class="col-md-12 p-0">
+            <div class="col-md-3 col-sm-12 col ps-1 float-start">
+                <div class="card bg-blue p-3 mb-0 Suitable text-white text-center text-break font-weight-4 font-size-16" style="border-radius:15px 15px 0px 0px;">
+                    Company Service Request(s)
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-12 col ps-1 float-start">
+                <div class="card p-3 Benefits mb-0 text-break border-theme-top border-theme-left border-theme-right text-theme text-center font-weight-4 font-size-16" style="border-radius:15px 15px 0px 0px;">
+                    Employee Service Request(s)
+                </div>
+            </div>
+            <div class="col-md-12 col-sm-12 col-12 ps-1 float-start cssanimation fadeInBottom" style="background:#F8F8F8;" id="Suitable">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-rep-plugin">
+                                <div class="table-responsive mb-0" data-pattern="priority-columns">
+                                    <table id="datatable" class="datatable1 table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th class="align-middle text-center">
+                                                    SR No.
+                                                </th>
+                                                <th class="align-middle text-center">
+                                                    Created By
+                                                </th>
+                                                <th class="align-middle text-center">
+                                                    Created Date
+                                                </th>
+                                                <th class="align-middle text-center">
+                                                    Company
+                                                </th>
+                                                <th class="align-middle text-center">
+                                                    Requested Service
+                                                </th>
+                                                <th class="align-middle text-center">
+                                                    Status
+                                                </th>
+                                                <th class="align-middle text-center">
+                                                    Assigned User(s)
+                                                </th>
+                                                <th>
+
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-sm-12 col-12 ps-1 float-start d-none cssanimation fadeInBottom" style="background:#F8F8F8;" id="Benefits">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-rep-plugin">
+                                <div class="table-responsive mb-0" data-pattern="priority-columns">
+                                    <table id="datatable1" class="datatable table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th class="align-middle text-center">
+                                                    SR No.
+                                                </th>
+                                                <th class="align-middle text-center">
+                                                    Created By
+                                                </th>
+                                                <th class="align-middle text-center">
+                                                    Created Date
+                                                </th>
+                                                <th class="align-middle text-center">
+                                                    Company
+                                                </th>
+                                                <th class="align-middle text-center">
+                                                    Applicant Name
+                                                </th>
+                                                <th class="align-middle text-center">
+                                                    Requested Service
+                                                </th>
+                                                <th class="align-middle text-center">
+                                                    Status
+                                                </th>
+                                                <th class="align-middle text-center">
+                                                    Assigned User(s)
+                                                </th>
+                                                <th>
+
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<div id="ServiceRequest" class="modal" tabindex="-1" role="dialog" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Assign Request</h5>
+                <button type="button" class="close btn btn-theme" id="ServiceRequestModalClose" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script>
+    $("#RejectServiceModalClose").on("click", function () {
+        window.location.reload();
+    });
+    $("#ServiceRequestModalClose").on("click", function () {
+        window.location.reload();
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        var companyId = $("#companyId").val();
+        var url = "@Url.Action("GetAllCompanyServiceRequests","Company")";
+        url = url + "?CompanyId=" + companyId;
+
+        var status = "";
+       
+        var table = $('#datatable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "ajax": {
+                "type": "post",
+                "datatype": "json",
+                "data": function () {
+                    var info = $('#datatable').DataTable().page.info();
+                    $('#datatable').DataTable().ajax.url(
+                        url 
+                    );
+                }
+            },
+            "responsive": true,
+            "deferRender": true,
+            "language": {
+                'processing': '<div class="spinner-2"><div class="center-div-2"><div class="loader-circle-1"></div></div></div>'
+            },
+            "columns": [
+                { "data": "serialNumber", "name": "SR No." },
+                { "data": "requestedBy", "name": "Created By" },
+                { "data": "createdOn", "name": "Created Date" },
+                { "data": "companyName", "name": "Company" },
+                { "data": "requestedService", "name": "Requested Service" },
+                { "data": "status", "name": "Status" },
+                { "data": "assignedUser", "name": "Assigned User(s)" },
+                {
+                    "data": function (data, full, meta) {
+                        var url = "@Url.Action("TrackServiceRequest","ServiceRequests")";
+                        url = url + "?SerialNumber=" + data.serialNumber + "&Status=" + status + "&name=MyRequests";
+
+                        var assignfun = "AssignRequestToUser('" + data.serialNumber + "'," + data.serviceId + ")";
+
+                        var returnKey = "";
+
+                        if ('@Model.allowedModule.Contains("View")' == "True") {
+                            returnKey = '<a href="' + url + '" class="btn btn-theme Details">Track</a>';
+                        }
+
+                        if ('@Model.allowedModule.Contains("Update")' == "True") {
+                            returnKey = returnKey + '<a onclick=' + assignfun + ' role="button" class="btn btn-theme ms-2 Update">Assign Request</a>';
+                        }
+
+                        return returnKey;
+                    },
+                    "name": ""
+                },
+            ],
+            paging: true,
+            ordering: true,
+            searching: true,
+            "aLengthMenu": [20,30,50],
+            dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+        });
+
+        var coll = document.getElementsByClassName("Suitable");
+
+        for (var i = 0; i < coll.length; i++) {
+
+            coll[i].addEventListener("click", function () {
+                $("#Suitable").removeClass("d-none");
+                $("#Benefits").addClass("d-none");
+                $(".Suitable").addClass("bg-blue").removeClass("border-theme");
+                $(".Suitable").closest("div").addClass("text-white").removeClass("text-theme");
+                if ($(".Benefits").hasClass("bg-blue")) {
+                    $(".Benefits").removeClass("bg-blue").addClass("border-theme-top").addClass("border-theme-left").addClass("border-theme-right");
+                    $(".Benefits").closest("div").addClass("text-theme").removeClass("text-white");
+                }
+            });
+        }
+    });
+
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        var companyId = $("#companyId").val();
+        var url = "@Url.Action("GetAllEmployeeServiceRequests","Company")";
+        url = url + "?CompanyId=" + companyId;
+
+        var status = "";
+        var coll = document.getElementsByClassName("Benefits");
+
+        for (var i = 0; i < coll.length; i++) {
+
+            coll[i].addEventListener("click", function () {
+
+                if ($.fn.dataTable.isDataTable('#datatable1')) {
+                    $('#datatable1').DataTable().destroy();
+                    $('#datatable1').empty();
+                }
+
+                var table1 = $('#datatable1').DataTable({
+                    "processing": true,
+                    "serverSide": true,
+                    "filter": true,
+                    "ajax": {
+                        "type": "post",
+                        "datatype": "json",
+                        "data": function () {
+                            var info = $('#datatable1').DataTable().page.info();
+                            $('#datatable1').DataTable().ajax.url(
+                                url
+                            );
+                        }
+                    },
+                    "responsive": true,
+                    "deferRender": true,
+                    "language": {
+                        'processing': '<div class="spinner-2"><div class="center-div-2"><div class="loader-circle-1"></div></div></div>'
+                    },
+                    "columns": [
+                        { "data": "serialNumber", title: "SR No.", name: "SR No." },
+                        { "data": "requestedBy", title: "Created By", name: "Created By" },
+                        { "data": "createdOn", title: "Created Date", name: "Created Date" },
+                        { "data": "companyName", title: "Company", name: "Company" },
+                        { "data": "applicantName", title: "Applicant Name", name: "Applicant Name" },
+                        { "data": "requestedService", title: "Requested Service", name: "Requested Service" },
+                        { "data": "status", title: "Status", name: "Status" },
+                        { "data": "assignedUser", title: "Assigned User(s)", name: "Assigned User(s)" },
+                        {
+                            "data": function (data, full, meta) {
+                                var url = "@Url.Action("TrackServiceRequest","ServiceRequests")";
+                                url = url + "?SerialNumber=" + data.serialNumber + "&Status=" + status + "&name=MyRequests";
+
+                                var assignfun = "AssignRequestToUser('" + data.serialNumber + "'," + data.serviceId + ")";
+
+                                var returnKey = "";
+                                if ('@Model.allowedModule.Contains("View")' == "True") {
+                                    returnKey = '<a href="' + url + '" class="btn btn-theme Details">Track</a>';
+                                }
+                                if ('@Model.allowedModule.Contains("Update")' == "True") {
+                                    returnKey = returnKey + '<a onclick=' + assignfun + ' role="button" class="btn btn-theme ms-2 Update">Assign Request</a>';
+                                }
+
+                                return returnKey;
+                            },
+                            title: "",
+                            name: ""
+                        },
+                    ],
+                    paging: true,
+                    ordering: true,
+                    searching: true,
+                    "aLengthMenu": [20,30,50],
+                    dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                });
+
+                $("#Suitable").addClass("d-none");
+                $("#Benefits").removeClass("d-none");
+                $(".Benefits").addClass("bg-blue").removeClass("border-theme");
+                $(".Benefits").closest("div").addClass("text-white").removeClass("text-theme");
+                if ($(".Suitable").hasClass("bg-blue")) {
+                    $(".Suitable").removeClass("bg-blue").addClass("border-theme-top").addClass("border-theme-left").addClass("border-theme-right");
+                    $(".Suitable").closest("div").addClass("text-theme").removeClass("text-white");
+                }
+            });
+        }
+    });
+</script>
+<script>
+    function AssignRequestToUser(serialNumber, ServiceId) {
+        $("#loader").show();
+        var companyId = $("#companyId").val();
+        $.ajax({
+            url: "@Url.Action("GetEmployeesToAssign","ServiceRequests")",
+            method: "GET",
+            data: { "serialNumber": serialNumber, "ServiceId": ServiceId, "actionMethod": "Company", "companyId": companyId },
+            success: function (response) {
+                $("#loader").hide();
+                $mymodal = $("#ServiceRequest");
+                $mymodal.find("div.modal-body").html(response);
+                $mymodal.modal("show");
+            }
+        });
+    }
+</script>

@@ -1,0 +1,339 @@
+﻿@model DIBN.Areas.Admin.Models.UserViewModel.UserPermissionList
+@{
+    ViewData["Title"] = "AddUserPermission";
+    int insertPermissionCnt = 0, updatePermissionCnt = 0, deletePermissionCnt = 0, viewPermissionCnt = 0;
+}
+<style>
+    .bg-gray {
+        background-color: gray;
+    }
+</style>
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+@if (Model.allowedModule.Contains("View"))
+{
+    <div class="row">
+        <div class="col-md-12">
+            <h6 class="text-theme font-weight-bolder float-start">@Model.Username</h6>
+            <a href="javascript:history.go(-1);" class="btn btn-theme float-end" style="margin-bottom:15px;">Back to List</a>
+        </div>
+    </div>
+}
+
+@if (Model.allowedModule.Contains("View"))
+{
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <input type="hidden" asp-for="@Model.UserId" id="UserId" />
+                    <div class="col-md-4 float-start">
+                        <h4 class="card-title mb-2">Modules</h4>
+
+                        @foreach (var item in Model.Modules)
+                        {
+                            <p style="margin-top:15px;">
+                                @item.ModuleKeyword
+                            </p>
+                        }
+                    </div>
+                    <div class="col-md-8 float-end">
+                        @foreach (var item in Model.Permissions)
+                        {
+                            <span class="card-title ms-4 mb-2 text-center">
+                                @item.PermissionName
+                            </span>
+
+                        }
+                        <div>
+                            @{
+                                List<string> permission = new List<string>();
+                                permission.Add("Insert");
+                                permission.Add("Update");
+                                permission.Add("View");
+                                permission.Add("Delete");
+                                List<int> permissionId = new List<int>();
+                                permissionId.Add(1);
+                                permissionId.Add(2);
+                                permissionId.Add(3);
+                                permissionId.Add(4);
+
+                            }
+
+                            @foreach (var item in Model.Modules)
+                            {
+                                <p style="margin-top:15px;">
+                                    @for (var i = 0; i < Model.permissionCount; i++)
+                                    {
+                                        var allowed = false;
+                                        @foreach (var checkPermission in Model.getUserPermissionByUserIds)
+                                        {
+
+                                            if (checkPermission.ModuleId == item.ModuleId && checkPermission.PermissionId == permissionId[i])
+                                            {
+                                                allowed = true;
+                                                if (permissionId[i] == 1)
+                                                {
+                                                    insertPermissionCnt++;
+                                                }
+                                                else if (permissionId[i] == 2)
+                                                {
+                                                    updatePermissionCnt++;
+                                                }
+                                                else if (permissionId[i] == 3)
+                                                {
+                                                    viewPermissionCnt++;
+                                                }
+                                                else if (permissionId[i] == 4)
+                                                {
+                                                    deletePermissionCnt++;
+                                                }
+                                            }
+                                        }
+                                        @if (Model.CompanyId == 1 && Model.Role != "DIBN")
+                                        {
+                                            @if (!item.ModuleName.StartsWith("MyRequests") && !item.ModuleName.StartsWith("SupportTickets") && !item.ModuleName.StartsWith("AccountManagement")
+                                           && !item.ModuleName.StartsWith("DocumentChecklist") && !item.ModuleName.StartsWith("HomePage"))
+                                            {
+                                                <span class="ms-5 text-center allow_@permission[i]">
+                                                    <input class="form-check-input bg-gray" type="checkbox" name="@item.ModuleId" id="allow_@item.ModuleId@permissionId[i]" value="@item.ModuleId" />
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="ms-5 text-center allow_@permission[i]">
+                                                    <input class="form-check-input" type="checkbox" name="@item.ModuleId" id="allow_@item.ModuleId@permissionId[i]" value="@item.ModuleId" @(allowed ? "checked=checked" : null) onclick="removePermission(@item.ModuleId,'@permission[i]',@permissionId[i]);" />
+                                                </span>
+                                            }
+                                        }
+                                        else
+                                       if (Model.Role != "DIBN")
+                                        {
+                                            // Full permission
+                                            @if (item.ModuleName.StartsWith("PortalBalance") || item.ModuleName.StartsWith("Services"))
+                                            {
+                                                <span class="ms-5 text-center allow_@permission[i]">
+                                                    <input class="form-check-input" type="checkbox" name="@item.ModuleId" id="allow_@item.ModuleId@permissionId[i]" value="@item.ModuleId" @(allowed ? "checked=checked" : null) onclick="removePermission(@item.ModuleId,'@permission[i]',@permissionId[i]);" />
+                                                </span>
+                                            }
+                                            else if (item.ModuleName.StartsWith("EmployeeServices") || item.ModuleName.StartsWith("CompanyServices") || item.ModuleName.StartsWith("SupportTickets"))// Only Insert and View
+                                            {
+                                                @if (@permissionId[i] == 1 || @permissionId[i] == 3)
+                                                {
+                                                    <span class="ms-5 text-center allow_@permission[i]">
+                                                        <input class="form-check-input" type="checkbox" name="@item.ModuleId" id="allow_@item.ModuleId@permissionId[i]" value="@item.ModuleId" @(allowed ? "checked=checked" : null) onclick="removePermission(@item.ModuleId,'@permission[i]',@permissionId[i]);" />
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="ms-5 text-center allow_@permission[i]">
+                                                        <input class="form-check-input bg-gray" type="checkbox" name="@item.ModuleId" id="allow_@item.ModuleId@permissionId[i]" value="@item.ModuleId" />
+                                                    </span>
+                                                }
+
+                                            }
+                                            else if (!item.ModuleName.StartsWith("AccountManagement") && !item.ModuleName.StartsWith("Enquiry")) // Only View
+                                            {
+                                                @if (@permissionId[i] == 3)
+                                                {
+                                                    <span class="ms-5 text-center allow_@permission[i]">
+                                                        <input class="form-check-input" type="checkbox" name="@item.ModuleId" id="allow_@item.ModuleId@permissionId[i]" value="@item.ModuleId" @(allowed ? "checked=checked" : null) onclick="removePermission(@item.ModuleId,'@permission[i]',@permissionId[i]);" />
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="ms-5 text-center allow_@permission[i]">
+                                                        <input class="form-check-input bg-gray" type="checkbox" name="@item.ModuleId" id="allow_@item.ModuleId@permissionId[i]" value="@item.ModuleId" />
+                                                    </span>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span class="ms-5 text-center allow_@permission[i]">
+                                                    <input class="form-check-input bg-gray" type="checkbox" name="@item.ModuleId" id="allow_@item.ModuleId@permissionId[i]" value="@item.ModuleId" />
+                                                </span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="ms-5 text-center allow_@permission[i]">
+                                                <input class="form-check-input" type="checkbox" name="@item.ModuleId" id="allow_@item.ModuleId@permissionId[i]" value="@item.ModuleId" @(allowed ? "checked=checked" : null) onclick="removePermission(@item.ModuleId,'@permission[i]',@permissionId[i]);" />
+                                            </span>
+                                        }
+                                    }
+                                </p>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <input name="insertPermissionCnt" type="hidden" id="insertPermissionCnt" value="@insertPermissionCnt" />
+                <input name="updatePermissionCnt" type="hidden" id="updatePermissionCnt" value="@updatePermissionCnt" />
+                <input name="viewPermissionCnt" type="hidden" id="viewPermissionCnt" value="@viewPermissionCnt" />
+                <input name="deletePermissionCnt" type="hidden" id="deletePermissionCnt" value="@deletePermissionCnt" />
+                <div class="mt-2 float-start">
+                    <input type="button" class="btn btn-theme ms-4 mb-2" value="Save" name="Save" id="savePermissions" />
+                    <p id="permissionMessage" class="text-danger">Please wait for while we are currently saving your permissions.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<input asp-for="@Model.Module" type="hidden" id="Module" value="@Model.Module" />
+<input asp-for="@Model.Role" type="hidden" id="roleName" value="@Model.Role" />
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+<script>
+    $(function () {
+        $("#savePermissions").prop('disabled', true);
+        $(".allow_Insert input[type='checkbox']").attr("disabled", true);
+        $(".allow_View input[type='checkbox']").attr("disabled", true);
+        $(".allow_Delete input[type='checkbox']").attr("disabled", true);
+        $(".allow_Update input[type='checkbox']").attr("disabled", true);
+    });
+</script>
+<script>
+    $(function () {
+        $("#loader").show();
+
+        if ('@Model.allowedModule.Contains("Insert")' == "True" && '@Model.allowedModule.Contains("Update")' == "True" && '@Model.allowedModule.Contains("Delete")' == "True") {
+            $("#savePermissions").prop('disabled', false);
+            $(".allow_Insert input[type='checkbox']").attr("disabled", false);
+            $(".allow_View input[type='checkbox']").attr("disabled", false);
+            $(".allow_Delete input[type='checkbox']").attr("disabled", false);
+            $(".allow_Update input[type='checkbox']").attr("disabled", false);
+            $(".bg-gray").attr("disabled", true);
+        }
+        else {
+            $("#savePermissions").prop('disabled', true);
+            $(".allow_Insert input[type='checkbox']").attr("disabled", true);
+            $(".allow_View input[type='checkbox']").attr("disabled", true);
+            $(".allow_Delete input[type='checkbox']").attr("disabled", true);
+            $(".allow_Update input[type='checkbox']").attr("disabled", true);
+            $(".bg-gray").attr("disabled", true);
+        }
+
+        $("#loader").hide();
+    });
+</script>
+<script>
+    $('input[type="checkbox"]').change(function () {
+
+        if (this.checked) {
+            var fieldName = $(this).attr('name');
+            $('input[name=' + fieldName + ']').not("[disabled]").each(function () {
+                this.checked = true;
+            });
+        }
+    });
+
+    $(document).ready(function () {
+        $("#loader").hide();
+        $("#permissionMessage").hide();
+    });
+</script>
+<script>
+    $("#savePermissions").click(function () {
+        $("#loader").show();
+        $("#permissionMessage").show();
+        $("#savePermissions").hide();
+        event.preventDefault();
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'ms-3 btn btn-success',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: false
+        })
+        var UserId = $("#UserId").val();
+        
+        var insertPermissionCntAl = $("#insertPermissionCnt").val();
+        var updatePermissionCntAl = $("#updatePermissionCnt").val();
+        var viewPermissionCntAl = $("#viewPermissionCnt").val();
+        var deletePermissionCntAl = $("#deletePermissionCnt").val();
+
+        var insertPermission = $('.allow_Insert input:checkbox:checked').map(function () {
+            return $(this).val();
+        }).get();
+        var insertPermissionCntNew = insertPermission.length;
+
+        var updatePermission = $('.allow_Update input:checkbox:checked').map(function () {
+            return $(this).val();
+        }).get();
+        var updatePermissionCntNew = updatePermission.length;
+
+        var viewPermission = $('.allow_View input:checkbox:checked').map(function () {
+            return $(this).val();
+        }).get();
+        var viewPermissionCntNew = viewPermission.length;
+
+        var deletePermission = $('.allow_Delete input:checkbox:checked').map(function () {
+            return $(this).val();
+        }).get();
+        var deletePermissionCntNew = deletePermission.length;
+        
+        $("#loader").show();
+        if (insertPermission != null || updatePermission != null || viewPermission != null || deletePermission != null || UserId != null) {
+            
+            $("#loader").show();
+            $.ajax({
+                url: "@Url.Action("SaveUserPermission","User")",
+                method: "post",
+                data: { "InsertPermission": insertPermission, "UpdatePermission": updatePermission, "ViewPermission": viewPermission, 'DeletePermission': deletePermission, "UserId": UserId },
+                success: function (response) {
+                    
+                    $("#loader").hide();
+                    if (response > 0) {
+                        $("#permissionMessage").hide();
+                        $("#savePermissions").show();
+                        $("#loader").hide();
+                        swalWithBootstrapButtons.fire({
+                            title: 'Success.',
+                            text: "Permission Added Successfully..!!",
+                            icon: 'success'
+                        }).then((result) => {
+                            window.location.reload();
+                        });
+                    } else {
+                        $("#permissionMessage").hide();
+                        $("#savePermissions").show();
+                        $("#loader").hide();
+                        swalWithBootstrapButtons.fire({
+                            title: 'Faild.',
+                            text: "Due to Some Problem Selected Permission(s) were not allocated to this User..!!",
+                            icon: 'error'
+                        }).then((result) => {
+                            window.location.reload();
+                        });
+                    }
+                }
+            });
+        }
+    });
+</script>
+<script>
+    function removePermission(moduleId, permission, permissionId) {
+        var checked = $("#allow_" + moduleId + permissionId);
+        var UserId = $("#UserId").val();
+        if (!$(checked).is(':checked')) {
+            $.ajax({
+                url: "@Url.Action("RemoveUserPermission","User")",
+                method: "get",
+                data: { "UserId": UserId, "ModuleId": moduleId, "PermissionId": permissionId },
+                success: function (response) {
+
+                }
+            });
+        }
+    }
+</script>
+

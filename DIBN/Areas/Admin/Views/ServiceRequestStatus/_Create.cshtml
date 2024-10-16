@@ -1,0 +1,25 @@
+﻿@model DIBN.Areas.Admin.Models.ServiceRequestStatusModel
+<div class="row">
+
+    <form asp-action="Creates" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="DisplayName" class="control-label"></label>
+            <input asp-for="DisplayName" class="form-control" oninvalid="this.setCustomValidity('Please Enter Status Name.')" oninput="this.setCustomValidity('')" maxlength="100" required/>
+            <span asp-validation-for="DisplayName" class="text-danger" ></span>
+        </div>
+        <input type="hidden" name="Module" id="Module" value="@Model.Module" />
+        <input type="hidden" name="DisplayId" value="@Model.DisplayId" />
+        <div class="modal-footer">
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-theme" />
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $('form').submit(function () {
+        alert("Please Wait for a while,We are currently saving Your Service Request Status.");
+        $('input[type="submit"]').attr('disabled', 'disabled');
+    });
+</script>

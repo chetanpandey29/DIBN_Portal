@@ -1,0 +1,498 @@
+﻿@model DIBN.Areas.Admin.Models.GetCompaniesWithMainCompany
+@{
+    ViewData["Title"] = "Index";
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+@if (Model.allowedModule.Contains("Insert"))
+{
+    <div class="row">
+        <div class="col-lg-12">
+            @* <a href="@Url.Action("GetCompanyListForExport","Company")" class="btn btn-theme float-end ms-2" style="margin-bottom:15px;">Export Company(s)</a> *@
+            <button class="btn btn-theme pull-right" style="float:right;margin-bottom:15px;" onclick="AddNew();" id="Insert">Create</button>
+        </div>
+    </div>
+}
+
+
+<input type="hidden" name="Module" id="Module" value="@Model.Module" />
+@if (Model.allowedModule.Contains("View"))
+{
+    <div class="row" id="View">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-center">Company(s)</h4>
+                    <hr style="height:1px;" class="text-theme" />
+                    <div class="table-rep-plugin">
+                        <div class="table-responsive mb-0" data-pattern="priority-columns">
+                            <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            DIBN No.
+                                        </th>
+                                        <th>
+                                            Company
+                                        </th>
+                                        <th>
+                                            Company Type
+                                        </th>
+                                        <th>
+                                            Contact Number
+                                        </th>
+                                        <th>
+                                            Email
+                                        </th>
+                                        <th>
+                                            Authority
+                                        </th>
+                                        <th>
+                                            Shareholder
+                                        </th>
+                                        <th>
+                                            Shareholder Share(%)
+                                        </th>
+                                        <th>
+                                            Company Status
+                                        </th>
+                                        <th>
+
+                                        </th>
+                                        <th>
+
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+<script>
+    $(function () {
+        var module = $("#Module").val();
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'ms-3 btn btn-success',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: false
+        })
+        var message = '@ViewData["Message"]';
+        if (message != "") {
+            swalWithBootstrapButtons.fire({
+                title: 'Success.',
+                text: message,
+                icon: 'success'
+            }).then((result) => {
+                message = "";
+                var url = "@Url.Action("Index","Company")";
+                url = url + "?name=" + module;
+                window.location.href = url;
+            });
+        }
+
+    });
+
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        var url = "@Url.Action("GetAllCompanyListWithPagination","Company")";
+        var table = $('#datatable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "ajax": {
+                "type": "post",
+                "datatype": "json",
+                "data": function () {
+                    var info = $('#datatable').DataTable().page.info();
+                    $('#datatable').DataTable().ajax.url(
+                        url
+                    );
+                }
+            },
+            "responsive": true,
+            "deferRender": true,
+            "language": {
+                'processing': '<div class="spinner-2"><div class="center-div-2"><div class="loader-circle-1"></div></div></div>'
+            },
+            "columns": [
+                { "data": "accountNumber", "name": "DIBN No." },
+                { "data": "companyName", "name": "Company" },
+                {
+                    "data": function (data, full, meta) {
+                        if (data.companyType.includes("Dubai Mainland")) {
+                            return '<span class="text-theme">Mainland</span>';
+                        }
+                        else if (data.companyType.includes("Freezone")) {
+                            return '<span class="text-theme">Freezone</span>';
+                        }
+                    },
+                    "name": "Company Type"
+                },
+                {
+                    "data": function (data, full, meta) {
+                        if (data.mobileNumber.includes(",")) {
+
+                            var _index = data.mobileNumber.indexOf(",");
+                            var mobileNumber = data.mobileNumber.substring(0, _index);
+                            mobileNumber = mobileNumber + "...";
+                            return '<span title="' + data.mobileNumber + '">' + mobileNumber + '</span>';
+                        }
+                        else {
+                            return '<span>' + data.mobileNumber + '</span>';
+                        }
+                    },
+                    "name": "Contact Number"
+                },
+                {
+                    "data": function (data, full, meta) {
+
+                        if (data.emailID.includes(",")) {
+                            var _index = data.emailID.indexOf(",");
+                            var emailId = data.emailID.substring(0, _index);
+                            emailId = emailId + "...";
+                            return '<span title="' + data.emailID + '">' + emailId + '</span>';
+                        }
+                        else {
+                            return '<span>' + data.emailID + '</span>';
+                        }
+                    },
+                    "name": "Email"
+                },
+                {
+                    "data": function (data, full, meta) {
+                        if (data.licenseType != "N/A") {
+                            return '<span>' + data.licenseType + '</span>';
+                        }
+                        else {
+                            return '<span>--</span>';
+                        }
+                    },
+                    "name": "Authority"
+                },
+                {
+                    "data": function (data, full, meta) {
+                        if (data.shareholderIsActive == false) {
+                            return '<span>--</span>';
+                        }
+                        else {
+                            if (data.shareholderName != "N/A") {
+                                return '<span>' + data.shareholderName + '</span>';
+                            }
+                            else {
+                                return '<span>--</span>';
+                            }
+                        }
+                    },
+                    "name": "Shareholder"
+                },
+                {
+                    "data": function (data, full, meta) {
+                        if (data.shareholderIsActive == false) {
+                            return '<span>--</span>';
+                        }
+                        else {
+                            if (data.shareholderSharePercentage != "N/A") {
+                                return '<span>' + data.shareholderSharePercentage + ' %</span>';
+                            }
+                            else {
+                                return '<span>--</span>';
+                            }
+                        }
+                    },
+                    "name": "Shareholder Share(%)"
+                },
+                {
+                    "data": function (data, full, meta) {
+                        if (data.isActive == false) {
+                            return '<span>De-Active</span>';
+                        }
+                        else {
+                            return '<span>Active</span>';
+                        }
+                    },
+                    "name": "Company Status"
+                },
+                {
+                    "data": function (data, full, meta) {
+                        var companyDetailBtn = "GetCompanyDetail(" + data.id + ")";
+                        var updateCompanyBtn = "UpdateCompany(" + data.id + ")";
+                        var removeCompanyBtn = "RemoveCompany(" + data.id + ")";
+                        var returnKey = "";
+                        if ('@Model.allowedModule.Contains("View")' == "True") {
+                            returnKey = '<span class="btn btn-theme Details" onclick=' + companyDetailBtn + '><i class="fas fa-eye"></i></span>';
+                        }
+                        if ('@Model.allowedModule.Contains("Update")' == "True") {
+                            returnKey = returnKey + '<span class="btn btn-theme ms-1 Update" onclick=' + updateCompanyBtn + '><i class="fas fa-edit"></i></span>';
+                        }
+                        if ('@Model.allowedModule.Contains("Delete")' == "True") {
+                            returnKey = returnKey + '<span class="btn btn-theme Delete ms-1" onclick=' + removeCompanyBtn + '><i class="fas fa-trash"></i></span>';
+                        }
+                        return returnKey;
+                    },
+                    "name": ""
+                },
+                {
+                    "data": function (data, full, meta) {
+                        var companyLogin = "CompanyDetails(" + data.id + ")";
+                        var companyEmail = "SendEmails(" + data.id + ")";
+                        var companyDocuments = "Documents(" + data.id + ")";
+                        var companyEmployees = "GetCompanyEmployees(" + data.id + ")";
+                        var companyUsers = "GetCompanyUsers(" + data.id + ")";
+                        var companyInvoice = "CompanyInvoice(" + data.id + ")";
+                        var companyServiceRequest = "ServiceRequests(" + data.id + ")";
+                        var returnKey="";
+                        if ('@Model.allowedModule.Contains("View")' == "True") {
+                            returnKey = '<button class="btn btn-theme Details ms-1" onclick=' + companyDocuments + '>Documents</button>';
+                        }
+                        if ('@Model.allowedPermission.Contains("OtherCompanyEmployee")' == "True") {
+                            returnKey = returnKey + '<button class="btn btn-theme OtherCompanyEmployee10 ms-1" onclick=' + companyEmployees + '>Employees</button>';
+                        }
+                        if ('@Model.allowedPermission.Contains("OtherCompanyOwner")' == "True") {
+                            returnKey = returnKey + '<button class="btn btn-theme ms-1 OtherCompanyOwner10" onclick=' + companyUsers + '>Users</button>';
+                        }
+                        if ('@Model.allowedPermission.Contains("Invoice")' == "True") {
+                            returnKey = returnKey + '<button class="btn btn-theme ms-1 Invoice10" onclick=' + companyInvoice + '>Invoice</button>';
+                        }
+                        if ('@Model.allowedPermission.Contains("MyRequests")' == "True") {
+                            returnKey = returnKey + '<button class="btn btn-theme ms-1 Services10" onclick=' + companyServiceRequest + '>Service Requests</button>';
+                        }
+                        return returnKey;
+                    },
+                    "name": ""
+                },
+            ],
+            paging: true,
+            pagingType: 'simple_numbers',
+            ordering: true,
+            searching: true,
+            "aLengthMenu": [20, 30, 50],
+            dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+        });
+    });
+</script>
+<script>
+    function ApplyCompanyPermission(Id, Module) {
+        var url = "@Url.Action("AddCompanyPermission","Company")";
+        window.location.href = url + "?Id=" + Id + "&name=" + Module;
+    };
+    function ClearFilterToDatatable() {
+        window.location.reload();
+    };
+</script>
+<script>
+    function AddNew() {
+        var module = $("#Module").val();
+        var url = "@Url.Action("Create","Company")";
+        window.location.href = url + "?name=" + module;
+    };
+    function UpdateCompany(Id) {
+        var module = $("#Module").val();
+
+        var url = "@Url.Action("Edit","Company")";
+        window.location.href = url + "?Id=" + Id + "&name=" + module;
+    };
+    function Documents(Id) {
+        var module = $("#Module").val();
+        var url = "@Url.Action("CompanyDocuments","Company")";
+        window.location.href = url + "?Id=" + Id + "&name=" + module;
+    };
+    function GetCompanyEmployees(Id) {
+        var module = $("#Module").val();
+        var url = "@Url.Action("GetCompanyEmployees","Company")";
+        window.location.href = url + "?Id=" + Id + "&name=" + module;
+    };
+    function GetCompanyUsers(Id) {
+        var module = $("#Module").val();
+        var url = "@Url.Action("GetCompanyUsers","Company")";
+        window.location.href = url + "?Id=" + Id + "&name=" + module;
+    };
+    function ServiceRequests(Id) {
+        var module = $("#Module").val();
+        var url = "@Url.Action("GetCompanyServiceRequests","Company")";
+        window.location.href = url + "?Id=" + Id + "&name=" + module;
+    };
+</script>
+<script>
+    function GetCompanyDetail(Id) {
+        var module = $("#Module").val();
+        var url = "@Url.Action("GetCompanyDetails","Company")";
+        window.location.href = url + "?Id=" + Id + "&name=" + module;
+    };
+    function CompanyDetails(Id) {
+        $.ajax({
+            url: "@Url.Action("GetRoleCounts", "Company")",
+            method: "GET",
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                if (response != 2) {
+                    var url = "@Url.Action("GetSelectedCompanyDetails","Company")";
+                    url = url + "?CompanyId=" + Id;
+                    window.open(url, '_blank');
+                }
+                else {
+                    alert("You can not login into this Company Account Currently ,as you already have logged in two Accounts.");
+                }
+            }
+        });
+    };
+    function CompanyInvoice(Id) {
+        var module = $("#Module").val();
+        var url = "@Url.Action("GetCompanyInvoices","Company")";
+        window.location.href = url + "?Id=" + Id + "&name=" + module;
+    }
+</script>
+<script>
+    function RemoveCompany(Id) {
+        event.preventDefault();
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'ms-3 btn btn-success',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: false
+        })
+
+        swalWithBootstrapButtons.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true,
+            showConfirmButton: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#loader").show();
+                $.ajax({
+                    url: "@Url.Action("CheckCompanyAssociation", "Company")",
+                    method: "GET",
+                    data: { "Id": Id },
+                    success: function (response) {
+                        $("#loader").hide();
+                        if (response == -1) {
+                            swalWithBootstrapButtons.fire({
+                                title: 'Error.',
+                                text: "Currently You can not Delete this Company as Some Employees/Documents are Associated with this Company.",
+                                icon: 'error'
+                            }).then((result) => {
+                                window.location.reload();
+                            });
+                        }
+                        else if (response == -2) {
+
+                            swalWithBootstrapButtons.fire({
+                                title: 'User is Associated With this Company,You want to Delete this Company??',
+                                text: "You won't be able to revert this!",
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonText: 'Yes, delete it!',
+                                cancelButtonText: 'No, cancel!',
+                                reverseButtons: true,
+                                showConfirmButton: true,
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    $("#loader").show();
+                                    $.ajax({
+                                        url: "@Url.Action("Delete", "Company")",
+                                        method: "GET",
+                                        data: { "Id": Id },
+                                        success: function (response) {
+                                            $("#loader").hide();
+                                            swalWithBootstrapButtons.fire({
+                                                title: 'Success.',
+                                                text: "Company Deleted Successfully..!",
+                                                icon: 'success'
+                                            }).then((result) => {
+                                                window.location.reload();
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                        else if (response == 0) {
+                            swalWithBootstrapButtons.fire({
+                                title: 'Are you sure?',
+                                text: "You won't be able to revert this!",
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonText: 'Yes, delete it!',
+                                cancelButtonText: 'No, cancel!',
+                                reverseButtons: true,
+                                showConfirmButton: true,
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    $("#loader").show();
+                                    $.ajax({
+                                        url: "@Url.Action("Delete", "Company")",
+                                        method: "GET",
+                                        data: { "Id": Id },
+                                        success: function (response) {
+                                            $("#loader").hide();
+                                            swalWithBootstrapButtons.fire({
+                                                title: 'Success.',
+                                                text: "Company Deleted Successfully..!",
+                                                icon: 'success'
+                                            }).then((result) => {
+                                                window.location.reload();
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+            else if (
+                result.dismiss === Swal.DismissReason.cancel
+            ) {
+                $("#loader").hide();
+                swalWithBootstrapButtons.fire(
+                    'Cancelled',
+                    'Cancled by User..!! :)',
+                    'error'
+                )
+            }
+        });
+    }
+</script>
+

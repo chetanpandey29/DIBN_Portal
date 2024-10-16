@@ -1,0 +1,125 @@
+﻿@{
+    ViewData["Title"] = "Company Report";
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row" id="View">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="text-center front-text-theme fw-bold">Company Report</h3>
+                <hr class="text-theme" style="height:1px;" />
+
+                <div class="col-md-12 mt-4 mb-3">
+                    <div class="row text-center justify-content-center">
+                        <div class="col-md-2 col-sm-4 p-1 mx-3 mt-1 float-left border rounded-3 bg-white border-theme" style="cursor:pointer;" onclick="SelectRangeType('Cleared Company');" onmouseover="addeffect1();" onmouseout="removeeffect1();" id="effect1">
+                            <p class="front-text-theme text-center h5 text-truncate text-wrap mt-2">Cleared Company(s) Excel</p>
+                            <img src="~/dibn_business_image/growth.png" class="img-fluid text-center front-text-theme mt-2 p-3" />
+                        </div>
+                        <div class="col-md-2 col-sm-4 p-1 mx-3 mt-1 float-left border rounded-3 bg-white border-theme" style="cursor:pointer;" onclick="SelectRangeType('Overdue Company');" onmouseover="addeffect2();" onmouseout="removeeffect2();" id="effect2">
+                            <p class="front-text-theme text-center h5 text-truncate text-wrap mt-2">Overdue Company(s) Excel</p>
+                            <img src="~/dibn_business_image/growth-1.png" class="img-fluid text-center mt-2 front-text-theme p-3" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function SelectRangeType(selectedType){
+        
+        if (selectedType == "Cleared Company") {
+            var url = "@Url.Action("ClearedCompanyListForExcel","ReportManagement")";
+            window.location.href = url;
+        }
+        else{
+            var url = "@Url.Action("OverdueCompanyListForExcel","ReportManagement")";
+            window.location.href = url;
+        }
+    }
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+
+    $(function () {
+        $("#Insert").hide();
+        $("#View").hide();
+        $(".Update").hide();
+        $(".Delete").hide();
+        $(".Details").hide();
+    });
+</script>
+<script>
+    $(function () {
+        $("#loader").show();
+        var module = $("#Module").val();
+        $.ajax({
+            url: "@Url.Action("GetRolePermissionsName", "Permission")",
+            method: "GET",
+            data: { "Module": "ReportManagement" },
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (RoleResponse) {
+                $("#loader").show();
+                $.ajax({
+                    url: "@Url.Action("GetUserPermissionsName", "Permission")",
+                    method: "GET",
+                    data: { "Module": "ReportManagement" },
+                    async: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (UserResponse) {
+                        $("#loader").show();
+                        if (UserResponse.length > 0) {
+                            for (let i = 0; i < UserResponse.length; i++) {
+                                $("#" + UserResponse[i]).show();
+                                if (UserResponse[i] == "View") {
+                                    $(".Details").show();
+                                }
+                                if (UserResponse[i] == "Update") {
+                                    $("." + UserResponse[i]).show();
+                                }
+                                if (UserResponse[i] == "Delete") {
+                                    $("." + UserResponse[i]).show();
+                                }
+                            }
+                            $("#loader").hide();
+                        }
+                        else if (RoleResponse.length > 0) {
+                            for (let i = 0; i < RoleResponse.length; i++) {
+                                $("#" + RoleResponse[i]).show();
+                                if (RoleResponse[i] == "View") {
+                                    $(".Details").show();
+                                }
+                                if (RoleResponse[i] == "Update") {
+                                    $("." + RoleResponse[i]).show();
+                                }
+                                if (RoleResponse[i] == "Delete") {
+                                    $("." + RoleResponse[i]).show();
+                                }
+                            }
+                            $("#loader").hide();
+
+                        } else {
+                            alert("You don't have any permission for this module.");
+                            $("#loader").hide();
+                        }
+                    }
+                })
+            }
+        });
+        $("#loader").hide();
+    });
+</script>

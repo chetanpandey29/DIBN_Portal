@@ -1,0 +1,397 @@
+﻿@model DIBN.Areas.Admin.Models.ServiceFormFieldModel
+
+@{
+    ViewData["Title"] = "Index";
+    int index = 0;
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <h6 class="float-start text-theme" >@Model.FormName</h6>
+        <a href="javascript:history.go(-1);" class="btn btn-theme float-end" style="margin-bottom:15px;">Back to List</a>
+    </div>
+</div>
+@if (Model.allowedModule.Contains("View"))
+{
+    @if (Model.getServiceFormFields.Count > 0)
+    {
+        <div class="row Details">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title text-center">
+                            <span>@Model.FormName</span>
+                            <hr style="color:#243c7c; height:1.5px" />
+                        </div>
+                        <form>
+                            @foreach (var dataField in Model.getServiceFormFields)
+                            {
+                                index++;
+                                @if (dataField.IsRequired == true && dataField.IsDocumentUpload == true)
+                                {
+                                    <div class="form-group">
+                                        <label class="control-label">@dataField.FieldName</label> <span class="text-danger">*</span>
+                                        <input name="@dataField.FieldId" id="fieldId_@index" type="file" class="form-control" data-val-required="@dataField.IsRequiredMessage" required />
+                                    </div>
+                                }
+                                else if (dataField.IsRequired == true)
+                                {
+                                    <div class="form-group">
+                                        <label class="control-label">@dataField.FieldName</label> <span class="text-danger">*</span>
+                                        <input name="@dataField.FieldId" id="fieldId_@index" class="form-control" data-val-required="@dataField.IsRequiredMessage" required />
+                                    </div>
+                                }
+                                else if (dataField.IsDocumentUpload == true)
+                                {
+                                    <div class="form-group">
+                                        <label class="control-label">@dataField.FieldName</label>
+                                        <input name="@dataField.FieldId" id="fieldId_@index" type="file" class="form-control" />
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="form-group">
+                                        <label class="control-label">@dataField.FieldName</label>
+                                        <input name="@dataField.FieldId" id="fieldId_@index" class="form-control" />
+                                    </div>
+                                }
+
+                            }
+                            <input type="button" class="btn btn-theme mt-3" value="Submit" />
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+@if (Model.allowedModule.Contains("View"))
+{
+    <div class="row" id="View">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-center">Form Fields</h4>
+                    <div class="table-rep-plugin">
+                        <div class="table-responsive mb-0" data-pattern="priority-columns">
+                            <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            #
+                                        </th>
+                                        <th>
+                                            Field Name
+                                        </th>
+                                        <th>
+                                            IsRequired
+                                        </th>
+                                        <th>
+                                            IsRequired Message
+                                        </th>
+                                        <th>
+                                            Is Document Upload
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int i = 0;
+                                    }
+                                    @foreach (var item in Model.getServiceFormFields)
+                                    {
+                                        if (@item.FieldName != null)
+                                        {
+                                            <tr>
+                                                <td>@(i + 1)</td>
+                                                <td>
+                                                    @item.FieldName
+                                                </td>
+                                                <td>
+                                                    @item.IsRequired
+                                                </td>
+                                                <td>
+                                                    @item.IsRequiredMessage
+                                                </td>
+                                                <td>
+                                                    @item.IsDocumentUpload
+                                                </td>
+                                            </tr>
+                                            i++;
+                                        }
+
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@if (Model.allowedModule.Contains("Insert"))
+{
+    <div class="row" id="Insert">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title">
+                        <h4 class="card-title">Add Form Fields</h4>
+                    </div>
+                    <div class="col-12 float-start">
+                        <hr style="height:1px;" class="text-theme" />
+                        <div class="table-rep-plugin">
+                            <div class="table-responsive mb-0" data-pattern="priority-columns">
+                                <table id="tblAddFormField" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                Step Number
+                                            </th>
+                                            <th>
+                                                Field Name
+                                            </th>
+                                            <th>
+                                                Is This Field Required?
+                                            </th>
+                                            <th>
+                                                Is Required Message
+                                            </th>
+                                            <th>
+                                                Is This Field For Document Upload?
+                                            </th>
+                                            <th>
+
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td><input type="text" id="txtStepNumber" class="form-control" required /></td>
+                                            <td><input type="text" id="txtFieldName" class="form-control" required /></td>
+                                            <td><input type="checkbox" id="txtIsRequired" class="form-check-input" /></td>
+                                            <td><input type="text" id="txtRequiredMessage" class="form-control" /></td>
+                                            <td><input type="checkbox" id="txtIsDocument" class="form-check-input" /></td>
+                                            <td><input type="button" id="btnAdd" class="btn btn-theme" value="Add" /></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <input type="button" id="btnSave" class="btn btn-theme" value="Save all" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<input type="hidden" value="@index" id="lastIndex" />
+<input type="hidden" asp-for="FormId" id="FormId"/>
+<input type="hidden" asp-for="ServiceId" id="ServiceId"/>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+
+<script>
+    $('#datatable').dataTable({
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    });
+
+    $('#txtStepNumber').val(1);
+
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>
+<script>
+    var _addedFields = new Array();
+    $("body").on("click","#btnAdd",function(){
+        $("#loader").show();
+        var txtStepNumberVal = $("#txtStepNumber").val();
+
+        var txtFieldNameVal = $("#txtFieldName").val();
+        var txtIsRequiredVal = null;
+        if ($('#txtIsRequired').is(':checked')) {
+            txtIsRequiredVal = true;
+        }else{
+            txtIsRequiredVal = 'false';
+        }
+        var txtRequiredMessageVal = $("#txtRequiredMessage").val();
+        var txtIsDocumentVal = null;
+        if ($('#txtIsDocument').is(':checked')) {
+            txtIsDocumentVal = true;
+        }else{
+            txtIsDocumentVal = 'false';
+        }
+        var ServiceId = $("#ServiceId").val();
+        var FormId = $("#FormId").val();
+        if(txtFieldNameVal==""){
+            $("#loader").hide();
+            const swalWithBootstrapButtons = Swal.mixin({
+                    customClass: {
+                    confirmButton: 'ms-3 btn btn-success',
+                    cancelButton: 'btn btn-danger'
+                    },
+                    buttonsStyling: false
+                })
+                swalWithBootstrapButtons.fire(
+                    'Error',
+                    "Please Provide Name of Field.",
+                    'error'
+                )
+        }else if(txtIsRequiredVal == true && txtRequiredMessageVal==""){
+            $("#loader").hide();
+             const swalWithBootstrapButtons = Swal.mixin({
+                    customClass: {
+                    confirmButton: 'ms-3 btn btn-success',
+                    cancelButton: 'btn btn-danger'
+                    },
+                    buttonsStyling: false
+                })
+                swalWithBootstrapButtons.fire(
+                    'Error',
+                    "Please Provide Message for Required Field.",
+                    'error'
+                )
+        }else{
+            $("#loader").show();
+            var fileData = new FormData();
+            fileData.append("StepNumber",txtStepNumberVal);
+            fileData.append("FieldName",txtFieldNameVal);
+            fileData.append("IsRequired",txtIsRequiredVal);
+            fileData.append("RequiredMessage",txtRequiredMessageVal);
+            fileData.append("IsDocumentUpload",txtIsDocumentVal);
+            fileData.append("ServiceId",ServiceId);
+            fileData.append("FormId",FormId);
+            _addedFields.push(fileData);
+
+
+            var txtStepNumber =  $("#txtStepNumber");
+            var txtFieldName =  $("#txtFieldName");
+            var txtIsRequired = $("#txtIsRequired");
+            var txtRequiredMessage = $("#txtRequiredMessage");
+            var txtIsDocument = $("#txtIsDocument");
+
+            var tbody = $("#tblAddFormField > TBODY")[0];
+            var row = tbody.insertRow(-1);
+
+             var cell = $(row.insertCell(-1));
+            cell.html(txtStepNumber.val());
+
+            var cell = $(row.insertCell(-1));
+            cell.html(txtFieldName.val());
+
+            cell = $(row.insertCell(-1));
+            cell.html(txtIsRequiredVal);
+
+            cell = $(row.insertCell(-1));
+            cell.html(txtRequiredMessage.val());
+
+            cell = $(row.insertCell(-1));
+            cell.html(txtIsDocumentVal);
+
+
+            cell = $(row.insertCell(-1));
+            var btnRemove = $("<input />");
+            btnRemove.attr("type","button");
+            btnRemove.attr("class","btn btn-theme");
+            btnRemove.attr("onclick","Remove(this);");
+            btnRemove.val("Remove");
+            cell.append(btnRemove);
+
+
+            txtStepNumber.val(parseInt(txtStepNumberVal)+1);
+            txtFieldName.val("");
+            if ($('#txtIsRequired').is(':checked')) {
+                $("#txtIsRequired").prop("checked", false);
+            }
+            txtRequiredMessage.val("");
+            if ($('#txtIsDocument').is(':checked')) {
+                $("#txtIsDocument").prop("checked", false);
+            }
+            $("#loader").hide();
+        }
+        $("#loader").hide();
+    });
+
+    function Remove(data,Id){
+        var row = $(data).closest("TR");
+        var task = $("TD",row).eq(0).html();
+        if(confirm("Are you sure you want to delete this :"+task+"Field?")){
+            var table = $("#tblAddFormField")[0];
+            var remove = _addedFields.splice(row[0].rowIndex-1,1);
+            table.deleteRow(row[0].rowIndex);
+        }
+    };
+
+    
+    $("body").on("click","#btnSave",function(){
+        $("#loader").show();
+        $("#btnSave").prop('disabled',true);
+        $("#tblAddFormField TBODY TR").each(function(){
+            
+            event.preventDefault();
+            var row = $(this);
+            var getFormData = _addedFields[parseInt((this).rowIndex)-1];
+            $.ajax({
+                url:"@Url.Action("AddFormFields","ServiceForm")",
+                type:"post",
+                contentType: false,
+                processData: false,
+                data:getFormData,
+                success:function(result){
+                    $("#loader").hide();
+                    var ServiceId = $("#ServiceId").val();
+                    var FormId = $("#FormId").val();
+                    var url = "@Url.Action("Index","ServiceForm")";
+                    url = url +"?ServiceId="+ServiceId+"&FormId="+FormId;
+                    window.location.href = url;
+                }
+            })
+        });
+    });
+</script>
+<script>
+    $(document).ready(function(){
+        var ServiceId = $("#ServiceId").val();
+        var FormId = $("#FormId").val();
+
+        $.ajax({
+            url:"@Url.Action("GetlastStepNumber","ServiceForm")",
+            type:"get",
+            data:{"ServiceId":ServiceId,"FormId":FormId},
+            success:function(result){
+                var lastStep = parseInt(result) + 1;
+                $("#txtStepNumber").val(lastStep);
+            }
+        });
+    });
+</script>

@@ -1,0 +1,128 @@
+﻿@model DIBN.Models.MainDocumentCheckListModel
+@{
+    ViewData["Title"] = "Index";
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+@if (Model.allowedModule.Contains("View"))
+{
+    <div class="row" id="View">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-center">Company(s)</h4>
+                    <hr style="height:1px;" class="text-theme" />
+                    <div class="table-rep-plugin">
+                        <div class="table-responsive mb-0" data-pattern="priority-columns">
+                            <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            #
+                                        </th>
+                                        <th>
+                                            DIBN No.
+                                        </th>
+                                        <th>
+                                            Company Name
+                                        </th>
+                                        <th>
+
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        var j = 0;
+                                    }
+                                    @foreach (var item in Model.companies)
+                                    {
+                                        @if (item.CompanyName != null)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @(j + 1)
+                                                </td>
+                                                <td>
+                                                    @item.AccountNumber
+                                                </td>
+                                                <td>
+                                                    @item.CompanyName
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-theme Details" onclick="GetDocuments(@item.Id)">
+                                                        View Documents
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td><p class="text-center">No data found.</p></td>
+                                                <td></td>
+                                            </tr>
+
+                                        }
+
+                                        j++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<input type="hidden" asp-for="@Model.Module" id="Module" />
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+
+<script>
+    var table = $('#datatable').DataTable({
+        responsive:true,
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    });
+
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>
+
+<script>
+    function GetDocuments(Id) {
+        var module = $("#Module").val();
+        var url = "@Url.Action("GetAllDocuments","Document")";
+        window.location.href = url + "?CompanyId=" + Id + "&name=" + module;
+    };
+</script>

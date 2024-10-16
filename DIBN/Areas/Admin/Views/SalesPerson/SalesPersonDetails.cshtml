@@ -1,0 +1,178 @@
+﻿@model DIBN.Areas.Admin.Models.SalesPersonViewModel
+@{
+    ViewData["Title"] = "SalesPersonDetails";
+}
+
+@{
+    string[] companies = { };
+    int count = 0;
+    int index = 1;
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <a href="@Url.Action("Index","SalesPerson")" class="btn btn-theme" style="float:right;margin-bottom:15px;">Back to List</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="card-title">
+                        <h5 class="text-dark float-start">Sales Person Details</h5>
+                        @if (Model.IsActive && Model.IsLogin)
+                        {
+                            <span class="float-end fas fa-check text-success" style="font-size:26px;"></span>
+                        }
+                        else
+                        {
+                            <span class="float-end fas fa-times text-danger" style="font-size:26px;"></span>
+                        }
+                    </div>
+                <hr/>
+                </div>
+                <dl class="row">
+                    <dt class="col-sm-4">
+                        Name
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.FirstName) @Html.Raw(" ") @Html.DisplayFor(model => model.LastName)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.PassportNumber)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.PassportNumber)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.PassportExpiryDate)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.PassportExpiryDate)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Designation)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.Raw("Sales Person")
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.VisaExpiryDate)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.VisaExpiryDate)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.InsuarnceCompany)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.InsuarnceCompany)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.InsuranceExpiryDate)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.InsuranceExpiryDate)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.EmailId)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.EmailId)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.PhoneNumber)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.PhoneNumber)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.CountryOfRecidence)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.CountryOfRecidence)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.Raw("Is Login Allowed?")
+                    </dt>
+                    <dd class="col-sm-8">
+                        @if (Model.IsLogin)
+                        {
+                            @Html.Raw("Yes")
+                        }
+                        else
+                        {
+                            @Html.Raw("No")
+                        }
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.Raw("Is User Active?")
+                    </dt>
+                    <dd class="col-sm-8">
+                        @if (Model.IsActive)
+                        {
+                            @Html.Raw("Yes")
+                        }
+                        else
+                        {
+                            @Html.Raw("No")
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="card-title">
+                    <h5 class="text-dark">Assigned Company(s)</h5>
+                </div>
+                <hr/>
+                </div>
+                <dl class="row">
+                    <dt class="col-sm-4">
+                        Company(s) : 
+                    </dt>
+                    <dd class="col-sm-8">
+                        @if (@Model.Company.Contains(","))
+                        {
+                            companies = @Model.Company.Split(",");
+                            count=companies.Count()-1;
+ 
+                            for (var i=0;i<=count;i++){
+
+                                @Html.Raw(""+@index+".") @Html.Raw(" ") @Html.Raw(companies[i])
+                                index++;
+                                <br/>
+                            }
+                        }
+                        else
+                        {
+                            @Html.DisplayFor(model => model.Company)
+                        }
+                        
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>

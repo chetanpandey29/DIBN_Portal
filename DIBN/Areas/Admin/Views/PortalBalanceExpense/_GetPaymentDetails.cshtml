@@ -1,0 +1,657 @@
+﻿@model DIBN.Areas.Admin.Models.PaymentTransaction
+<style>.datepicker{ z-index:99999 !important; }</style>
+<div class="row">
+    <form asp-action="UpdatePaymentDetails" asp-controller="PortalBalanceExpense" method="post">
+        <div class="form-group">
+            <label asp-for="Type" class="control-label"></label>
+            @Html.DropDownListFor(w => w.Type, Model.expenseType, "Select Type", new { @class = "form-control form-select single-line",@id="types",@onchange="ExpenseTypeChange();" })
+            <span asp-validation-for="Type" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="CompanyId" class="control-label"></label>
+            @Html.DropDownListFor(w => w.CompanyId, Model.Companies, "Select Company", new { @class = "form-control form-select single-line",@id="Companies" })
+            <span asp-validation-for="CompanyId" class="text-danger"></span>
+        </div>
+        <div class="form-group" id="paymentModeBlock">
+            <label class="control-label">Payment Mode</label>
+            @Html.DropDownListFor(w => w.PaymentMode, Model.PaymentModes, "Select Payment Mode", new { @class = "form-control form-select single-line",@id="selectedpaymentMode" })
+            <span asp-validation-for="PaymentMode" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="TransectionDate" class="control-label"></label>
+            <input asp-for="TransectionDate" class="form-control" data-toggle="datepicker" id="CreatedDate1" placeholder="yyyy-mm-dd" required readonly/>
+            <span asp-validation-for="TransectionDate" class="text-danger"></span>
+        </div>
+            <div class="form-group">
+            <label class="control-label">Description</label>
+            <textarea asp-for="@Model.Description" id="txtDescription1" maxlength="200" class="form-control text-wrap" required rows="3" cols="30"></textarea>
+        </div>
+        <div class="form-group" id="Amount1Block">
+            <label class="control-label">Amount</label>
+            <input asp-for="@Model.Amount" type="text" id="Amount1" step=".01" maxlength="10" class="form-control" onkeyup="ValidAlphabet(this)" onfocusout="ValidAlphabet(this)" onkeypress="ValidTextLength(this)" required />
+            <input type="hidden" asp-for="@Model.Id" />
+            <input type="hidden" asp-for="@Model.Action" />
+            <input type="hidden" asp-for="@Model.Controller" />
+            <input type="hidden" asp-for="@Model.CreatedOnUtc" />
+            <input type="hidden" asp-for="@Model.TransactionId" />
+            <input type="hidden" asp-for="@Model.PreviousCompanyId" value="@Model.CompanyId"/>
+            <input type="hidden" name="previousTotalAmount" value="@Model.TotalAmount" id="previousTotalAmount" />
+            <input type="hidden" name="previousQuantity" value="@Model.Quantity" id="previousQuantity" />
+            <input type="hidden" name="previousAddedVat" value="@Model.Vat" id="previousAddedVat" />
+            <input type="hidden" name="previousAddedVatAmount" value="@Model.VatAmount" id="previousAddedVatAmount" />
+            <input type="hidden" name="previousAddedAmount" value="@Model.Amount" id="previousAddedAmount" />
+            <input type="hidden" name="previousCompanyId1" id="previousCompanyId1" value="@Model.CompanyId"/>
+        </div>
+        <div class="form-group" style="width: 110px;" id="QuantityBlock1">
+            <label class="control-label">Quantity</label>
+            <input data-toggle="touchspin" type="text" id="Quantity1" asp-for="@Model.Quantity" class="txtQuantity" readonly required/>
+        </div>
+        <div class="form-group" id="TotalAmountBlock1">
+            <label class="control-label">Total Amount</label>
+            <input asp-for="@Model.TotalAmount" id="TotalAmount1" step=".01" type="text" class="form-control" required readonly/>
+        </div> 
+        <div class="form-group" id="vatBlock">
+            <label asp-for="Vat" class="control-label"></label>
+            <input asp-for="Vat" type="text" class="form-control" id="Vat2" maxlength="4" onkeyup="ValidAlphabet(this)" onfocusout="ValidAlphabet(this)" onkeypress="ValidTextLength(this)" step=".01" />
+            <span asp-validation-for="Vat" class="text-danger"></span>
+        </div>
+        <div class="form-group" id="vatAmountBlock">
+            <label asp-for="VatAmount" class="control-label"></label>
+            <input asp-for="VatAmount" step=".01" type="text" class="form-control" id="VatAmount2" readonly/>
+            <span asp-validation-for="VatAmount" class="text-danger"></span>
+        </div>
+        <div class="form-group" id="grandTotalBlock">
+            <label asp-for="GrandTotal" class="control-label"></label>
+            <input asp-for="GrandTotal" type="text" class="form-control" step=".01" id="GrandTotal2" readonly/>
+            <span asp-validation-for="GrandTotal" class="text-danger"></span>
+        </div>
+        <input asp-for="PreviousAmount" type="hidden" value="@Model.TotalAmount" class="form-control"/>
+        <div class="modal-footer">
+            <div class="form-group">
+                <input type="button" id="btnPaymentDetails12" value="Update" class="btn btn-theme" />
+                <span id="btnPaymentDetailsMessage12" class="text-danger">Please Wait While We Are Saving Portal Balance Details.</span>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+
+<link href="~/assets/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css" rel="stylesheet" />
+<script src="~/assets/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js"></script>
+<!-- Select 2-->
+<link href="~/select2/select2.min.css" rel="stylesheet" />
+<script src="~/select2/select2.min.js"></script>
+
+<script src="~/assets/libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $("#vatBlock").hide();
+        $("#paymentModeBlock").show();
+        $("#selectedpaymentMode").attr("required","required");
+        $("#vatAmountBlock").hide();
+        $("#grandTotalBlock").hide();
+    });
+
+$(document).ready(function() {
+    $("#btnPaymentDetailsMessage12").hide();
+});
+</script>
+<script>
+    $("#Companies").on('change', function() {
+        var companyId = $("#Companies").val();
+        var previousCompanyId = $("#previousCompanyId1").val();
+        var previousTotalAmount = $("#previousTotalAmount").val();
+        var previousQuantity = $("#previousQuantity").val();
+        var selectedType = $("#types").val();
+        var previousAddedAmount = $("#previousAddedAmount").val();
+        var previousAddedVat = $("#previousAddedVat").val();
+        var previousAddedVatAmount = $("#previousAddedVatAmount").val();
+        if (isNaN(parseFloat(previousAddedVat))) {
+            previousAddedVat = 0;
+        }
+        if (isNaN(parseFloat(previousAddedVatAmount))) {
+            previousAddedVatAmount = 0;
+        }
+        if (companyId != previousCompanyId) {
+            $("#Amount1").attr("readonly", "readonly");
+            $("#Vat2").attr("readonly", "readonly");
+            $("#TotalAmount1").val(parseFloat(previousTotalAmount).toFixed(2));
+            $("#GrandTotal2").val(parseFloat(previousTotalAmount).toFixed(2));
+            $("#QuantityBlock1").hide();
+            $("#Quantity1").val(parseInt(previousQuantity));
+            $("#Amount1").val(parseFloat(previousAddedAmount).toFixed(2));
+            $("#Vat2").val(parseFloat(previousAddedVat).toFixed(2));
+            $("#VatAmount2").val(parseFloat(previousAddedVatAmount).toFixed(2));
+            $("#Amount1Block").hide();
+           
+        }
+        else{
+            $("#Amount1").removeAttr("readonly");
+            $("#Vat2").removeAttr("readonly");
+            $("#QuantityBlock1").show();
+            $("#Quantity1").val(parseInt(previousQuantity));
+            $("#Amount1Block").show();
+        }
+    });
+</script>
+<script>
+    function ValidAlphabet(data) {
+        var code = (event.which) ? event.which : event.keyCode;  
+        if (!(code>= 48 && code <=57) || !(code >=96 && code <=105) || code == 54 || code == 189 || code == 219 || code==57) {
+            if (code != 32 && code != 190) {
+                var digits = $(data).val();
+                var lastValue = digits.substring(digits.length - 1);
+                digits = digits.replace(/[^(\.\s)[^0-9-]/g, '');
+                if (lastValue == "^" || lastValue == "-" || lastValue == "(" || lastValue == ")" || lastValue == "[") {
+                    var lastIndex = digits.indexOf(lastValue);
+                    var currentText = digits.substring(0, lastIndex);
+                    digits = currentText;
+                    digits = digits.replace(lastValue, '');
+                }
+                else if (digits.includes("-") || digits.includes("^") || digits.includes("(")|| digits.includes(")")|| digits.includes("[")) {
+                    if (digits.includes("-")) {
+                        var lastIndex = digits.lastIndexOf("-");
+                        var currentText = digits.substring(lastIndex+1, digits.length);
+                        digits = currentText;
+                    }
+                    else if (digits.includes("^")) {
+                        var lastIndex = digits.lastIndexOf("^");
+                        var currentText = digits.substring(lastIndex+1, digits.length);
+                        digits = currentText;
+                    }
+                    else if (digits.includes("(")) {
+                        var lastIndex = digits.lastIndexOf("(");
+                        var currentText = digits.substring(lastIndex+1, digits.length);
+                        digits = currentText;
+                    }
+                    else if (digits.includes(")")) {
+                        var lastIndex = digits.lastIndexOf(")");
+                        var currentText = digits.substring(lastIndex+1, digits.length);
+                        digits = currentText;
+                    }
+                    else if (digits.includes("[")) {
+                        var lastIndex = digits.lastIndexOf("[");
+                        var currentText = digits.substring(lastIndex+1, digits.length);
+                        digits = currentText;
+                    }
+                }
+                else if (digits.replace(/[^.]/g, "").length > 1) {
+                    lastValue = digits.substring(digits.length - 1);
+                    var lastIndex = digits.indexOf(lastValue);
+                    var currentText = digits.substring(lastIndex, digits.length);
+                    if (currentText.replace(/[^.]/g, "").length > 1) {
+                        var currentDigits1 = digits.slice(0, lastIndex+1);
+                        digits = currentDigits1;
+                    }
+                    else {
+                        var currentDigits = digits.slice(0,lastIndex);
+                        digits = currentDigits;
+                    }
+
+                }
+                $(data).val(digits);
+            }
+            else if (digits.replace(/[^.]/g, "").length > 1) {
+                lastValue = digits.substring(digits.length - 1);
+                    var lastIndex = digits.indexOf(lastValue);
+                    var currentText = digits.substring(lastIndex, digits.length);
+                    if (currentText.replace(/[^.]/g, "").length > 1) {
+                        var currentDigits1 = digits.slice(0, lastIndex+1);
+                        digits = currentDigits1;
+                    }
+                    else {
+                        var currentDigits = digits.slice(0,lastIndex);
+                        digits = currentDigits;
+                    }
+
+                $(data).val(digits);
+            }
+        }
+    } 
+     function ValidTextLength(data) {
+        var digits = $(data).val();
+         var currentDigits = digits.split(".");
+        if (digits.includes(".") == true) {
+            if (currentDigits[1].length >= 2) {
+                event.preventDefault();
+            }
+        }
+    }
+</script>
+<script>
+    $(function () {
+        var today = new Date();
+        $("#CreatedDate1").datepicker({
+            format: "yyyy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            todayHighlight: true,
+            endDate: "today",
+            maxDate: today
+        }).on('changeDate', function (ev) {
+            $(this).datepicker('hide');
+        });
+    });
+</script>
+<script>
+    $("#Amount1").on("keyup",function(){
+        var amount = $("#Amount1").val();
+        var quantity = $("#Quantity1").val();
+        var vatPercentage = $("#Vat2").val();
+        var totalAmount=0,vatAmount=0,grandTotal=0;
+        if(parseInt(vatPercentage)!=0){
+            totalAmount = ((parseFloat(amount) * quantity));
+            vatAmount = parseFloat(totalAmount) * parseFloat(vatPercentage) / 100;
+            grandTotal = parseFloat(totalAmount) + parseFloat(vatAmount);
+            if (isNaN(vatAmount)) {
+                vatAmount = 0;
+            }
+            $("#VatAmount2").val(parseFloat(vatAmount).toFixed(2));
+        }
+        else{
+            totalAmount = ((parseFloat(amount) * quantity));
+            grandTotal = parseFloat(totalAmount);
+        }
+        if (isNaN(totalAmount)) {
+            totalAmount = 0;
+        }
+        if (isNaN(grandTotal)) {
+            grandTotal = 0;
+        }
+        $("#TotalAmount1").val(parseFloat(totalAmount).toFixed(2));
+        $("#GrandTotal2").val(parseFloat(grandTotal).toFixed(2));
+
+    });
+    $("#Quantity1").on("change",function(){
+        var amount = $("#Amount1").val();
+        var quantity = $("#Quantity1").val();
+        var vatPercentage = $("#Vat2").val();
+        var totalAmount=0,vatAmount=0,grandTotal=0;
+        if(parseInt(vatPercentage)!=0){
+            totalAmount = ((parseFloat(amount) * quantity));
+            vatAmount = parseFloat(totalAmount) * parseFloat(vatPercentage) / 100;
+            grandTotal = parseFloat(totalAmount) + parseFloat(vatAmount);
+            if (isNaN(vatAmount)) {
+                vatAmount = 0;
+            }
+            $("#VatAmount2").val(parseFloat(vatAmount).toFixed(2));
+        }
+        else{
+            totalAmount = ((parseFloat(amount) * quantity));
+            grandTotal = parseFloat(totalAmount);
+        }
+        if (isNaN(totalAmount)) {
+            totalAmount = 0;
+        }
+        if (isNaN(grandTotal)) {
+            grandTotal = 0;
+        }
+        $("#TotalAmount1").val(parseFloat(totalAmount).toFixed(2));
+        $("#GrandTotal2").val(parseFloat(grandTotal).toFixed(2));
+    });
+    $("#Vat2").on("keyup",function(){
+        var totalAmount = $("#TotalAmount1").val();
+        var vatPercentage = $("#Vat2").val();
+        var vatAmount = (parseFloat(totalAmount) * parseFloat(vatPercentage))/100;
+        if(isNaN(vatAmount)){
+            vatAmount = 0;
+        }
+        var totalAmount = $("#TotalAmount1").val();
+        var grandTotal = parseFloat(totalAmount) + parseFloat(vatAmount);
+        if(isNaN(vatAmount)){
+            vatAmount = 0;
+        }
+        if (isNaN(grandTotal)) {
+            grandTotal = 0;
+        }
+        $("#VatAmount2").val(parseFloat(vatAmount).toFixed(2));
+        $("#GrandTotal2").val(parseFloat(grandTotal).toFixed(2));
+    });
+
+    $("#Amount1").on("focus", function () {
+        var amount = $("#Amount1").val();
+        var quantity = $("#Quantity1").val();
+        var vatPercentage = $("#Vat2").val();
+        var totalAmount = 0, vatAmount = 0, grandTotal = 0;
+        if (parseInt(vatPercentage) != 0) {
+            totalAmount = ((parseFloat(amount) * quantity));
+            vatAmount = parseFloat(totalAmount) * parseFloat(vatPercentage) / 100;
+            grandTotal = parseFloat(totalAmount) + parseFloat(vatAmount);
+            if (isNaN(vatAmount)) {
+                vatAmount = 0;
+            }
+            $("#VatAmount2").val(parseFloat(vatAmount).toFixed(2));
+        }
+        else {
+            totalAmount = ((parseFloat(amount) * quantity));
+            grandTotal = parseFloat(totalAmount);
+        }
+        if (isNaN(totalAmount)) {
+            totalAmount = 0;
+        }
+        if (isNaN(grandTotal)) {
+            grandTotal = 0;
+        }
+        $("#TotalAmount1").val(parseFloat(totalAmount).toFixed(2));
+        $("#GrandTotal2").val(parseFloat(grandTotal).toFixed(2));
+
+    });
+    $("#Quantity1").on("focus", function () {
+        var amount = $("#Amount1").val();
+        var quantity = $("#Quantity1").val();
+        var vatPercentage = $("#Vat2").val();
+        var totalAmount = 0, vatAmount = 0, grandTotal = 0;
+        if (parseInt(vatPercentage) != 0) {
+            totalAmount = ((parseFloat(amount) * quantity));
+            vatAmount = parseFloat(totalAmount) * parseFloat(vatPercentage) / 100;
+            grandTotal = parseFloat(totalAmount) + parseFloat(vatAmount);
+            if (isNaN(vatAmount)) {
+                vatAmount = 0;
+            }
+            $("#VatAmount2").val(parseFloat(vatAmount).toFixed(2));
+        }
+        else {
+            totalAmount = ((parseFloat(amount) * quantity));
+            grandTotal = parseFloat(totalAmount);
+        }
+        if (isNaN(totalAmount)) {
+            totalAmount = 0;
+        }
+        if (isNaN(grandTotal)) {
+            grandTotal = 0;
+        }
+        $("#TotalAmount1").val(parseFloat(totalAmount).toFixed(2));
+        $("#GrandTotal2").val(parseFloat(grandTotal).toFixed(2));
+    });
+    $("#Vat2").on("focus", function () {
+        var totalAmount = $("#TotalAmount1").val();
+        var vatPercentage = $("#Vat2").val();
+        var vatAmount = (parseFloat(totalAmount) * parseFloat(vatPercentage)) / 100;
+        if (isNaN(vatAmount)) {
+            vatAmount = 0;
+        }
+        var totalAmount = $("#TotalAmount1").val();
+        var grandTotal = parseFloat(totalAmount) + parseFloat(vatAmount);
+        if (isNaN(vatAmount)) {
+            vatAmount = 0;
+        }
+        if (isNaN(grandTotal)) {
+            grandTotal = 0;
+        }
+        $("#VatAmount2").val(parseFloat(vatAmount).toFixed(2));
+        $("#GrandTotal2").val(parseFloat(grandTotal).toFixed(2));
+    });
+    ////// Open Selection dropdown on focus                                     -- Yashasvi TBC (09-02-2023)
+    $(document).on('focus', '.select2.select2-container', function (e) {
+        if (e.originalEvent && $(this).find(".select2-selection--single").length > 0) {
+            $(this).siblings('select').select2('open');
+        }
+    });
+    $("#Quantity1").TouchSpin({
+        min: 1,
+        max: 20,
+        boostat: 5,
+        maxboostedstep: 10
+    });
+    $(function() {
+        $("#Companies").select2();
+    });
+</script>
+<script>
+    function ExpenseTypeChange(){
+        var selectedType = $("#types").val();
+        if(selectedType=="Credit"){
+            $("#vatBlock").hide();
+            $("#paymentModeBlock").show();
+            $("#selectedpaymentMode").attr("required","required");
+            $("#vatAmountBlock").hide();
+            $("#grandTotalBlock").hide();
+        }
+        else{
+            $("#vatBlock").show();
+            if($("#GrandTotal2").val()=="" || $("#GrandTotal2").val()=="0.00"){
+                $("#GrandTotal2").val(parseFloat($("#TotalAmount1").val()).toFixed(2));
+            }
+            $("#Vat2").val(0);
+            $("#paymentModeBlock").hide();
+            $("#selectedpaymentMode").removeAttr("required");
+            $("#vatAmountBlock").show();
+            $("#grandTotalBlock").show();
+            $("#VatAmount2").val(0);
+        }
+    }
+</script>
+<script>
+    $("#btnPaymentDetails12").on('click', function() {
+        
+        var currentDate = $("#CreatedDate1").val();
+        var selectedType = $("#types").find(":selected").val();
+        var companyId = $("#Companies").val();
+        var selectedpaymentMode = $("#selectedpaymentMode").find(":selected").val();
+        var txtDescription = $("#txtDescription1").val();
+        var vat = $("#Vat2").val();
+        var amount = $("#Amount1").val();
+        if (!/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(currentDate)) {
+            alert("Please Enter Valid Date Format for Company Starting Date.");
+            var today = new Date();
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+
+            today = yyyy + '-' + mm + '-' + dd;
+            $('#CreatedDate1').datepicker('setDate', today);
+            $("#CreatedDate1").focus();
+            
+             return false;
+        }
+        else{
+            
+            if (selectedType != "") {
+                if (selectedType == "Credit") {
+                    var amount = $("#Amount1").val();
+                    var quantity = $("#Quantity1").val();
+                    var totalAmount = ((parseFloat(amount) * parseInt(quantity)));
+                    $("#TotalAmount1").val(parseFloat(totalAmount).toFixed(2));
+
+                    if (isNaN(parseFloat(amount)) || (isNaN(parseFloat(vat)) && vat!="")) {
+                        if (isNaN(parseFloat(amount))) {
+                            alert("Please Provide Valid Amount.");
+                            $("#Amount1").val(parseFloat(amount).toFixed(2));
+                            
+                            return false;
+                        }
+                        else if (isNaN(parseFloat(vat))) {
+                            alert("Please Provide Valid Vat.");
+                            $("#Vat2").val(0);
+                            $("#VatAmount2").val(0);
+                            $("#GrandTotal2").val(parseFloat(totalAmount).toFixed(2));
+                            return false;
+                        }
+                    }
+                    else if (companyId != "" && selectedpaymentMode != "" && txtDescription != "" && amount!="" && amount!="0"&& amount!="0.0") {
+                        
+                        if (isNaN(parseFloat(amount))) {
+                            amount = 0;
+                        }
+                        
+                        $("#Amount1").val(parseFloat(amount).toFixed(2));
+                        $("#btnPaymentDetails12").removeAttr("type");
+                        $("#btnPaymentDetails12").attr("type","submit");
+                        $("#btnPaymentDetails12").hide();
+                        $("#btnPaymentDetailsMessage12").show();
+                    }
+                    else {
+                        if(txtDescription==""){
+                            
+                            const swalWithBootstrapButtons = Swal.mixin({
+                                customClass: {
+                                confirmButton: 'ms-3 btn btn-success',
+                                cancelButton: 'btn btn-danger'
+                                },
+                                buttonsStyling: false
+                            })
+                            swalWithBootstrapButtons.fire(
+                                'Error',
+                                "Please Provide Description for which you are adding Top-up Balance.",
+                                'error'
+                            )
+                        }
+                        else if(selectedpaymentMode==""){
+                            
+                            const swalWithBootstrapButtons = Swal.mixin({
+                                customClass: {
+                                confirmButton: 'ms-3 btn btn-success',
+                                cancelButton: 'btn btn-danger'
+                                },
+                                buttonsStyling: false
+                            })
+                            swalWithBootstrapButtons.fire(
+                                'Error',
+                                "Please Select Payment Mode.",
+                                'error'
+                            )
+                        }
+                        else if(companyId==""){
+                            
+                            const swalWithBootstrapButtons = Swal.mixin({
+                                customClass: {
+                                confirmButton: 'ms-3 btn btn-success',
+                                cancelButton: 'btn btn-danger'
+                                },
+                                buttonsStyling: false
+                            })
+                            swalWithBootstrapButtons.fire(
+                                'Error',
+                                "Please Select Company For which You want to Add Expense.",
+                                'error'
+                            )
+                        }
+                        else if(amount=="" || amount=="0"|| amount=="0.0"){
+                            
+                            const swalWithBootstrapButtons = Swal.mixin({
+                                customClass: {
+                                confirmButton: 'ms-3 btn btn-success',
+                                cancelButton: 'btn btn-danger'
+                                },
+                                buttonsStyling: false
+                            })
+                            swalWithBootstrapButtons.fire(
+                                'Error',
+                                "Please Provide Amount for Top-up Balance.",
+                                'error'
+                            )
+                        }
+                    }
+                }
+                else {
+                    var amount = $("#Amount1").val();
+                    var quantity = $("#Quantity1").val();
+                    var totalAmount = ((parseFloat(amount) * parseInt(quantity)));
+                    $("#TotalAmount1").val(parseFloat(totalAmount).toFixed(2));
+
+                    var vatPercentage = $("#Vat2").val();
+                    var vatAmount = (parseFloat(totalAmount) * parseFloat(vatPercentage)) / 100;
+                    $("#VatAmount2").val(parseFloat(vatAmount).toFixed(2));
+
+                    var grandTotal = parseFloat(totalAmount) + parseFloat(vatAmount);
+                    $("#GrandTotal2").val(parseFloat(grandTotal).toFixed(2));
+
+
+                    if (isNaN(parseFloat(amount)) || isNaN(parseFloat(vat))) {
+                        if (isNaN(parseFloat(amount))) {
+                            alert("Please Provide Valid Amount.");
+                            $("#Amount1").val(parseFloat(amount).toFixed(2));
+                            
+                            return false;
+                        }
+                        else if (isNaN(parseFloat(vat))) {
+                            alert("Please Provide Valid Vat.");
+                            $("#Vat2").val(0);
+                            $("#VatAmount2").val(0);
+                            $("#GrandTotal2").val(parseFloat(totalAmount).toFixed(2));
+                            return false;
+                        }
+                    }
+                    else if (companyId != "" && txtDescription != "" && amount!="" && amount!="0"&& amount!="0.0") {
+                        if (isNaN(parseFloat(amount))) {
+                            amount = 0;
+                        }
+                        
+                        $("#Amount1").val(parseFloat(amount).toFixed(2));
+                        $("#btnPaymentDetails12").removeAttr("type");
+                        $("#btnPaymentDetails12").attr("type","submit");
+                        $("#btnPaymentDetails12").hide();
+                        $("#btnPaymentDetailsMessage12").show();
+                    }
+                    else {
+                        if(txtDescription==""){
+                            
+                            const swalWithBootstrapButtons = Swal.mixin({
+                                customClass: {
+                                confirmButton: 'ms-3 btn btn-success',
+                                cancelButton: 'btn btn-danger'
+                                },
+                                buttonsStyling: false
+                            })
+                            swalWithBootstrapButtons.fire(
+                                'Error',
+                                "Please Provide Description for which you are adding Top-up Balance.",
+                                'error'
+                            )
+                        }
+                        else if(companyId==""){
+                            
+                            const swalWithBootstrapButtons = Swal.mixin({
+                                customClass: {
+                                confirmButton: 'ms-3 btn btn-success',
+                                cancelButton: 'btn btn-danger'
+                                },
+                                buttonsStyling: false
+                            })
+                            swalWithBootstrapButtons.fire(
+                                'Error',
+                                "Please Select Company For which You want to Add Expense.",
+                                'error'
+                            )
+                        }
+                        else if(amount==""  || amount=="0"|| amount=="0.0"){
+                            
+                            const swalWithBootstrapButtons = Swal.mixin({
+                                customClass: {
+                                confirmButton: 'ms-3 btn btn-success',
+                                cancelButton: 'btn btn-danger'
+                                },
+                                buttonsStyling: false
+                            })
+                            swalWithBootstrapButtons.fire(
+                                'Error',
+                                "Please Provide Amount for Top-up Balance.",
+                                'error'
+                            )
+                        }
+                    }
+                }
+            }
+            else{
+                
+                const swalWithBootstrapButtons = Swal.mixin({
+                    customClass: {
+                    confirmButton: 'ms-3 btn btn-success',
+                    cancelButton: 'btn btn-danger'
+                    },
+                    buttonsStyling: false
+                })
+                swalWithBootstrapButtons.fire(
+                    'Error',
+                    "Please Select Type of Expense.",
+                    'error'
+                )
+            }
+        }
+    });
+</script>

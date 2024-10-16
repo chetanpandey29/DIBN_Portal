@@ -1,0 +1,322 @@
+﻿@model DIBN.Models.MainCompanyServicesModel
+@{
+    ViewData["Title"] = "Index";
+    string ServiceName = null;
+}
+
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+@if (Model.allowedModule.Contains("View"))
+{
+    <div class="row">
+        <div class="col-12">
+            <h3>
+                @foreach (var item in Model.companyServices)
+                {
+                    <span class="float-start mb-3 mt-3">
+
+                        @if (item.CompanyType.Contains("Dubai Mainland"))
+                        {
+                            <span class="text-theme">@Html.Raw("Mainland Company")</span>
+                        }
+                        else if (item.CompanyType.Contains("Freezone"))
+                        {
+                            <span class="text-theme">@Html.Raw("Freezone Company")</span>
+                        }
+
+
+                    </span>
+                    <span class="float-end mb-3 mt-3">
+
+                        @if (item.SendCompanyId != 0)
+                        {
+                            <a href="@Url.Action("Index","Company",new{name="Company"})" class="btn btn-theme float-end mt-2 ms-3">
+                                Back to list
+                            </a>
+                        }
+
+                    </span>
+                    break;
+                }
+            </h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="input-group mb-3">
+                <div class="form-outline">
+                    <label class="form-label" for="form1">Search Service</label>
+                </div>
+                <div class="col-12">
+                    <div class="col-10 float-start">
+                        <input type="text" id="searchService" class="form-control" />
+                    </div>
+                    <div class="col-2 float-start">
+                        <button type="button" class="btn btn-theme ms-3" onclick="GetServiceFormByName();">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @foreach (var item in Model.companyServices)
+    {
+        @if (item.ServiceName != null)
+        {
+            <div class="row">
+                <div class="col-md-12">
+                    <h3 class="front-text-theme">
+                        <strong>Company Service Requests</strong>
+                    </h3>
+                    <span class="front-text-theme" style="font-size:13px;">
+                        Apply for all types of Company services, including Licensing Services , Company Amendment Services, and Establishment Card ,etc.
+                    </span>
+                </div>
+            </div>
+            <br />
+            <div>
+                <input id="Module" name="Module" asp-for="@item.Module" type="hidden" />
+                <input id="CompanyId" name="CompanyId" asp-for="@item.CompanyId" type="hidden" />
+            </div>
+        }
+        break;
+    }
+    <div class="row">
+        <div class="make-columns">
+            @foreach (var item in Model.companyServices)
+            {
+                @if (item.getChildCompanyServices != null && item.getChildCompanyServices.Count > 0)
+                {
+                    <div class="card">
+                        <div class="card-header btn-theme">
+                            <h5 class="text-center text-light" title="@item.ServiceName">
+                                @item.ServiceName
+                            </h5>
+                        </div>
+                        <div class="card-body" style="padding:10px 5px 10px 5px;">
+                            <ul class="list-group list-group-flush">
+                                @if (item.getChildCompanyServices != null && item.getChildCompanyServices.Count > 0)
+                                {
+                                    @foreach (var data in item.getChildCompanyServices)
+                                    {
+                                        <li class="list-group-item pe-auto">
+                                            <a onclick="GetformDetails(@data.ID,true,false,'@data.ServiceName');" role="button" class="text-theme getServiceForm">
+                                                <span class="h6" title="@data.ServiceName">
+                                                    @data.ServiceName
+                                                </span>
+                                            </a>
+                                        </li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+    </div>
+}
+
+<div id="ServiceRequest" class="modal" tabindex="-1" data-bs-keyboard="false" data-bs-backdrop="static" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Service Request</h5>
+                <button type="button" class="close btn btn-theme" id="ServiceRequestModalClose" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+
+
+<script>
+    $(document).ready(function(){
+        $("#loader").hide();
+    })
+    function ViewMoreServices(Id) {
+
+        var values = "displayValue_" + Id;
+        var hideValue = "ViewMore_" + Id;
+        var viewLess = "viewLess_" + Id;
+        $("." + values).removeAttr("style");
+        $("#" + hideValue).css("display", "none");
+        $('<li class="list-group-item pe-auto" id="' + viewLess + '"><span class="h6"><a href="#" onclick="ViewLessServices(' + parseInt(Id) + ');" class="float-end">..Less</a></span></li>').insertAfter('.' + values + ':last');
+    };
+</script>
+
+<script>
+    function ViewLessServices(Id) {
+        var values = "ViewMore_" + Id;
+        var hideValue = "displayValue_" + Id;
+        var viweless = "viewLess_" + Id;
+        $("#" + values).removeAttr("style");
+        $("." + hideValue).css("display", "none");
+        $("#" + viweless).remove();
+    };
+</script>
+<script>
+    function GetformDetails(Id, IsCompanyService, IsEmployeeService, serviceName) {
+        $("#loader").show();
+        var module = $("#Module").val();
+        $.ajax({
+            url: "@Url.Action("CheckUsers","SupportTicket")",
+            method: "GET",
+            success: function (response) {
+                if (response > 0) {
+                    $.ajax({
+                        url: "@Url.Action("GetServiceFormDetail", "CompanyService")",
+                        method: "GET",
+                        data: { "ServiceId": Id, "IsCompanyService": IsCompanyService, "IsEmployeeService": IsEmployeeService },
+                        success: function (response) {
+                            if (response.countOfFields == 0 && response.formId == 0) {
+                                $("#loader").hide();
+                                const swalWithBootstrapButtons = Swal.mixin({
+                                    customClass: {
+                                        confirmButton: 'ms-3 btn btn-success',
+                                        cancelButton: 'btn btn-danger'
+                                    },
+                                    buttonsStyling: false
+                                })
+                                swalWithBootstrapButtons.fire(
+                                    'Error',
+                                    "Something went wrong.Please try after sometime.!",
+                                    'error'
+                                )
+                            }
+                            else {
+                                $("#loader").hide();
+                                var CompanyId = $("#CompanyId").val();
+                                var url = "@Url.Action("GetServiceForm","CompanyService")";
+                                url = url + "?ServiceId=" + response.serviceFormId + "&FormId=" + response.formId + "&name=" + module + "&CompanyId=" + CompanyId + "&serviceName="+response.formName;
+                                window.location.href = url;
+                            }
+                        }
+                    });
+                }
+                else {
+                    $("#loader").hide();
+                    alert("Currently you can not Add Any Service Request. Please ask Admin to assign User for this Company.");
+                }
+            }
+        });
+    }
+</script>
+<script>
+    $(document).ready(function(){
+        if ('@Model.allowedModule.Contains("Insert")' != 'True')
+        {
+            $(".getServiceForm").prop("onclick", null).off("click");
+        }
+    })                 
+</script>
+
+<script>
+
+    $(document).ready(function () {
+        $("#searchService").autocomplete({
+            minLength: 0,
+            source: function (request, response) {
+                $.ajax({
+                    url: "@Url.Action("SearchService","CompanyService")",
+                    type: "GET",
+                    dataType: "json",
+                    data: { prefix: request.term },
+                    success: function (data) {
+                        if (data.length > 0) {
+
+                            response($.map(data, function (item) {
+                                return {
+                                    label: item,
+                                    val: item
+                                };
+                            }))
+                        }
+                    }
+                })
+            },
+            focus: function () {
+                return false;
+            },
+        });
+        $('#searchService').on("keydown", function (event) {
+            if (event.keyCode === $.ui.keyCode.TAB && $(this).data("autocomplete").menu.active) {
+                event.preventDefault();
+            }
+        });
+    });
+</script>
+
+<script>
+    function GetServiceFormByName() {
+        $("#loader").show();
+        var module = $("#Module").val();
+        var searchService = $("#searchService").val();
+        if (searchService != null && searchService != "") {
+            $.ajax({
+                url: "@Url.Action("SearchServiceId","CompanyService")",
+                type: "GET",
+                dataType: "json",
+                data: { "Service": searchService },
+                success: function (data) {
+                    var IsCompanyService = data[1] == "1" ? true : false;
+                    var IsEmployeeService = data[2] == "1" ? true : false;
+                    $.ajax({
+                        url: "@Url.Action("GetServiceFormDetail", "CompanyService")",
+                        method: "GET",
+                        data: { "ServiceId": data[0], "IsCompanyService": IsCompanyService, "IsEmployeeService": IsEmployeeService },
+                        success: function (response) {
+                            $("#loader").hide();
+                            if (response.countOfFields == 0 && response.formId == 0) {
+                                const swalWithBootstrapButtons = Swal.mixin({
+                                    customClass: {
+                                        confirmButton: 'ms-3 btn btn-success',
+                                        cancelButton: 'btn btn-danger'
+                                    },
+                                    buttonsStyling: false
+                                })
+                                swalWithBootstrapButtons.fire(
+                                    'Error',
+                                    "Something went wrong.Please try after sometime.!",
+                                    'error'
+                                )
+                            }
+                            else {
+                                var CompanyId = $("#CompanyId").val();
+                                var url = "@Url.Action("GetServiceForm","CompanyService")";
+                                url = url + "?ServiceId=" + response.serviceFormId + "&FormId=" + response.formId + "&name=" + module + "&CompanyId=" + CompanyId + "&serviceName=" + response.formName;
+                                window.location.href = url;
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        $("#loader").hide();
+    }
+</script>

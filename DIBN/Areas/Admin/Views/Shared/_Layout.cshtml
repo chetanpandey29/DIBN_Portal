@@ -1,0 +1,148 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    @await Html.PartialAsync("/Areas/Admin/Views/Shared/Theme/_title_meta.cshtml")
+    @await Html.PartialAsync("/Areas/Admin/Views/Shared/Theme/_head_css.cshtml")
+</head>
+
+<body>
+
+    <!-- Begin page -->
+    <div id="layout-wrapper">
+        @* <div class="spinner">
+        <div class="center-div">
+        <div class="loader">
+        <span><img src="~/DIBN_Logo.png" width="100" height="50"/></span>
+        </div>
+        </div>
+        </div> *@
+        @await Html.PartialAsync("/Areas/Admin/Views/Shared/Theme/_sidebar.cshtml")
+        @await Html.PartialAsync("/Areas/Admin/Views/Shared/Theme/_topbar.cshtml")
+
+        <!-- ============================================================== -->
+        <!-- Start right Content here -->
+        <!-- ============================================================== -->
+        <div id="main-loader">
+            <div class="spinner-1">
+                <div class="center-div-1">
+                    <div class="loader-circle-75">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="page-content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12 mb-2">
+                            <h3 class="text-theme" style="font-size:18px">
+                                @*  <strong>
+                                Welcome <span id="CompanyName"></span><span>.</span>
+                                <span class="float-end front-text-theme">
+                                <span id="UserName"></span>
+                                </span>
+                                </strong> *@
+                                <strong>
+                                    Welcome to DIBN<span>.</span>
+                                    <span class="float-end text-theme">
+                                        <span id="UserName"></span>
+                                    </span>
+                                </strong>
+                            </h3>
+                        </div>
+                    </div>
+                    @RenderBody()
+                </div> <!-- container-fluid -->
+            </div>
+            <!-- End Page-content -->
+            @await Html.PartialAsync("/Areas/Admin/Views/Shared/Theme/_footer.cshtml")
+        </div>
+        <!-- end main content-->
+
+    </div>
+    <!-- END layout-wrapper -->
+    <!-- JAVASCRIPT -->
+    <script src="~/assets/fontawesome-free-6.0.0-web/js/fontawesome.min.js"></script>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/assets/libs/metismenu/metisMenu.min.js"></script>
+    <script src="~/assets/libs/simplebar/simplebar.min.js"></script>
+    <script src="~/assets/libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+
+    <!-- Required datatable js -->
+    <script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Responsive examples -->
+    <script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+
+    <!-- App js -->
+    <script src="~/assets/js/app.js"></script>
+
+    <script src="~/assets/autocomplete/jquery-ui.min.js"></script>
+
+    <script src="~/select2/select2.min.js"></script>
+
+    @* <script src="~/assets/draganddrop/jquery-ui.js"></script> *@
+    <!-- Sweet Alerts-->
+    <script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+    <!-- Bootrstrap touchspin -->
+    <script src="~/assets/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js"></script>
+    <script>
+        document.onkeypress = function (event) {
+            event = (event || window.event);
+            if (event.keyCode == 123) {
+                return false;
+            }
+        }
+        document.onmousedown = function (event) {
+            event = (event || window.event);
+            if (event.keyCode == 123) {
+                return false;
+            }
+        }
+        document.onkeydown = function (event) {
+            event = (event || window.event);
+            if (event.keyCode == 123) {
+                return false;
+            }
+        }
+    </script>
+    <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());  // To disable right click
+
+        ////// Open Selection dropdown on focus                                     -- Yashasvi TBC (09-02-2023)
+        $(document).on('focus', '.select2.select2-container', function (e) {
+            if (e.originalEvent && $(this).find(".select2-selection--single").length > 0) {
+                $(this).siblings('select').select2('open');
+            }
+        });
+    </script>
+    <script>
+        $(function () {
+            $.ajax({
+                url: "@Url.Action("GetCompanyName", "Home")",
+                method: "GET",
+                async: false,
+                success: function (response) {
+                    $("#CompanyName").text(response.companyName);
+                }
+            });
+        });
+        $(function () {
+            $.ajax({
+                url: "@Url.Action("GetUserName", "Home")",
+                method: "GET",
+                async: false,
+                success: function (response) {
+                    $("#UserName").text(response);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

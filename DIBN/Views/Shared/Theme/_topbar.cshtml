@@ -1,0 +1,146 @@
+﻿<style>
+    .bell-font {
+        background: #243c7c26 !important;
+        color: #243c7c !important;
+        font-weight: bold;
+        font-size: 11px !important;
+    }
+</style>
+<header id="page-topbar">
+    <div class="navbar-header">
+        <div class="d-flex">
+            <!-- LOGO -->
+            <div class="navbar-brand-box" style="padding:0;">
+                <a href=@Url.Action("Index", "Home",new{area="admin"}) class="logo logo-dark">
+                    <span class="logo-sm">
+                        <img src="~/DIBN_Logo.png" alt="" height="30">
+                    </span>
+                    <span class="logo-lg">
+                        <img src="~/DIBN_Logo.png" alt="" height="20">
+                    </span>
+                </a>
+
+                <a href=@Url.Action("Index", "Home",new{area="admin"}) class="logo logo-light">
+                    <span class="logo-sm">
+                        <img src="~/DIBN_Logo.png" alt="" height="30">
+                    </span>
+                    <span class="logo-lg">
+                        <img src="~/DIBN_Logo.png" alt="" height="20">
+                    </span>
+                </a>
+            </div>
+
+            <button type="button" class="btn btn-sm px-3 font-size-16 header-item waves-effect vertical-menu-btn">
+                <i class="fas fa-fw fa-bars"></i>
+            </button>
+            <div class="dropdown d-inline-block ms-3">
+                <button type="button" class="btn header-item noti-icon waves-effect" id="page-header-notifications-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="uil-bell front-text-theme"></i>
+                    <span class="badge bell-font rounded-pill" id="notificationCount"></span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" id="notificationMessage">
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex">
+            <a class="dropdown-item" href="@Url.Action("Logout","Account",new{area=""})"><i class="uil uil-sign-out-alt font-size-18 align-middle overflow-hidden" style="color:#243c7c;"></i> <span class="align-middle overflow-hidden text-truncate front-text-theme">Sign out</span></a>
+            <input type="hidden" name="support" id="supportid" />
+        </div>
+    </div>
+</header>
+<script src="@Url.Content("~/lib/jquery/dist/jquery.min.js")"></script>
+
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: "@Url.Action("GetLoggedInCompany","Home")",
+            method: "POST",
+            success: function (response) {
+                if (response != null && response == 1) {
+                    $.ajax({
+                        url: "@Url.Action("GetCurrentNotificationCount","Home")",
+                        method: "POST",
+                        success: function (service) {
+                            if (service != null) {
+                                var _url = "@Url.Action("GetRequestNotifications","Home")";
+                                var _count = parseInt($("#notificationCount").text());
+                                if (isNaN(_count)) {
+                                    _count = 0;
+                                }
+                                _count = parseInt(_count) + parseInt(service);
+                                var _message = "<a class='dropdown-item' href=" + _url + " style='color:#333D51;'>"
+                                    + "<span class='align-middle'><strong> You have " + service + " New Notification.</strong></span></a>";
+
+                                $("#notificationCount").text(_count);
+                                $("#notificationMessage").append(_message);
+
+                                $(".CompanyServices15").hide();
+                                $(".EmployeeServices15").hide();
+                            }
+
+                        }
+                    });
+                }
+                else {
+                    $.ajax({
+                        url: "@Url.Action("GetLoggedInRole","Home")",
+                        method: "GET",
+                        success: function (role) {
+                            if (!role.startsWith("Sales") && role != "RM Team") {
+                                $.ajax({
+                                    url: "@Url.Action("GetNoticeMessage","Home")",
+                                    method: "POST",
+                                    success: function (response) {
+                                        if (response != null) {
+                                            if (response.message != null) {
+                                                var _url = "@Url.Action("GetAllNotification","Home")";
+                                                var _message = "<a class='dropdown-item' href=" + _url + " style='color:#333D51;'>"
+                                                    + "<span class='align-middle'><strong> You have " + response.notificationCount + " New Notifications.</strong></span></a>";
+                                                $("#notificationCount").text(response.notificationCount);
+                                                $("#notificationMessage").append(_message);
+                                            }
+                                            else {
+                                                $("#notificationCount").text(response.notificationCount);
+                                                $("#notificationMessage").html("<strong>No Notification Found.</strong>");
+                                            }
+
+                                        }
+
+                                    }
+                                });
+                            }
+                            else{
+                                $("#notificationCount").text("0");
+                                $("#notificationMessage").html("<strong>No Notification Found.</strong>");
+                                $(".CompanyServices15").hide();
+                                $(".EmployeeServices15").hide();    
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
+    });
+</script>
+<script>
+    $("#dibnlivesupport").on('click', function () {
+        var supprort = $("#supportid").val();
+        if (supprort == "") {
+            $("#supportid").val("true");
+            var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+            (function () {
+                var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+                s1.async = true;
+                s1.src = 'https://embed.tawk.to/62848be4b0d10b6f3e72c2c5/1g3as4tf4';
+                s1.charset = 'UTF-8';
+                s1.setAttribute('crossorigin', '*');
+                s0.parentNode.insertBefore(s1, s0);
+            })();
+        }
+        else {
+            window.location.reload();
+        }
+    });
+</script>

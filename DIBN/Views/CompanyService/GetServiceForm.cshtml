@@ -1,0 +1,624 @@
+﻿@model DIBN.Models.ServiceFormFieldModel
+@{
+    ViewData["Title"] = "GetServiceForm";
+}
+@{
+    int index = 0;
+    string _FormConstrains = null;
+    string[] FormName = { };
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+<div id="View">
+    @{
+        _FormConstrains = @Model.FormConstrains;
+        if (_FormConstrains != null)
+        {
+            if (!_FormConstrains.Contains("N/A"))
+            {
+                FormName = _FormConstrains.Split("+");
+            }
+        }
+    }
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+    @if (Model.getServiceFormFields.Count > 0)
+    {
+        <div class="row">
+            <div class="col-12">
+                <h5 class="text-theme float-start mb-2 mt-2">
+                    <strong>
+                        @if (Model.DisplayName != "N/A" && Model.HasMultipleForms == true)
+                        {
+                            @Model.DisplayName
+                        }
+                        else
+                        {
+                            @Model.FormName
+                        }
+                    </strong>
+                </h5>
+                <a href="@Url.Action("Index","CompanyService",new{name=@Model.Module})" class="btn btn-theme float-end mb-2">
+                    Back
+                </a>
+            </div>
+        </div>
+        @if (@Model.HasMultipleForms == true)
+        {
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="form-group">
+                                <span class="h6 text-theme">
+                                    <strong>
+                                        Select Service Type For Which You Want to Request :
+                                    </strong>
+                                </span>
+                                <br /><br />
+                            </div>
+                            <div class="form-group ms-4">
+                                @if (FormName != null && FormName.Count() > 0)
+                                {
+                                    @for (int i = 1; i <= FormName.Count(); i++)
+                                    {
+                                        int j = i - 1;
+                                        <input name="SelectedType" id="SelectedType" class="form-check-input" type="radio" value="@FormName[j]" /> @FormName[j]
+                                        <br />
+                                        <br />
+                                    }
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <form>
+                                <div class="row me-2">
+
+                                    @foreach (var dataField in Model.getServiceFormFields)
+                                    {
+                                        index++;
+                                        @if (dataField.IsRequired == true && dataField.IsDocumentUpload == true)
+                                        {
+                                            <div class="form-group col-md-5 float-start ms-3">
+                                                <label class="col-12 text-truncate truncat control-label">@dataField.FieldName<span class="text-danger">*</span></label>
+                                                <input name="@dataField.FieldId" id="fieldId_@index" type="file" class="form-control" data-val-required="@dataField.IsRequiredMessage" multiple required />
+                                                <hr class="mt-2 out-border" />
+                                            </div>
+
+                                        }
+                                        else if (dataField.IsRequired == true)
+                                        {
+                                            <div class="form-group col-md-5 float-start ms-3">
+                                                <label class="col-12 text-truncate truncat control-label">@dataField.FieldName<span class="text-danger">*</span></label>
+                                                <input name="@dataField.FieldId" type="text" id="fieldId_@index" class="form-control" data-val-required="@dataField.IsRequiredMessage" required />
+                                                <hr class="mt-2 out-border" />
+                                            </div>
+                                        }
+                                        else if (dataField.IsDocumentUpload == true)
+                                        {
+                                            if (@dataField.FieldName.Contains("Additional"))
+                                            {
+                                                <div class="col-md-12">
+                                                    <div class="form-group col-md-6 float-start ms-3">
+                                                        <label class="col-12 text-truncate truncat control-label">
+                                                            @dataField.FieldName
+                                                        </label>
+                                                        <input name="@dataField.FieldId" id="fieldId_@index" type="file" class="form-control" />
+                                                        <hr class="mt-2 out-border" />
+                                                    </div>
+
+                                                    <div class="form-group col-md-5 float-start ms-3 me-3 pt-4">
+                                                        <input class="btn btn-theme mt-2 mb-2" onclick="AddTextBox(@dataField.FieldId);" type="button" value="Add More">
+                                                    </div>
+                                                </div>
+                                                <div id="NewEmails">
+                                                </div>
+
+                                            }
+                                            else
+                                            {
+                                                <div class="form-group col-md-5 float-start ms-3">
+                                                    <label class="col-12 text-truncate truncat control-label">
+                                                        @dataField.FieldName
+                                                    </label>
+                                                    <input name="@dataField.FieldId" id="fieldId_@index" type="file" class="form-control" multiple />
+                                                    <hr class="mt-2 out-border" />
+                                                </div>
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            <div class="form-group col-md-5 float-start ms-3">
+                                                <label class="col-12 text-truncate truncat control-label">@dataField.FieldName</label>
+                                                <input name="@dataField.FieldId" type="text" id="fieldId_@index" class="form-control" />
+                                                <hr class="mt-2 out-border" />
+                                            </div>
+                                            <br />
+                                        }
+                                    }
+                                    <br />
+                                </div>
+                                <div class="float-start mt-3">
+                                    <input type="button" class="btn btn-theme" value="Submit" onclick="GetFormFieldsData();" id="btnSaveFrom" />
+                                    <p id="proccessingMessage" class="text-danger">Please wait for a while, we are currently submitting your request.</p>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+
+        <input type="hidden" id="ServiceId" value="@Model.ServiceId" />
+        <input type="hidden" id="FormId" value="@Model.FormId" />
+        <input type="hidden" id="companyType" value="@Model.CompanyType" />
+        <input type="hidden" id="CompanyId" value="@Model.CompanyId" />
+        <input type="hidden" id="serviceName" value="@Model.serviceName" />
+        <input type="hidden" id="selected" value="1" />
+        <input type="hidden" value="@index" id="lastIndex" />
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-12">
+                <a href="@Url.Action("Index","CompanyService",new{name=@Model.Module})" class="btn btn-theme float-end mb-2">
+                    Back
+                </a>
+            </div>
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="text-theme text-center">Currently this service request form don't have any field.</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+<input type="hidden" asp-for="Module" name="Module" id="Module" />
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+<script>
+    $(document).ready(function () {
+        $('.spinner-1').css('display', 'none');
+        $('#proccessingMessage').hide();
+    });
+</script>
+<script>
+    $('form').submit(function () {
+        alert("Please Wait for a while,We are currently submitting Your Request.");
+        $('input[type="button"]').attr('disabled', 'disabled');
+    });
+</script>
+<script>
+    var i = 1;
+    function GetDynamicTextBox(FieldId) {
+        var LastValue = $("#lastIndex").val();
+        var newIndex = parseInt(LastValue) + 1;
+        $("#lastIndex").val(newIndex);
+
+        var div = $("<div />").attr("class", "form-group");
+
+        var div1 = $("<div />").attr("class", "d-flex justify-content-start");
+
+        var div2 = $("<div />").attr("class", "col-md-5 col-lg-5");
+
+        var textBox = $("<input />").attr("type", "file").attr("name", FieldId).attr("class", "form-control col-lg-5 ms-3 col-md-5 EmailID mt-2 remove" + i).attr("id", "fieldId_" + newIndex);
+        textBox.val("");
+        div2.append(textBox);
+        div1.append(div2);
+
+        var div3 = $("<div />");
+        var _class = "remove" + i;
+        var button = $("<input />").attr("type", "button").attr("value", "Remove").attr("class", "btn btn-theme ms-5 mb-2 mt-2 remove" + i);
+        button.attr("onclick", "RemoveTextBox('" + _class + "')");
+        div3.append(button);
+        div1.append(div3);
+
+        div.append(div1);
+        i = i + 1;
+        return div;
+    };
+
+    function AddTextBox(FieldId) {
+        var div = GetDynamicTextBox(FieldId);
+        $("#NewEmails").append(div);
+    };
+
+    function RemoveTextBox(button) {
+        var LastValue = $("#lastIndex").val();
+        var newIndex = parseInt(LastValue) - 1;
+        $("#lastIndex").val(newIndex);
+        $("." + button).parent().remove();
+    };
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>
+
+<script>
+    $(function () {
+        var module = $("#Module").val();
+        var companyType = $("#companyType").val();
+        var selected = $("#selected").val();
+        $('input[type="radio"]').click(function () {
+            if ($(this).is(':checked')) {
+                $("#loader").show();
+                var formName = $(this).val();
+                $.ajax({
+                    url: "@Url.Action("GetServiceId", "CompanyService")",
+                    method: "GET",
+                    data: { "CompanyType": companyType, "Service": $(this).val(), "Value": selected },
+                    success: function (response) {
+                        $.ajax({
+                            url: "@Url.Action("GetServiceFormDetail", "CompanyService")",
+                            method: "GET",
+                            data: { "ServiceId": response, "IsCompanyService": true, "IsEmployeeService": false, "Value": selected },
+                            success: function (response) {
+                                $("#loader").hide();
+                                if (response.countOfFields == 0 && response.formId == 0) {
+                                    const swalWithBootstrapButtons = Swal.mixin({
+                                        customClass: {
+                                            confirmButton: 'ms-3 btn btn-success',
+                                            cancelButton: 'btn btn-danger'
+                                        },
+                                        buttonsStyling: false
+                                    })
+                                    swalWithBootstrapButtons.fire(
+                                        'Error',
+                                        "Something went wrong.Please try after sometime.!",
+                                        'error'
+                                    )
+                                }
+                                else {
+
+                                    var url = "@Url.Action("GetServiceForm", "CompanyService")";
+                                    url = url + "?ServiceId=" + response.serviceFormId + "&FormId=" + response.formId + "&name=" + module + "&Value=" + selected + "&serviceName=" + response.formName;
+                                    window.location.href = url;
+                                }
+                            }
+                        });
+                    }
+                });
+                $("#loader").hide();
+            }
+        });
+        $("#loader").hide();
+    });
+
+</script>
+<script>
+    var _addedFields = new Array();
+    var _serialNumber;
+    function GetFormFieldsData() {
+        $("#loader").show();
+        $("#proccessingMessage").show();
+        $('input[type="button"]').attr('disabled', 'disabled');
+        $('input[type="button"]').attr('hidden', 'hidden');
+        $('#btnSaveFrom').hide();
+        var CompanyId = $("#CompanyId").val();
+        var ServiceId = $("#ServiceId").val();
+        var serviceName = $("#serviceName").val();
+        var FormId = $("#FormId").val();
+
+        var LastValue = $("#lastIndex").val();
+
+        var SerialNumber = "";
+        setTimeout(function () {
+            $.ajax({
+                url: "@Url.Action("GetSerialNumber", "EmployeeService")",
+                type: "get",
+                contentType: false,
+                processData: false,
+                async: false,
+                beforeSend: function () {
+
+
+                },
+                success: function (result) {
+
+                    SerialNumber = result;
+                    for (var i = 1; i <= LastValue; i++) {
+                        var output = $("#fieldId_" + i);
+                        var fieldType = output.attr("type");
+                        var fieldRequired = output.attr("required");
+                        if (fieldRequired == "required" && output.val() == "") {
+
+                            var message = output.attr("data-val-required");
+                            alert(message);
+                            output.focus();
+                            $('.spinner-1').css('display', 'none');
+                            $('#btnSaveFrom').show();
+                            $('input[type="button"]').removeAttr('hidden');
+                            $('#proccessingMessage').hide();
+                            $('input[type="button"]').removeAttr('disabled');
+                            return false;
+                        }
+                    }
+                    for (var i = 1; i <= LastValue; i++) {
+                        var output = $("#fieldId_" + i);
+                        var fieldType = output.attr("type");
+                        $('input[type="button"]').attr('disabled', 'disabled');
+                        $('#btnSaveFrom').hide();
+                        $('input[type="button"]').attr('hidden', 'hidden');
+                        $('#proccessingMessage').show();
+
+
+                        if (fieldType == 'file') {
+                            var fieldName = output.attr("name");
+                            var uploadedFile = output.get(0);
+                            var files = uploadedFile.files;
+                            var fileData = new FormData();
+                            if (fieldName != "" && FormId != "" && ServiceId != "" && SerialNumber != "") {
+                                fileData.append("FieldId", fieldName);
+                                fileData.append("FormId", FormId);
+                                fileData.append("ServiceId", ServiceId);
+                                fileData.append("serviceName", serviceName);
+                                fileData.append("SerialNumber", SerialNumber);
+                                fileData.append("CompanyId", CompanyId);
+                                fileData.append("IsCompanyService", true);
+                                fileData.append("IsEmployeeService", false);
+                                if (files.length > 0) {
+
+                                    for (var j = 0; j < files.length; j++) {
+                                        fileData.append("formFile", files[j]);
+                                    }
+                                }
+
+                                if (i == LastValue) {
+                                    fileData.append("Last", 1);
+                                }
+                                _addedFields.push(fileData);
+                            }
+                        }
+                        else {
+                            if (fieldName != "" && FormId != "" && ServiceId != "" && SerialNumber != "") {
+                                var fieldName = output.attr("name");
+                                var fieldValue = output.val();
+                                var fileData = new FormData();
+                                fileData.append("FieldId", fieldName);
+                                fileData.append("FieldValue", fieldValue);
+                                fileData.append("FormId", FormId);
+                                fileData.append("serviceName", serviceName);
+                                fileData.append("SerialNumber", SerialNumber);
+                                fileData.append("CompanyId", CompanyId);
+                                fileData.append("IsCompanyService", true);
+                                fileData.append("IsEmployeeService", false);
+                                fileData.append("ServiceId", ServiceId);
+                                if (i == LastValue) {
+                                    fileData.append("Last", 1);
+                                }
+                                _addedFields.push(fileData);
+
+                            }
+                        }
+                    }
+
+                    if (_addedFields.length > 0 && parseInt(LastValue) == parseInt(_addedFields.length)) {
+                        $('#btnSaveFrom').hide();
+                        $('input[type="button"]').attr('hidden', 'hidden');
+                        $('#proccessingMessage').show();
+                        for (var index = 0; index <= _addedFields.length; index++) {
+                            $.ajax({
+                                url: "@Url.Action("AddFormFieldsValue", "CompanyService")",
+                                type: "post",
+                                contentType: false,
+                                processData: false,
+                                async: false,
+                                data: _addedFields[index],
+
+                                beforeSend: function () {
+
+                                },
+                                success: function (result) {
+
+                                }
+                            })
+                        }
+                        const swalWithBootstrapButtons = Swal.mixin({
+                            customClass: {
+                                confirmButton: 'ms-3 btn btn-success',
+                                cancelButton: 'btn btn-danger'
+                            },
+                            buttonsStyling: false
+                        })
+                        swalWithBootstrapButtons.fire({
+                            title: 'Success',
+                            html: 'Your Service Request has been successfully submitted for Processing. <br><br> To View the status,  Use the <br> <span style="font-size:20px;"><b>' + SerialNumber + '</b></span>',
+                            icon: 'success'
+                        }).then((result) => {
+
+                            var url = "@Url.Action("Index", "ServiceRequests")";
+                            url = url + "?name=MyRequests";
+                            window.location.href = url;
+                            $('#btnSaveFrom').hide();
+                            $('input[type="button"]').attr('hidden', 'hidden');
+                            $('#proccessingMessage').show();
+                        });
+                        $("#loader").hide();
+                    }
+                    else {
+                        const swalWithBootstrapButtons = Swal.mixin({
+                            customClass: {
+                                confirmButton: 'ms-3 btn btn-success',
+                                cancelButton: 'btn btn-danger'
+                            },
+                            buttonsStyling: false
+                        })
+                        swalWithBootstrapButtons.fire({
+                            title: 'Fail',
+                            text: 'Something Went wrong please try again.',
+                            //+SerialNumber,
+                            icon: 'error'
+                        }).then((result) => {
+                            var url = "@Url.Action("Index", "CompanyService")";
+                            url = url + "?name=CompanyServices";
+                            window.location.href = url;
+                        });
+                        $("#loader").hide();
+                        $('input[type="button"]').removeAttr('disabled');
+                        $('#btnSaveFrom').show();
+                        $('input[type="button"]').removeAttr('hidden');
+                        $('#proccessingMessage').hide();
+                    }
+
+                }
+            })
+        }, 10)
+        $("#loader").hide();
+    };
+</script>
+
+<script>
+    $(function () {
+        $("#Insert").hide();
+        $("#View").hide();
+        $("#View1").hide();
+        $(".Update").hide();
+        $(".Delete").hide();
+        $(".Details").hide();
+    });
+</script>
+<script>
+    $(function () {
+        $("#loader").show();
+        var module = $("#Module").val();
+        $.ajax({
+            url: "@Url.Action("GetRolePermissionsName", "UserPermission")",
+            method: "GET",
+            data: { "Module": module },
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (RoleResponse) {
+                $.ajax({
+                    url: "@Url.Action("GetCompanyPermissionsName", "UserPermission")",
+                    method: "GET",
+                    data: { "Module": module },
+                    async: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (CompanyResponse) {
+                        $.ajax({
+                            url: "@Url.Action("GetUserPermissionsName", "UserPermission")",
+                            method: "GET",
+                            data: { "Module": module },
+                            async: false,
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (UserResponse) {
+
+                                if (UserResponse.length > 0) {
+                                    for (let i = 0; i < UserResponse.length; i++) {
+                                        if (UserResponse[i] == "PermissionCount") {
+                                            alert("You don't have any permission for this module.");
+                                            var url = "@Url.Action("Index", "Home")";
+                                            url = url + "?name=HomePage";
+                                            window.location.href = url;
+                                        } else {
+                                            $("#" + UserResponse[i]).show();
+                                            if (UserResponse[i] == "View") {
+                                                $(".Details").show();
+                                                $("#View1").show();
+                                            }
+                                            if (UserResponse[i] == "Update") {
+                                                $("." + UserResponse[i]).show();
+                                            }
+                                            if (UserResponse[i] == "Delete") {
+                                                $("." + UserResponse[i]).show();
+                                            }
+                                        }
+
+                                    }
+                                    $("#loader").hide();
+                                }
+                                else if (CompanyResponse.length > 0) {
+                                    for (let i = 0; i < CompanyResponse.length; i++) {
+                                        if (CompanyResponse[i] == "PermissionCount") {
+                                            alert("You don't have any permission for this module.");
+                                            var url = "@Url.Action("Index", "Home")";
+                                            url = url + "?name=HomePage";
+                                            window.location.href = url;
+                                        }
+                                        else {
+                                            $("#" + CompanyResponse[i]).show();
+                                            if (CompanyResponse[i] == "View") {
+                                                $(".Details").show();
+                                                $("#View1").show();
+                                            }
+                                            if (CompanyResponse[i] == "Update") {
+                                                $("." + CompanyResponse[i]).show();
+                                            }
+                                            if (CompanyResponse[i] == "Delete") {
+                                                $("." + CompanyResponse[i]).show();
+                                            }
+                                        }
+
+                                    }
+                                    $("#loader").hide();
+                                } else if (RoleResponse.length > 0) {
+                                    for (let i = 0; i < RoleResponse.length; i++) {
+                                        if (RoleResponse[i] == "PermissionCount") {
+                                            alert("You don't have any permission for this module.");
+                                            var url = "@Url.Action("Index", "Home")";
+                                            url = url + "?name=HomePage";
+                                            window.location.href = url;
+                                        }
+                                        else {
+                                            $("#" + RoleResponse[i]).show();
+                                            if (RoleResponse[i] == "View") {
+                                                $(".Details").show();
+                                                $("#View1").show();
+                                            }
+                                            if (RoleResponse[i] == "Update") {
+                                                $("." + RoleResponse[i]).show();
+                                            }
+                                            if (RoleResponse[i] == "Delete") {
+                                                $("." + RoleResponse[i]).show();
+                                            }
+                                        }
+
+                                    }
+                                    $("#loader").hide();
+                                } else {
+                                    alert("You don't have any permission for this module.");
+                                    $("#loader").hide();
+                                }
+                            }
+                        })
+                    }
+                })
+            }
+        });
+    });
+</script>

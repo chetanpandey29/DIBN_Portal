@@ -1,0 +1,1956 @@
+﻿@{
+    ViewData["Title"] = "Company(s)";
+}
+<style>
+    .addEffect {
+        /*box-shadow: 3px 1px #243c7c;*/
+        box-shadow: 3px 1px #243c7c;
+    }
+
+    .datepicker {
+        z-index: 99999 !important;
+    }
+</style>
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row Details">
+    <div class="col-md-12">
+        <a class="mb-2 float-end btn btn-theme" id="generateSelectedCompanyReport" role="button">Generate Report(All Selected)</a>
+    </div>
+</div>
+
+<div class="row" id="View">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center front-text-theme fw-bold">Balance Sheet Report</h3>
+                <h6 class="text-center front-text-theme fw-bold">Company(s)</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-rep-plugin">
+                    <div class="table-responsive mb-0" data-pattern="priority-columns">
+                        <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse:collapse;border-spacing:0;width:100%;">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        @*<input type="checkbox" class="form-check" id="companyIds"/>*@
+                                    </th>
+                                    <th>
+                                        Company Account Number
+                                    </th>
+                                    <th>
+                                        Company
+                                    </th>
+                                    <th>
+
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="multipleDownloadErrorModal" role="dialog" data-bs-keyboard="false" data-bs-backdrop="static" style="z-index:10000 !important;">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-blue" style="justify-content:center !important;">
+                <h5 class="text-white">Step(s) to turn off a Pop-up blocker in your web browser.</h5>
+            </div>
+            <div class="modal-body pt-0">
+                <div class="col-md-12 mt-1">
+                    <h6><i class="fas fa-caret-right"></i>  Turn off pop-ups blocker on a <b style="font-size:18px !important;">Mac</b> :</h6>
+                    <p class="text-left pl-3">Just open your Safari browser, go to the drop-down menu, click Preferences and follow these steps:</p>
+                    <ol>
+                        <li>Select Websites</li>
+                        <li>Click Pop-up Windows in the left navigation pane</li>
+                        <li>Locate When visiting other websites in the lower right of the screen</li>
+                        <li>Click the drop-down menu and select "Allow" from the following options.</li>
+                    </ol>
+                </div>
+                <hr class="border border-theme" />
+                <div class="col-md-12 mt-1">
+                    <h6><i class="fas fa-caret-right"></i>  Turn off pop-ups blocker on a <b style="font-size:18px !important;">Chrome</b> :</h6>
+                    <p class="text-left pl-3">Just open your Chrome browser, open the browser menu by clicking the three dots in the upper right corner, and follow these steps :</p>
+                    <ol>
+                        <li>Click Settings > Privacy and security > Site settings</li>
+                        <li>Scroll down to Pop-ups and redirects and click the arrow on the right to open the menu where you can set your preferences</li>
+                        <li>To allow pop-ups on specific websites, scroll to Allowed to send pop-ups and use redirects, and click Add</li>
+                        <li>Enter the website name (first copy Portal URL without login and paste that URL into this box.) and save by clicking Add</li>
+                    </ol>
+                </div>
+                <hr class="border border-theme" />
+                <div class="col-md-12 mt-1">
+                    <h6><i class="fas fa-caret-right"></i>  Turn off pop-ups blocker on a <b style="font-size:18px !important;">Mozilla Firefox</b> :</h6>
+                    <p class="text-left pl-3">Just open your Mozilla Firefox browser , open the browser menu by clicking the three dots in the upper right corner, and follow these steps :</p>
+                    <ol>
+                        <li>Settings > Privacy & Security > Permissions and uncheck Block pop-up windows.</li>
+                    </ol>
+                </div>
+                <hr class="border border-theme" />
+                <div class="col-md-12 mt-1">
+                    <h6><i class="fas fa-caret-right"></i>  Turn off pop-ups blocker on a <b style="font-size:18px !important;">Microsoft Edge</b> :</h6>
+                    <p class="text-left pl-3">Just open your Microsoft Edge browser, open the browser menu by clicking the three dots in the upper right corner, and follow these steps :</p>
+                    <ol>
+                        <li>Settings > Cookies and site permissions > Pop-ups and redirects and turn off the switch of Block.</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-theme" data-dismiss="modal" id="multipleDownloadErrorCloseModal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="reportSelectionModal" role="dialog" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="justify-content:center !important;">
+                <h5 class="text-center" id="reportSelectionModalTitle">Balance Sheet Report</h5>
+            </div>
+            <h5 class="text-center front-text-theme fw-bold mt-2 mb-0" id="showSelectedType"></h5>
+            <div class="modal-body pt-0">
+                <div class="col-md-12 mt-4 mb-3" id="SelectPdfOrGraphType">
+                    <div class="row text-center justify-content-center">
+                        <div class="col-md-4 col-sm-6 p-1 mx-3 mt-1 float-left border rounded-3 bg-white border-theme" style="cursor:pointer;" onclick="SelectRangeType('Pdf or Excel');" onmouseover="addeffect1();" onmouseout="removeeffect1();" id="effect1">
+                            <p class="front-text-theme text-center h5 text-truncate text-break mt-2">Pdf or Excel</p>
+                            <img src="~/dibn_business_image/paper_2.jpg" class="img-fluid text-center" />
+                        </div>
+                        <div class="col-md-4 col-sm-6 p-1 mx-3 mt-1 float-left border rounded-3 bg-white border-theme" style="cursor:pointer;" onclick="SelectRangeType('Graph');" onmouseover="addeffect2();" onmouseout="removeeffect2();" id="effect2">
+                            <p class="front-text-theme text-center h5 text-truncate text-break mt-2">Graph</p>
+                            <img src="~/dibn_business_image/seo-investment-business-data-analysis-optimization_18660-3125.png" class="img-fluid text-center mt-2" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 mt-4 mb-3" id="SelectedPdfOrExcelType" hidden="hidden">
+                    <div class="row text-center justify-content-center">
+                        <div class="col-md-2 col-sm-4 p-1 mx-3 mt-1 float-left" id="Weekly">
+                            <input type="radio" name="SelectedPdfExcelOptionType" class="form-check-input" value="Weekly" onclick="GetPdfExcelSelectedType('Pdf');" /><span class="front-text-theme text-center h5 text-truncate text-break mt-2 ms-2">PDF</span>
+                        </div>
+                        <div class="col-md-2 col-sm-4 p-1 mx-3 mt-1 float-left" id="Monthly">
+                            <input type="radio" name="SelectedPdfExcelOptionType" class="form-check-input" value="Monthly" onclick="GetPdfExcelSelectedType('Excel');" /><span class="front-text-theme text-center h5 text-truncate text-break mt-2 ms-2">EXCEL</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 mt-4 mb-3" id="SelectedRangeType" hidden="hidden">
+                    <div class="row text-center justify-content-center">
+                        <div class="col-md-2 col-sm-4 p-1 mx-3 mt-1 float-left" id="Weekly">
+                            <input type="radio" name="SelectedOptionType" class="form-check-input" value="Weekly" onclick="GetSelectedType('Weekly');" /><span class="front-text-theme text-center h5 text-truncate text-break mt-2 ms-2">Weekly</span>
+                        </div>
+                        <div class="col-md-2 col-sm-4 p-1 mx-3 mt-1 float-left" id="Monthly">
+                            <input type="radio" name="SelectedOptionType" class="form-check-input" value="Monthly" onclick="GetSelectedType('Monthly');" /><span class="front-text-theme text-center h5 text-truncate text-break mt-2 ms-2">Monthly</span>
+                        </div>
+                        <div class="col-md-2 col-sm-4 p-1 mx-3 mt-1 float-left" id="Yearly">
+                            <input type="radio" name="SelectedOptionType" class="form-check-input" value="Yearly" onclick="GetSelectedType('Yearly');" /><span class="front-text-theme text-center h5 text-truncate text-break mt-2 ms-2">Yearly</span>
+                        </div>
+                        <div class="col-md-2 col-sm-4 p-1 mx-3 mt-1 float-left" id="Custom">
+                            <input type="radio" name="SelectedOptionType" class="form-check-input" value="Custom" onclick="GetSelectedType('Custom');" checked="checked" /><span class="front-text-theme text-center h5 text-truncate text-break mt-2 ms-2">Custom</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="weeklySelection" hidden="hidden">
+                    <div class="row text-center justify-content-center">
+                        <div class="col-md-2 col-sm-4 p-1 mx-3 mt-2 float-left">
+                            <button class="btn btn-theme" id="weeklyReport">
+                                Generate Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="monthSelection" hidden="hidden">
+                    <div class="row text-center justify-content-center">
+                        <div class="col-md-4 col-sm-6 p-1 mx-3 mt-1 float-left">
+                            <p class="front-text-theme text-center h5 text-truncate text-break mt-2 ms-2">Select Month :</p>
+                            <select name="selectMonth" id="selectMonth" class="form-control form-select">
+                                <option value="" selected>Select Month</option>
+                                <option value="01">January</option>
+                                <option value="02">February</option>
+                                <option value="03">March</option>
+                                <option value="04">April</option>
+                                <option value="05">May</option>
+                                <option value="06">June</option>
+                                <option value="07">July</option>
+                                <option value="08">August</option>
+                                <option value="09">September</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">December</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 col-sm-6 p-1 mx-3 mt-1 float-left">
+                            <p class="front-text-theme text-center h5 text-truncate text-break mt-2 ms-2">Select Year :</p>
+                            <select name="selectYear" id="selectYear" class="form-control form-select">
+                                <option value="" selected>Select Year</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row text-center justify-content-center">
+                        <div class="col-md-2 col-sm-4 p-1 mx-3 mt-2 float-left">
+                            <button class="btn btn-theme" id="monthReport">
+                                Generate Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="yearSelection" hidden="hidden">
+                    <div class="row text-center justify-content-center">
+                        <div class="col-md-4 col-sm-6 p-1 mx-3 mt-1 float-left">
+                            <p class="front-text-theme text-center h5 text-truncate text-break mt-2 ms-2">Select Year :</p>
+                            <select name="selectYear" id="selectedYear" class="form-control form-select">
+                                <option value="" selected>Select Year</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row text-center justify-content-center">
+                        <div class="col-md-2 col-sm-4 p-1 mx-3 mt-2 float-left">
+                            <button class="btn btn-theme" id="yearReport">
+                                Generate Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="customSelection" hidden="hidden">
+                    <div class="row text-center justify-content-center">
+                        <div class="col-md-4 col-sm-6 p-1 mx-3 mt-1 float-left">
+                            <p class="front-text-theme text-center h5 text-truncate text-break mt-2 ms-2">From Date :</p>
+                            <input name="FromDate" class="form-control" id="FromDate" placeholder="yyyy-mm-dd" readonly />
+                        </div>
+                        <div class="col-md-4 col-sm-6 p-1 mx-3 mt-1 float-left">
+                            <p class="front-text-theme text-center h5 text-truncate text-break mt-2 ms-2">To Date :</p>
+                            <input name="ToDate" class="form-control" id="ToDate" placeholder="yyyy-mm-dd" readonly />
+                        </div>
+                    </div>
+                    <div class="row text-center justify-content-center">
+                        <div class="col-md-2 col-sm-4 p-1 mx-3 mt-2 float-left">
+                            <button class="btn btn-theme" id="customReport">
+                                Generate Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-theme" data-dismiss="modal" id="reportSelectionCloseModal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<input type="hidden" name="SelectedType" id="SelectedType" />
+<input type="hidden" name="SelectedPdfExcelType" id="SelectedPdfExcelType" />
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+<script>
+    function addeffect1() {
+        $("#effect1").addClass("addEffect");
+    };
+
+    function removeeffect1() {
+        $("#effect1").removeClass("addEffect");
+    };
+
+    function addeffect2() {
+        $("#effect2").addClass("addEffect");
+    };
+
+    function removeeffect2() {
+        $("#effect2").removeClass("addEffect");
+    };
+</script>
+<script>
+    $("#customReport").on('click', function () {
+        var FromDate = $("#FromDate").val();
+        var ToDate = $("#ToDate").val();
+        var companyId = $("#companyId").val();
+        var SelectedPdfExcelType = $("#SelectedPdfExcelType").val();
+        var SelectedType = $("#SelectedType").val();
+        var selected = new Array();
+
+        var flag = true, firstFlag = true;
+        var index = 0;
+        var win;
+        var currentHourTime = new Date().getHours();
+        var currentMinTime = new Date().getMinutes();
+        var currentTime = new Date();
+        var nextTime = new Date();
+
+        var retrievedObject = localStorage.getItem('balanceSheetReportSelectedCompany');
+        
+        if (retrievedObject != null && retrievedObject != "[]") {
+            var removeExtra = retrievedObject.replace("[", "");
+            removeExtra = removeExtra.replace("]", "");
+            var splitData = removeExtra.split(",");
+            if (splitData.length > 0 && splitData != null) {
+                for (var ind = 0; ind < splitData.length; ind++) {
+                    selected.push(parseInt(splitData[ind]));
+                }
+            }
+        }
+
+        if (selected.length != 0) {
+            if (FromDate != null && FromDate != "" && FromDate != "undefined") {
+                if (ToDate != null && ToDate != "" && ToDate != "undefined") {
+                    if (ToDate < FromDate) {
+                        alert("Please select proper date, To Date should be greater than From Date.");
+                        return false;
+                    }
+                    else {
+                        $("#reportSelectionCloseModal").attr("disabled", "disabled");
+                        localStorage.removeItem('balanceSheetReportSelectedCompany');
+                        if (SelectedType == "Pdf or Excel") {
+                            if (SelectedPdfExcelType == "Pdf") {
+                                $("#loader").show();
+                                for (; index < selected.length;) {
+                                    pdfDownload(selected[index]);
+                                }
+                                $("#reportSelectionCloseModal").removeAttr("disabled");
+                                $("#loader").hide();
+                            }
+                            else {
+                                if (SelectedType == "Pdf or Excel") {
+                                    if (SelectedPdfExcelType == "Excel") {
+                                        $("#loader").show();
+                                        for (; index < selected.length;) {
+                                            excelDownload(selected[index]);
+                                        }
+                                        $("#reportSelectionCloseModal").removeAttr("disabled");
+                                        $("#loader").hide();
+                                    }
+                                }
+                            }
+                        }
+                        else {
+                            $("#loader").show();
+                            for (var i = 0; i < selected.length; i++) {
+                                var url = "@Url.Action("BalanceSheetCompanyCustomGraphReport","ReportManagement")";
+                                url = url + "?fromDate=" + FromDate + "&toDate=" + ToDate + "&companyId=" + selected[i];
+                                win = window.open();
+                                if (!win || win.closed || typeof win.closed == 'undefined' || typeof win.outerWidth == 'undefined' || typeof win.outerHeight == 'undefined') {
+                                    $mymodal = $("#multipleDownloadErrorModal");
+                                    $mymodal.find("div.modal-body");
+                                    $mymodal.modal("show");
+                                }
+                                else {
+                                    win.location.href = url;
+                                }
+                            }
+                            $("#reportSelectionCloseModal").removeAttr("disabled");
+                            $("#loader").hide();
+                        }
+
+                        window.location.reload();
+                    }
+                }
+                else {
+                    alert("Please select till which date you want to generate report.!");
+                    return false;
+                }
+            }
+            else {
+                alert("Please select from which date you want to generate report.!");
+                return false;
+            }
+        }
+        else {
+            alert("Please select company(s), for which you want to generate report.!");
+            return false;
+        }
+
+        function pdfDownload(company) {
+            var url = "@Url.Action("BalanceSheetMultipleCompanyCustomReportPdf","ReportManagement")";
+            if (flag) {
+                var windowText = "window " + company.toString();
+                url = url + "?fromDate=" + FromDate + "&toDate=" + ToDate + "&companyId=" + company;
+                win = window.open();
+                
+                if (!win || win.closed || typeof win.closed == 'undefined' || typeof win.outerWidth == 'undefined' || typeof win.outerHeight == 'undefined') {
+                    //alert("Please disable your pop-up blocker to use this feature.");
+                    //setTimeout(() => {
+                    //    window.location.reload();
+                    //},3000);
+                    $mymodal = $("#multipleDownloadErrorModal");
+                    $mymodal.find("div.modal-body");
+                    $mymodal.modal("show");
+                }
+                else {
+                    win.location.href = url;
+                    currentHourTime = new Date().getHours();
+                    currentMinTime = new Date().getSeconds();
+
+                    currentTime.setSeconds(currentMinTime + 1);
+                    flag = false;
+                }
+            }
+
+            nextTime = new Date();
+            if (currentTime < nextTime) {
+                
+                index++;
+                flag = true;
+                win.close(url);
+            }
+        }
+
+        function excelDownload(company) {
+            var url = "@Url.Action("BalanceSheetMultipleCompanyCustomReportExcel","ReportManagement")";
+            if (flag) {
+                var windowText = "window " + company.toString();
+                url = url + "?fromDate=" + FromDate + "&toDate=" + ToDate + "&companyId=" + company;
+                win = window.open();
+                if (!win || win.closed || typeof win.closed == 'undefined' || typeof win.outerWidth == 'undefined' || typeof win.outerHeight == 'undefined') {
+                    //alert("Please disable your pop-up blocker to use this feature.");
+                    //setTimeout(() => {
+                    //    window.location.reload();
+                    //},3000);
+                    $mymodal = $("#multipleDownloadErrorModal");
+                    $mymodal.find("div.modal-body");
+                    $mymodal.modal("show");
+                }
+                else {
+                    win.location.href = url;
+                    currentHourTime = new Date().getHours();
+                    currentMinTime = new Date().getSeconds();
+
+                    currentTime.setSeconds(currentMinTime + 1);
+                    flag = false;
+                }
+            }
+
+            nextTime = new Date();
+            if (currentTime < nextTime) {
+                
+                index++;
+                flag = true;
+                win.close(url);
+            }
+        }
+    });
+
+    $("#weeklyReport").on('click', function () {
+        var companyId = $("#companyId").val();
+        var url = "@Url.Action("BalanceSheetCompanyWeeklyReport","ReportManagement")";
+        var currentStartDate = new Date();
+        var currentEndDate = new Date();
+        var currentDay = currentStartDate.getDay();
+        var SelectedType = $("#SelectedType").val();
+        var selected = new Array();
+        var SelectedPdfExcelType = $("#SelectedPdfExcelType").val();
+
+        var flag = true, firstFlag = true;
+        var index = 0;
+        var win;
+        var currentHourTime = new Date().getHours();
+        var currentMinTime = new Date().getMinutes();
+        var currentTime = new Date();
+        var nextTime = new Date();
+
+        var retrievedObject = localStorage.getItem('balanceSheetReportSelectedCompany');
+
+        if (retrievedObject != null && retrievedObject != "[]") {
+            var removeExtra = retrievedObject.replace("[", "");
+            removeExtra = removeExtra.replace("]", "");
+            var splitData = removeExtra.split(",");
+            if (splitData.length > 0 && splitData != null) {
+                for (var ind = 0; ind < splitData.length; ind++) {
+                    selected.push(parseInt(splitData[ind]));
+                }
+            }
+        }
+
+        localStorage.removeItem('balanceSheetReportSelectedCompany');
+
+        if (selected.length != 0) {
+            if (currentDay == 0) {
+                var startingDate = currentStartDate.setDate(currentStartDate.getDate() - 6);
+                var endingDate = currentDate;
+
+                var startDate = new Date(startingDate);
+                var endDate = new Date(endingDate);
+
+                startMonth = (startDate.getMonth() + 1).toString();
+                endMonth = (endDate.getMonth() + 1).toString();
+
+                var startDay = startDate.getDate().toString();
+                var endDay = endDate.getDate().toString();
+
+                if (startDay.length <= 1) {
+                    startDay = "0" + (startDate.getDate()).toString();
+                }
+                else {
+                    startDay = (startDate.getDate()).toString();
+                }
+
+
+                if (endDay.length <= 1) {
+                    endDay = "0" + (endDate.getDate()).toString();
+                }
+                else {
+                    endDay = (endDate.getDate()).toString();
+                }
+
+                if (startMonth.length <= 1) {
+                    startMonth = "0" + (startDate.getMonth() + 1);
+                }
+                else {
+                    startMonth = (startDate.getMonth() + 1);
+                }
+
+                if (endMonth.length <= 1) {
+                    endMonth = "0" + (endDate.getMonth() + 1).toString();
+                }
+                else {
+                    endMonth = (endDate.getMonth() + 1).toString();
+                }
+
+                var finalStartDate = startDate.getFullYear() + '-' + startMonth + '-' + startDay;
+                var finalEndDate = endDate.getFullYear() + '-' + endMonth + '-' + endDay;
+
+                if (SelectedType == "Pdf or Excel") {
+                    if (SelectedPdfExcelType == "Pdf") {
+                        $("#loader").show();
+                        $("#reportSelectionCloseModal").attr("disabled", "disabled");
+                        for (; index < selected.length;) {
+                            pdfDownload(selected[index], finalStartDate, finalEndDate);
+                        }
+                        $("#reportSelectionCloseModal").removeAttr("disabled");
+                        $("#loader").hide();
+                    }
+                    else {
+                        if (SelectedType == "Pdf or Excel") {
+                            if (SelectedPdfExcelType == "Excel") {
+                                $("#loader").show();
+                                $("#reportSelectionCloseModal").attr("disabled", "disabled");
+                                for (; index < selected.length;) {
+                                    excelDownload(selected[index], finalStartDate, finalEndDate);
+                                }
+                                $("#reportSelectionCloseModal").removeAttr("disabled");
+                                $("#loader").hide();
+                            }
+                        }
+                    }
+                }
+                else {
+                    $("#loader").show();
+                    $("#reportSelectionCloseModal").attr("disabled", "disabled");
+                    for (var i = 0; i < selected.length; i++) {
+                        var url = "@Url.Action("BalanceSheetCompanyWeeklyGraphReport","ReportManagement")";
+                        url = url + "?fromDate=" + finalStartDate + "&toDate=" + finalEndDate + "&companyId=" + selected[i];
+                        win = window.open();
+                        if (!win || win.closed || typeof win.closed == 'undefined' || typeof win.outerWidth == 'undefined' || typeof win.outerHeight == 'undefined') {
+                            $mymodal = $("#multipleDownloadErrorModal");
+                            $mymodal.find("div.modal-body");
+                            $mymodal.modal("show");
+                        }
+                        else {
+                            win.location.href = url;
+                        }
+                    }
+                    $("#reportSelectionCloseModal").removeAttr("disabled");
+                    $("#loader").hide();
+                }
+
+                window.location.reload();
+            }
+            else if (currentDay == 1) {
+                var startingDate = currentStartDate.setDate(currentStartDate.getDate());
+                var endingDate = currentEndDate.setDate(currentEndDate.getDate() + 6);
+
+                var startDate = new Date(startingDate);
+                var endDate = new Date(endingDate);
+
+                var startDay = startDate.getDate().toString();
+                var endDay = endDate.getDate().toString();
+
+                if (startDay.length <= 1) {
+                    startDay = "0" + (startDate.getDate()).toString();
+                }
+                else {
+                    startDay = (startDate.getDate()).toString();
+                }
+
+
+                if (endDay.length <= 1) {
+                    endDay = "0" + (endDate.getDate()).toString();
+                }
+                else {
+                    endDay = (endDate.getDate()).toString();
+                }
+
+                startMonth = (startDate.getMonth() + 1).toString();
+                endMonth = (endDate.getMonth() + 1).toString();
+
+                if (startMonth.length <= 1) {
+                    startMonth = "0" + (startDate.getMonth() + 1);
+                }
+                else {
+                    startMonth = (startDate.getMonth() + 1);
+                }
+
+                if (endMonth.length <= 1) {
+                    endMonth = "0" + (endDate.getMonth() + 1).toString();
+                }
+                else {
+                    endMonth = (endDate.getMonth() + 1).toString();
+                }
+
+                var finalStartDate = startDate.getFullYear() + '-' + startMonth + '-' + startDay;
+                var finalEndDate = endDate.getFullYear() + '-' + endMonth + '-' + endDay;
+                if (SelectedType == "Pdf or Excel") {
+                    if (SelectedPdfExcelType == "Pdf") {
+                        $("#loader").show();
+                        $("#reportSelectionCloseModal").attr("disabled", "disabled");
+                        for (; index < selected.length;) {
+                            pdfDownload(selected[index], finalStartDate, finalEndDate);
+                        }
+                        $("#reportSelectionCloseModal").removeAttr("disabled");
+                        $("#loader").hide();
+                    }
+                    else {
+                        if (SelectedType == "Pdf or Excel") {
+                            if (SelectedPdfExcelType == "Excel") {
+                                $("#loader").show();
+                                $("#reportSelectionCloseModal").attr("disabled", "disabled");
+                                for (; index < selected.length;) {
+                                    excelDownload(selected[index], finalStartDate, finalEndDate);
+                                }
+                                $("#reportSelectionCloseModal").removeAttr("disabled");
+                                $("#loader").hide();
+                            }
+                        }
+                    }
+                }
+                else {
+                    $("#loader").show();
+                    $("#reportSelectionCloseModal").attr("disabled", "disabled");
+                    for (var i = 0; i < selected.length; i++) {
+                        var url = "@Url.Action("BalanceSheetCompanyWeeklyGraphReport","ReportManagement")";
+                        url = url + "?fromDate=" + finalStartDate + "&toDate=" + finalEndDate + "&companyId=" + selected[i];
+                        win = window.open();
+                        if (!win || win.closed || typeof win.closed == 'undefined' || typeof win.outerWidth == 'undefined' || typeof win.outerHeight == 'undefined') {
+                            $mymodal = $("#multipleDownloadErrorModal");
+                            $mymodal.find("div.modal-body");
+                            $mymodal.modal("show");
+                        }
+                        else {
+                            win.location.href = url;
+                        }
+                    }
+                    $("#reportSelectionCloseModal").removeAttr("disabled");
+                    $("#loader").hide();
+                }
+
+                window.location.reload();
+            }
+            else if (currentDay == 2) {
+                var startingDate = currentStartDate.setDate(currentStartDate.getDate() - 1);
+                var endingDate = currentEndDate.setDate(currentEndDate.getDate() + 5);
+
+                var startDate = new Date(startingDate);
+                var endDate = new Date(endingDate);
+
+                var startDay = startDate.getDate().toString();
+                var endDay = endDate.getDate().toString();
+
+                if (startDay.length <= 1) {
+                    startDay = "0" + (startDate.getDate()).toString();
+                }
+                else {
+                    startDay = (startDate.getDate()).toString();
+                }
+
+
+                if (endDay.length <= 1) {
+                    endDay = "0" + (endDate.getDate()).toString();
+                }
+                else {
+                    endDay = (endDate.getDate()).toString();
+                }
+
+                startMonth = (startDate.getMonth() + 1).toString();
+                endMonth = (endDate.getMonth() + 1).toString();
+
+                if (startMonth.length <= 1) {
+                    startMonth = "0" + (startDate.getMonth() + 1);
+                }
+                else {
+                    startMonth = (startDate.getMonth() + 1);
+                }
+
+                if (endMonth.length <= 1) {
+                    endMonth = "0" + (endDate.getMonth() + 1).toString();
+                }
+                else {
+                    endMonth = (endDate.getMonth() + 1).toString();
+                }
+
+                var finalStartDate = startDate.getFullYear() + '-' + startMonth + '-' + startDay;
+                var finalEndDate = endDate.getFullYear() + '-' + endMonth + '-' + endDay;
+                if (SelectedType == "Pdf or Excel") {
+                    if (SelectedPdfExcelType == "Pdf") {
+                        $("#loader").show();
+                        $("#reportSelectionCloseModal").attr("disabled", "disabled");
+
+                        for (; index < selected.length;) {
+                            pdfDownload(selected[index], finalStartDate, finalEndDate);
+                        }
+
+                        $("#reportSelectionCloseModal").removeAttr("disabled");
+                        $("#loader").hide();
+                    }
+                    else {
+                        if (SelectedType == "Pdf or Excel") {
+                            if (SelectedPdfExcelType == "Excel") {
+                                $("#loader").show();
+                                $("#reportSelectionCloseModal").attr("disabled", "disabled");
+                                for (; index < selected.length;) {
+                                    excelDownload(selected[index], finalStartDate, finalEndDate);
+                                }
+                                $("#reportSelectionCloseModal").removeAttr("disabled");
+                                $("#loader").hide();
+                            }
+                        }
+                    }
+                }
+                else {
+                    $("#loader").show();
+                    $("#reportSelectionCloseModal").attr("disabled", "disabled");
+                    for (var i = 0; i < selected.length; i++) {
+                        var url = "@Url.Action("BalanceSheetCompanyWeeklyGraphReport","ReportManagement")";
+                        url = url + "?fromDate=" + finalStartDate + "&toDate=" + finalEndDate + "&companyId=" + selected[i];
+                        win = window.open();
+                        if (!win || win.closed || typeof win.closed == 'undefined' || typeof win.outerWidth == 'undefined' || typeof win.outerHeight == 'undefined') {
+                            $mymodal = $("#multipleDownloadErrorModal");
+                            $mymodal.find("div.modal-body");
+                            $mymodal.modal("show");
+                        }
+                        else {
+                            win.location.href = url;
+                        }
+                    }
+                    $("#reportSelectionCloseModal").removeAttr("disabled");
+                    $("#loader").hide();
+                }
+
+                window.location.reload();
+            }
+            else if (currentDay == 3) {
+                var startingDate = currentStartDate.setDate(currentStartDate.getDate() - 2);
+                var endingDate = currentEndDate.setDate(currentEndDate.getDate() + 4);
+
+                var startDate = new Date(startingDate);
+                var endDate = new Date(endingDate);
+
+                var startDay = startDate.getDate().toString();
+                var endDay = endDate.getDate().toString();
+
+                if (startDay.length <= 1) {
+                    startDay = "0" + (startDate.getDate()).toString();
+                }
+                else {
+                    startDay = (startDate.getDate()).toString();
+                }
+
+
+                if (endDay.length <= 1) {
+                    endDay = "0" + (endDate.getDate()).toString();
+                }
+                else {
+                    endDay = (endDate.getDate()).toString();
+                }
+
+                startMonth = (startDate.getMonth() + 1).toString();
+                endMonth = (endDate.getMonth() + 1).toString();
+
+                if (startMonth.length <= 1) {
+                    startMonth = "0" + (startDate.getMonth() + 1);
+                }
+                else {
+                    startMonth = (startDate.getMonth() + 1);
+                }
+
+                if (endMonth.length <= 1) {
+                    endMonth = "0" + (endDate.getMonth() + 1).toString();
+                }
+                else {
+                    endMonth = (endDate.getMonth() + 1).toString();
+                }
+
+                var finalStartDate = startDate.getFullYear() + '-' + startMonth + '-' + startDay;
+                var finalEndDate = endDate.getFullYear() + '-' + endMonth + '-' + endDay;
+                if (SelectedType == "Pdf or Excel") {
+                    if (SelectedPdfExcelType == "Pdf") {
+                        $("#loader").show();
+                        $("#reportSelectionCloseModal").attr("disabled", "disabled");
+                        for (; index < selected.length;) {
+                            pdfDownload(selected[index], finalStartDate, finalEndDate);
+                        }
+                        $("#reportSelectionCloseModal").removeAttr("disabled");
+                        $("#loader").hide();
+                    }
+                    else {
+                        if (SelectedType == "Pdf or Excel") {
+                            if (SelectedPdfExcelType == "Excel") {
+                                $("#loader").show();
+                                $("#reportSelectionCloseModal").attr("disabled", "disabled");
+                                for (; index < selected.length;) {
+                                    excelDownload(selected[index], finalStartDate, finalEndDate);
+                                }
+                                $("#reportSelectionCloseModal").removeAttr("disabled");
+                                $("#loader").hide();
+                            }
+                        }
+                    }
+                }
+                else {
+                    $("#loader").show();
+                    $("#reportSelectionCloseModal").attr("disabled", "disabled");
+                    for (var i = 0; i < selected.length; i++) {
+                        var url = "@Url.Action("BalanceSheetCompanyWeeklyGraphReport","ReportManagement")";
+                        url = url + "?fromDate=" + finalStartDate + "&toDate=" + finalEndDate + "&companyId=" + selected[i];
+                        win = window.open();
+                        if (!win || win.closed || typeof win.closed == 'undefined' || typeof win.outerWidth == 'undefined' || typeof win.outerHeight == 'undefined') {
+                            $mymodal = $("#multipleDownloadErrorModal");
+                            $mymodal.find("div.modal-body");
+                            $mymodal.modal("show");
+                        }
+                        else {
+                            win.location.href = url;
+                        }
+                    }
+                    $("#reportSelectionCloseModal").removeAttr("disabled");
+                    $("#loader").hide();
+                }
+
+                window.location.reload();
+            }
+            else if (currentDay == 4) {
+                var startingDate = currentStartDate.setDate(currentStartDate.getDate() - 3);
+                var endingDate = currentEndDate.setDate(currentEndDate.getDate() + 3);
+
+                var startDate = new Date(startingDate);
+                var endDate = new Date(endingDate);
+
+                var startDay = startDate.getDate().toString();
+                var endDay = endDate.getDate().toString();
+
+                if (startDay.length <= 1) {
+                    startDay = "0" + (startDate.getDate()).toString();
+                }
+                else {
+                    startDay = (startDate.getDate()).toString();
+                }
+
+
+                if (endDay.length <= 1) {
+                    endDay = "0" + (endDate.getDate()).toString();
+                }
+                else {
+                    endDay = (endDate.getDate()).toString();
+                }
+
+                startMonth = (startDate.getMonth() + 1).toString();
+                endMonth = (endDate.getMonth() + 1).toString();
+
+                if (startMonth.length <= 1) {
+                    startMonth = "0" + (startDate.getMonth() + 1);
+                }
+                else {
+                    startMonth = (startDate.getMonth() + 1);
+                }
+
+                if (endMonth.length <= 1) {
+                    endMonth = "0" + (endDate.getMonth() + 1).toString();
+                }
+                else {
+                    endMonth = (endDate.getMonth() + 1).toString();
+                }
+
+                var finalStartDate = startDate.getFullYear() + '-' + startMonth + '-' + startDay;
+                var finalEndDate = endDate.getFullYear() + '-' + endMonth + '-' + endDay;
+                if (SelectedType == "Pdf or Excel") {
+                    if (SelectedPdfExcelType == "Pdf") {
+                        $("#loader").show();
+                        $("#reportSelectionCloseModal").attr("disabled", "disabled");
+
+                        for (; index < selected.length;) {
+                            pdfDownload(selected[index], finalStartDate, finalEndDate);
+                        }
+                        $("#reportSelectionCloseModal").removeAttr("disabled");
+                        $("#loader").hide();
+                    }
+                    else {
+                        if (SelectedType == "Pdf or Excel") {
+                            if (SelectedPdfExcelType == "Excel") {
+                                $("#loader").show();
+                                $("#reportSelectionCloseModal").attr("disabled", "disabled");
+
+                                for (; index < selected.length;) {
+                                    excelDownload(selected[index], finalStartDate, finalEndDate);
+                                }
+                                $("#reportSelectionCloseModal").removeAttr("disabled");
+                                $("#loader").hide();
+                            }
+                        }
+                    }
+                }
+                else {
+                    $("#loader").show();
+                    $("#reportSelectionCloseModal").attr("disabled", "disabled");
+                    for (var i = 0; i < selected.length; i++) {
+                        var url = "@Url.Action("BalanceSheetCompanyWeeklyGraphReport","ReportManagement")";
+                        url = url + "?fromDate=" + finalStartDate + "&toDate=" + finalEndDate + "&companyId=" + selected[i];
+                        win = window.open();
+                        if (!win || win.closed || typeof win.closed == 'undefined' || typeof win.outerWidth == 'undefined' || typeof win.outerHeight == 'undefined') {
+                            $mymodal = $("#multipleDownloadErrorModal");
+                            $mymodal.find("div.modal-body");
+                            $mymodal.modal("show");
+                        }
+                        else {
+                            win.location.href = url;
+                        }
+                    }
+                    $("#reportSelectionCloseModal").removeAttr("disabled");
+                    $("#loader").hide();
+                }
+
+                window.location.reload();
+            }
+            else if (currentDay == 5) {
+                var startMonth = "", endMonth = "";
+                var startingDate = currentStartDate.setDate(currentStartDate.getDate() - 4);
+                var endingDate = currentEndDate.setDate(currentEndDate.getDate() + 2);
+
+                var startDate = new Date(startingDate);
+                var endDate = new Date(endingDate);
+
+                var startDay = startDate.getDate().toString();
+                var endDay = endDate.getDate().toString();
+
+                if (startDay.length <= 1) {
+                    startDay = "0" + (startDate.getDate()).toString();
+                }
+                else {
+                    startDay = (startDate.getDate()).toString();
+                }
+
+
+                if (endDay.length <= 1) {
+                    endDay = "0" + (endDate.getDate()).toString();
+                }
+                else {
+                    endDay = (endDate.getDate()).toString();
+                }
+
+                startMonth = (startDate.getMonth() + 1).toString();
+                endMonth = (endDate.getMonth() + 1).toString();
+
+                if (startMonth.length <= 1) {
+                    startMonth = "0" + (startDate.getMonth() + 1);
+                }
+                else {
+                    startMonth = (startDate.getMonth() + 1);
+                }
+
+                if (endMonth.length <= 1) {
+                    endMonth = "0" + (endDate.getMonth() + 1).toString();
+                }
+                else {
+                    endMonth = (endDate.getMonth() + 1).toString();
+                }
+
+                var finalStartDate = startDate.getFullYear() + '-' + startMonth + '-' + startDay;
+                var finalEndDate = endDate.getFullYear() + '-' + endMonth + '-' + endDay;
+
+                if (SelectedType == "Pdf or Excel") {
+                    if (SelectedPdfExcelType == "Pdf") {
+                        $("#loader").show();
+                        $("#reportSelectionCloseModal").attr("disabled", "disabled");
+                        for (; index < selected.length;) {
+                            pdfDownload(selected[index], finalStartDate, finalEndDate);
+                        }
+                        $("#reportSelectionCloseModal").removeAttr("disabled");
+                        $("#loader").hide();
+
+                    }
+                    else {
+                        if (SelectedType == "Pdf or Excel") {
+                            if (SelectedPdfExcelType == "Excel") {
+                                $("#loader").show();
+                                $("#reportSelectionCloseModal").attr("disabled", "disabled");
+                                for (; index < selected.length;) {
+                                    excelDownload(selected[index], finalStartDate, finalEndDate);
+                                }
+                                $("#reportSelectionCloseModal").removeAttr("disabled");
+                                $("#loader").hide();
+                            }
+                        }
+                    }
+                }
+                else {
+                    $("#loader").show();
+                    $("#reportSelectionCloseModal").attr("disabled", "disabled");
+                    for (var i = 0; i < selected.length; i++) {
+                        var url = "@Url.Action("BalanceSheetCompanyWeeklyGraphReport","ReportManagement")";
+                        url = url + "?fromDate=" + finalStartDate + "&toDate=" + finalEndDate + "&companyId=" + selected[i];
+                        win = window.open();
+                        if (!win || win.closed || typeof win.closed == 'undefined' || typeof win.outerWidth == 'undefined' || typeof win.outerHeight == 'undefined') {
+                            //alert("Please disable your pop-up blocker to use this feature.");
+                            //setTimeout(() => {
+                            //    window.location.reload();
+                            //},3000);
+                            $mymodal = $("#multipleDownloadErrorModal");
+                            $mymodal.find("div.modal-body");
+                            $mymodal.modal("show");
+                        }
+                        else {
+                            win.location.href = url;
+                        }
+                    }
+                    $("#reportSelectionCloseModal").removeAttr("disabled");
+                    $("#loader").hide();
+                }
+
+                window.location.reload();
+            }
+            else if (currentDay == 6) {
+                var startingDate = currentStartDate.setDate(currentStartDate.getDate() - 5);
+                var endingDate = currentEndDate.setDate(currentEndDate.getDate() + 1);
+
+                var startDate = new Date(startingDate);
+                var endDate = new Date(endingDate);
+
+                var startDay = startDate.getDate().toString();
+                var endDay = endDate.getDate().toString();
+
+                if (startDay.length <= 1) {
+                    startDay = "0" + (startDate.getDate()).toString();
+                }
+                else {
+                    startDay = (startDate.getDate()).toString();
+                }
+
+
+                if (endDay.length <= 1) {
+                    endDay = "0" + (endDate.getDate()).toString();
+                }
+                else {
+                    endDay = (endDate.getDate()).toString();
+                }
+
+                startMonth = (startDate.getMonth() + 1).toString();
+                endMonth = (endDate.getMonth() + 1).toString();
+
+                if (startMonth.length <= 1) {
+                    startMonth = "0" + (startDate.getMonth() + 1);
+                }
+                else {
+                    startMonth = (startDate.getMonth() + 1);
+                }
+
+                if (endMonth.length <= 1) {
+                    endMonth = "0" + (endDate.getMonth() + 1).toString();
+                }
+                else {
+                    endMonth = (endDate.getMonth() + 1).toString();
+                }
+
+                var finalStartDate = startDate.getFullYear() + '-' + startMonth + '-' + startDay;
+                var finalEndDate = endDate.getFullYear() + '-' + endMonth + '-' + endDay;
+
+                if (SelectedType == "Pdf or Excel") {
+                    if (SelectedPdfExcelType == "Pdf") {
+                        $("#loader").show();
+                        $("#reportSelectionCloseModal").attr("disabled", "disabled");
+                        for (; index < selected.length;) {
+                            pdfDownload(selected[index], finalStartDate, finalEndDate);
+                        }
+                        $("#reportSelectionCloseModal").removeAttr("disabled");
+                        $("#loader").hide();
+
+                    }
+                    else {
+                        if (SelectedType == "Pdf or Excel") {
+                            if (SelectedPdfExcelType == "Excel") {
+                                $("#loader").show();
+                                $("#reportSelectionCloseModal").attr("disabled", "disabled");
+                                for (; index < selected.length;) {
+                                    excelDownload(selected[index], finalStartDate, finalEndDate);
+                                }
+                                $("#reportSelectionCloseModal").removeAttr("disabled");
+                                $("#loader").hide();
+                            }
+                        }
+                    }
+                }
+                else {
+                    $("#loader").show();
+                    $("#reportSelectionCloseModal").attr("disabled", "disabled");
+                    for (var i = 0; i < selected.length; i++) {
+                        var url = "@Url.Action("BalanceSheetCompanyWeeklyGraphReport","ReportManagement")";
+                        url = url + "?fromDate=" + finalStartDate + "&toDate=" + finalEndDate + "&companyId=" + selected[i];
+                        win = window.open();
+                        if (!win || win.closed || typeof win.closed == 'undefined' || typeof win.outerWidth == 'undefined' || typeof win.outerHeight == 'undefined') {
+                            $mymodal = $("#multipleDownloadErrorModal");
+                            $mymodal.find("div.modal-body");
+                            $mymodal.modal("show");
+                        }
+                        else {
+                            win.location.href = url;
+                        }
+                    }
+                    $("#reportSelectionCloseModal").removeAttr("disabled");
+                    $("#loader").hide();
+                }
+
+                window.location.reload();
+            }
+        }
+        else {
+            alert("Please select company(s), for which you want to generate report.!");
+            return false;
+        }
+
+        function pdfDownload(company, finalStartDate, finalEndDate) {
+            var url = "@Url.Action("BalanceSheetMultipleCompanyWeeklyReportPdf","ReportManagement")";
+            if (flag) {
+                var windowText = "window " + company.toString();
+                url = url + "?fromDate=" + finalStartDate + "&toDate=" + finalEndDate + "&companyId=" + company;
+                win = window.open();
+                if (!win || win.closed || typeof win.closed == 'undefined' || typeof win.outerWidth == 'undefined' || typeof win.outerHeight == 'undefined') {
+                    //alert("Please disable your pop-up blocker to use this feature.");
+                    //setTimeout(() => {
+                    //    window.location.reload();
+                    //},3000);
+                    $mymodal = $("#multipleDownloadErrorModal");
+                    $mymodal.find("div.modal-body");
+                    $mymodal.modal("show");
+                }
+                else {
+                    win.location.href = url;
+                    currentHourTime = new Date().getHours();
+                    currentMinTime = new Date().getSeconds();
+
+                    currentTime.setSeconds(currentMinTime + 1);
+                    flag = false;
+                }
+            }
+
+            nextTime = new Date();
+            if (currentTime < nextTime) {
+                
+                index++;
+                flag = true;
+                win.close(url);
+            }
+        }
+
+        function excelDownload(company, finalStartDate, finalEndDate) {
+            var url = "@Url.Action("BalanceSheetMultipleCompanyWeeklyReportExcel","ReportManagement")";
+            if (flag) {
+                var windowText = "window " + company.toString();
+                url = url + "?fromDate=" + finalStartDate + "&toDate=" + finalEndDate + "&companyId=" + company;
+                win = window.open();
+                if (!win || win.closed || typeof win.closed == 'undefined' || typeof win.outerWidth == 'undefined' || typeof win.outerHeight == 'undefined') {
+                    //alert("Please disable your pop-up blocker to use this feature.");
+                    //setTimeout(() => {
+                    //    window.location.reload();
+                    //},3000);
+                    $mymodal = $("#multipleDownloadErrorModal");
+                    $mymodal.find("div.modal-body");
+                    $mymodal.modal("show");
+                }
+                else {
+                    win.location.href = url;
+                    currentHourTime = new Date().getHours();
+                    currentMinTime = new Date().getSeconds();
+
+                    currentTime.setSeconds(currentMinTime + 1);
+                    flag = false;
+                }
+            }
+
+            nextTime = new Date();
+            if (currentTime < nextTime) {
+                
+                index++;
+                flag = true;
+                win.close(url);
+            }
+        }
+    });
+
+    $("#monthReport").on('click', function () {
+        var month = $("#selectMonth").val();
+        var year = $("#selectYear").val();
+        var companyId = $("#companyId").val();
+        var SelectedType = $("#SelectedType").val();
+        var selected = new Array();
+        var SelectedPdfExcelType = $("#SelectedPdfExcelType").val();
+
+        var retrievedObject = localStorage.getItem('balanceSheetReportSelectedCompany');
+
+        if (retrievedObject != null && retrievedObject != "[]") {
+            var removeExtra = retrievedObject.replace("[", "");
+            removeExtra = removeExtra.replace("]", "");
+            var splitData = removeExtra.split(",");
+            if (splitData.length > 0 && splitData != null) {
+                for (var ind = 0; ind < splitData.length; ind++) {
+                    selected.push(parseInt(splitData[ind]));
+                }
+            }
+        }
+
+        var flag = true, firstFlag = true;
+        var index = 0;
+        var win;
+        var currentHourTime = new Date().getHours();
+        var currentMinTime = new Date().getMinutes();
+        var currentTime = new Date();
+        var nextTime = new Date();
+
+        if (month != "" && month != null && month != "unidentified") {
+            if (year != "" && year != null && year != "unidentified") {
+
+                localStorage.removeItem('balanceSheetReportSelectedCompany');
+
+                if (SelectedType == "Pdf or Excel") {
+                    if (SelectedPdfExcelType == "Pdf") {
+                        $("#loader").show();
+                        $("#reportSelectionCloseModal").attr("disabled", "disabled");
+                        for (; index < selected.length;) {
+                            pdfDownload(selected[index]);
+                        }
+                        $("#reportSelectionCloseModal").removeAttr("disabled");
+                        $("#loader").hide();
+                    }
+                    else {
+                        if (SelectedType == "Pdf or Excel") {
+                            if (SelectedPdfExcelType == "Excel") {
+                                $("#loader").show();
+                                $("#reportSelectionCloseModal").attr("disabled", "disabled");
+                                for (; index < selected.length;) {
+                                    excelDownload(selected[index]);
+                                }
+                                $("#reportSelectionCloseModal").removeAttr("disabled");
+                                $("#loader").hide();
+                            }
+                        }
+                    }
+                }
+                else {
+                    $("#loader").show();
+                    $("#reportSelectionCloseModal").attr("disabled", "disabled");
+                    for (var i = 0; i < selected.length; i++) {
+                        var url = "@Url.Action("BalanceSheetCompanyMonthlyGraphReport","ReportManagement")";
+                        url = url + "?month=" + month + "&year=" + year + "&companyId=" + selected[i];
+                        win = window.open();
+                        if (!win || win.closed || typeof win.closed == 'undefined' || typeof win.outerWidth == 'undefined' || typeof win.outerHeight == 'undefined') {
+                            $mymodal = $("#multipleDownloadErrorModal");
+                            $mymodal.find("div.modal-body");
+                            $mymodal.modal("show");
+                        }
+                        else {
+                            win.location.href = url;
+                        }
+                    }
+                    $("#reportSelectionCloseModal").removeAttr("disabled");
+                    $("#loader").hide();
+                }
+
+                window.location.reload();
+            }
+            else {
+                alert("Please select Year.!");
+                return false;
+            }
+        }
+        else {
+            alert("Please select Month.!");
+            return false;
+        }
+
+        function pdfDownload(company) {
+            event.preventDefault();
+            var url = "@Url.Action("BalanceSheetMultipleCompanyMonthlyReportPdf","ReportManagement")";
+            if (flag) {
+                var windowText = "window " + company.toString();
+                url = url + "?month=" + month + "&year=" + year + "&companyId=" + company;
+                win = window.open('', windowText);
+                //win.opener = null;
+                
+                if (!win || win.closed || typeof win.closed == 'undefined' || typeof win.outerWidth == 'undefined' || typeof win.outerHeight == 'undefined') {
+                    //alert("Please disable your pop-up blocker to use this feature.");
+                    //setTimeout(() => {
+                    //    window.location.reload();
+                    //},3000);
+                    $mymodal = $("#multipleDownloadErrorModal");
+                    $mymodal.find("div.modal-body");
+                    $mymodal.modal("show");
+                }
+                else {
+                    win.location.href = url;
+                    win.focus();
+                    currentHourTime = new Date().getHours();
+                    currentMinTime = new Date().getSeconds();
+
+                    currentTime.setSeconds(currentMinTime + 2);
+                    flag = false;
+                }
+            }
+
+            nextTime = new Date();
+            if (currentTime < nextTime) {
+                
+                index++;
+                flag = true;
+                win.close(url);
+            }
+        }
+
+        function excelDownload(company) {
+            event.preventDefault();
+            var url = "@Url.Action("BalanceSheetMultipleCompanyMonthlyReportExcel","ReportManagement")";
+            if (flag) {
+                var windowText = "window " + company.toString();
+                url = url + "?month=" + month + "&year=" + year + "&companyId=" + company;
+                win = window.open('', windowText);
+                //win.opener = null;
+                
+                if (!win || win.closed || typeof win.closed == 'undefined' || typeof win.outerWidth == 'undefined' || typeof win.outerHeight == 'undefined') {
+                    //alert("Please disable your pop-up blocker to use this feature.");
+                    //setTimeout(() => {
+                    //    window.location.reload();
+                    //},3000);
+                    $mymodal = $("#multipleDownloadErrorModal");
+                    $mymodal.find("div.modal-body");
+                    $mymodal.modal("show");
+                }
+                else {
+                    win.location.href = url;
+                    win.focus();
+                    currentHourTime = new Date().getHours();
+                    currentMinTime = new Date().getSeconds();
+
+                    currentTime.setSeconds(currentMinTime + 1);
+                    flag = false;
+                }
+            }
+
+            nextTime = new Date();
+            if (currentTime < nextTime) {
+                
+                index++;
+                flag = true;
+                win.close(url);
+            }
+        }
+    });
+
+    $("#yearReport").on('click', function () {
+        var year = $("#selectedYear").val();
+        var companyId = $("#companyId").val();
+        var SelectedType = $("#SelectedType").val();
+        var selected = new Array();
+        var SelectedPdfExcelType = $("#SelectedPdfExcelType").val();
+
+        var flag = true, firstFlag = true;
+        var index = 0;
+        var win;
+        var currentHourTime = new Date().getHours();
+        var currentMinTime = new Date().getMinutes();
+        var currentTime = new Date();
+        var nextTime = new Date();
+
+        var retrievedObject = localStorage.getItem('balanceSheetReportSelectedCompany');
+
+        if (retrievedObject != null && retrievedObject != "[]") {
+            var removeExtra = retrievedObject.replace("[", "");
+            removeExtra = removeExtra.replace("]", "");
+            var splitData = removeExtra.split(",");
+            if (splitData.length > 0 && splitData != null) {
+                for (var ind = 0; ind < splitData.length; ind++) {
+                    selected.push(parseInt(splitData[ind]));
+                }
+            }
+        }
+
+        if (year != "" && year != null && year != "unidentified") {
+
+            localStorage.removeItem('balanceSheetReportSelectedCompany');
+
+            if (SelectedType == "Pdf or Excel") {
+                if (SelectedPdfExcelType == "Pdf") {
+                    $("#loader").show();
+                    $("#reportSelectionCloseModal").attr("disabled", "disabled");
+                    for (; index < selected.length;) {
+                        pdfDownload(selected[index]);
+                    }
+                    $("#reportSelectionCloseModal").removeAttr("disabled");
+                    $("#loader").hide();
+                }
+                else {
+                    if (SelectedType == "Pdf or Excel") {
+                        if (SelectedPdfExcelType == "Excel") {
+                            $("#loader").show();
+                            $("#reportSelectionCloseModal").attr("disabled", "disabled");
+                            for (; index < selected.length;) {
+                                excelDownload(selected[index]);
+                            }
+                            $("#reportSelectionCloseModal").removeAttr("disabled");
+                            $("#loader").hide();
+                        }
+                    }
+                }
+            }
+            else {
+                $("#loader").show();
+                $("#reportSelectionCloseModal").attr("disabled", "disabled");
+                for (var i = 0; i < selected.length; i++) {
+                    var url = "@Url.Action("BalanceSheetCompanyYearlyGraphReport","ReportManagement")";
+                    url = url + "?year=" + year + "&companyId=" + selected[i];
+                    var win = window.open();
+                    if (!win || win.closed || typeof win.closed == 'undefined' || typeof win.outerWidth == 'undefined' || typeof win.outerHeight == 'undefined') {
+                        $mymodal = $("#multipleDownloadErrorModal");
+                        $mymodal.find("div.modal-body");
+                        $mymodal.modal("show");
+                    }
+                    else {
+                        win.location.href = url;
+                    }
+                }
+                $("#reportSelectionCloseModal").removeAttr("disabled");
+                $("#loader").hide();
+            }
+            window.location.reload();
+        }
+        else {
+            alert("Please select Year.!");
+            return false;
+        }
+
+        function pdfDownload(company) {
+            var url = "@Url.Action("BalanceSheetMultipleCompanyYearlyReportPdf","ReportManagement")";
+            if (flag) {
+                var windowText = "window " + company.toString();
+                url = url + "?year=" + year + "&companyId=" + company;
+                win = window.open();
+                if (!win || win.closed || typeof win.closed == 'undefined' || typeof win.outerWidth == 'undefined' || typeof win.outerHeight == 'undefined') {
+                    $mymodal = $("#multipleDownloadErrorModal");
+                    $mymodal.find("div.modal-body");
+                    $mymodal.modal("show");
+                }
+                else {
+                    win.location.href = url;
+                    currentHourTime = new Date().getHours();
+                    currentMinTime = new Date().getSeconds();
+
+                    currentTime.setSeconds(currentMinTime + 1);
+                    flag = false;
+                }
+            }
+
+            nextTime = new Date();
+            if (currentTime < nextTime) {
+                
+                index++;
+                flag = true;
+                win.close(url);
+            }
+        }
+
+        function excelDownload(company) {
+            var url = "@Url.Action("BalanceSheetMultipleCompanyYearlyReportExcel","ReportManagement")";
+            if (flag) {
+                var windowText = "window " + company.toString();
+                url = url + "?year=" + year + "&companyId=" + company;
+                win = window.open();
+                if (!win || win.closed || typeof win.closed == 'undefined' || typeof win.outerWidth == 'undefined' || typeof win.outerHeight == 'undefined') {
+                    $mymodal = $("#multipleDownloadErrorModal");
+                    $mymodal.find("div.modal-body");
+                    $mymodal.modal("show");
+                }
+                else {
+                    win.location.href = url;
+                    currentHourTime = new Date().getHours();
+                    currentMinTime = new Date().getSeconds();
+
+                    currentTime.setSeconds(currentMinTime + 1);
+                    flag = false;
+                }
+            }
+
+            nextTime = new Date();
+            if (currentTime < nextTime) {
+                
+                index++;
+                flag = true;
+                win.close(url);
+            }
+        }
+    });
+</script>
+<script>
+    function GetSelectedType(getSelectedName) {
+        if (getSelectedName == "Weekly") {
+            $("#monthSelection").attr("hidden", "hidden");
+            $("#yearSelection").attr("hidden", "hidden");
+            $("#weeklySelection").removeAttr("hidden");
+            $("#customSelection").attr("hidden", "hidden");
+        }
+        else if (getSelectedName == "Monthly") {
+            $("#monthSelection").removeAttr("hidden");
+            $("#yearSelection").attr("hidden", "hidden");
+            $("#weeklySelection").attr("hidden", "hidden");
+            $("#customSelection").attr("hidden", "hidden");
+        }
+        else if (getSelectedName == "Yearly") {
+            $("#monthSelection").attr("hidden", "hidden");
+            $("#yearSelection").removeAttr("hidden");
+            $("#weeklySelection").attr("hidden", "hidden");
+            $("#customSelection").attr("hidden", "hidden");
+        }
+        else if (getSelectedName == "Custom") {
+            $("#monthSelection").attr("hidden", "hidden");
+            $("#yearSelection").attr("hidden", "hidden");
+            $("#customSelection").removeAttr("hidden");
+            $("#weeklySelection").attr("hidden", "hidden");
+        }
+    };
+
+    function SelectRangeType(selectedType) {
+        if (selectedType == "Pdf or Excel") {
+            $("#SelectedPdfOrExcelType").removeAttr("hidden");
+            $("#SelectPdfOrGraphType").attr("hidden", "hidden");
+            $("#SelectedType").val(selectedType);
+            $("#showSelectedType").text(selectedType);
+        }
+        else {
+            $("#SelectedType").val(selectedType);
+            $("#showSelectedType").text(selectedType);
+            $("#SelectPdfOrGraphType").attr("hidden", "hidden");
+            $("#showBackButtonBlock").removeAttr("hidden");
+            $("#SelectedRangeType").removeAttr("hidden");
+            $("#customSelection").removeAttr("hidden");
+        }
+    };
+
+    function GetPdfExcelSelectedType(selectedType) {
+        $("#SelectedPdfExcelType").val(selectedType);
+        $("#showSelectedType").text(selectedType);
+        $("#SelectedPdfOrExcelType").attr("hidden", "hidden");
+        $("#showBackButtonBlock").removeAttr("hidden");
+        $("#SelectedRangeType").removeAttr("hidden");
+        $("#customSelection").removeAttr("hidden");
+    }
+
+    // Generate Year Select List from year 2020 to current year
+    $(document).ready(function () {
+        const d = new Date();
+        let year = d.getFullYear();
+        var yearRange = new Array();
+        var previousYear = "2020";
+        var indexRange = parseInt(year) - parseInt(previousYear);
+
+        for (var index = 0; index <= indexRange; index++) {
+            if (parseInt(year) == parseInt(previousYear)) {
+                $("#selectYear").append('<option value=' + parseInt(previousYear) + ' selected="selected">' + parseInt(previousYear) + '</option>');
+                $("#selectedYear").append('<option value=' + parseInt(previousYear) + ' selected="selected">' + parseInt(previousYear) + '</option>');
+            }
+            else {
+                $("#selectYear").append('<option value=' + parseInt(previousYear) + '>' + parseInt(previousYear) + '</option>');
+                $("#selectedYear").append('<option value=' + parseInt(previousYear) + '>' + parseInt(previousYear) + '</option>');
+            }
+            previousYear = parseInt(previousYear) + 1;
+        }
+    });
+
+    $(function () {
+        $("#FromDate").datepicker({
+            format: 'yyyy-mm-dd',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            todayHighlight: true,
+        }).on('changeDate', function (selected) {
+            var minDate = new Date(selected.date);
+            minDate.setDate(minDate.getDate() + 1);
+            $('#ToDate').datepicker('setStartDate', minDate);
+        });
+
+        $("#ToDate").datepicker({
+            format: 'yyyy-mm-dd',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            todayHighlight: true,
+        }).on('changeDate', function (selected) {
+            var minDate = new Date(selected.date);
+            minDate.setDate(minDate.getDate() - 1);
+            $('#FromDate').datepicker('setEndDate', minDate);
+        });
+    });
+
+    $(function () {
+        $("#WeeklyFromDate").datepicker({
+            format: 'yyyy-mm-dd',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            todayHighlight: true,
+        }).on('changeDate', function (selected) {
+            var minDate = new Date(selected.date);
+            var maxDate = new Date(selected.date);
+            minDate.setDate(minDate.getDate() + 6);
+            $('#WeeklyToDate').datepicker('setEndDate', minDate);
+            $('#WeeklyToDate').datepicker('setStartDate', maxDate);
+        });
+
+        $("#WeeklyToDate").datepicker({
+            format: 'yyyy-mm-dd',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            todayHighlight: true,
+        }).on('changeDate', function (selected) {
+            var minDate = new Date(selected.date);
+            var maxDate = new Date(selected.date);
+            var weeklyFromDate = $("#WeeklyFromDate").val();
+            minDate.setDate(minDate.getDate() - 6);
+            $('#WeeklyFromDate').datepicker('setStartDate', minDate);
+            $('#WeeklyFromDate').datepicker('setEndDate', maxDate);
+        });
+    });
+</script>
+<script>
+
+    $("#companyIdsSelection").on('click', function () {
+        $('input:checkbox[name=companyIds]').each(function () {
+            if ($(this).is(':checked')) {
+                $(this).removeAttr('checked');
+            }
+            else {
+                $(this).attr('checked', 'checked');
+            }
+        });
+    });
+
+    function GeneratePdfOrGraph(companyId) {
+        var url = "@Url.Action("CompanyBalanceSheetReport","ReportManagement")";
+        url = url + "?companyId=" + companyId;
+        window.location.href = url;
+    };
+
+    $(document).ready(function () {
+        var url = "@Url.Action("CompanyWiseBalanceSheetPaginationReport","ReportManagement")";
+        $("#datatable").DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": false,
+            "ajax": {
+                "type": "post",
+                "datatype": "json",
+                "data": function () {
+                    var info = $('#datatable').DataTable().page.info();
+                    $('#datatable').DataTable().ajax.url(
+                        url
+                    );
+                }
+            },
+            "columns": [
+                {
+                    "data": function (data, full, meta) {
+                        var flag = false;
+                        var selectedData = new Array();
+                        var retrievedObject = localStorage.getItem('balanceSheetReportSelectedCompany');
+
+                        if (retrievedObject != null && retrievedObject != "[]") {
+                            var removeExtra = retrievedObject.replace("[", "");
+                            removeExtra = removeExtra.replace("]", "");
+                            var splitData = removeExtra.split(",");
+                            if (splitData.length > 0 && splitData != null) {
+                                for (var index = 0; index < splitData.length; index++) {
+                                    selectedData.push(parseInt(splitData[index]));
+                                }
+                            }
+                        }
+                        for (var index = 0; index < selectedData.length; index++) {
+                            if (selectedData[index] == data.id) {
+                                flag = true;
+                                break;
+                            }
+                        }
+                        if (flag) {
+                            return '<input type="checkbox" class="form-check-input" name="companyIds" id="companyIds" onchange="massGenerateReport(' + data.id + ')" value=' + data.id + ' checked="checked" />';
+                        }
+                        else {
+                            return '<input type="checkbox" class="form-check-input" name="companyIds" id="companyIds" onchange="massGenerateReport(' + data.id + ')" value=' + data.id + ' />';
+                        }
+
+                    },
+                    "name": ""
+                },
+                { "data": "companyAccountNumber", "name": "Company Account Number" },
+                { "data": "companyName", "name": "Company" },
+                {
+                    "data": function (data, full, meta) {
+                        return '<button onclick="GeneratePdfOrGraph(' + data.id + ');" class="btn btn-theme">Generate Report</button>';
+                    },
+                    "name": ""
+                },
+            ],
+            "language": {
+                'processing': '<div class="spinner-2"><div class="center-div-2"><div class="loader-circle-1"></div></div></div>'
+            },
+            responsive: true,
+            paging: true,
+            pagingType: 'simple_numbers',
+            "bInfo": true,
+            ordering: true,
+            "aLengthMenu": [20, 30, 50],
+            searching: true,
+            dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+        });
+    });
+
+    function massGenerateReport(companyId){
+        var selectedData = new Array();
+        var retrievedObject = localStorage.getItem('balanceSheetReportSelectedCompany');
+
+        if (retrievedObject != null && retrievedObject != "[]") {
+            var removeExtra = retrievedObject.replace("[", "");
+            removeExtra = removeExtra.replace("]", "");
+            var splitData = removeExtra.split(",");
+            if (splitData.length > 0 && splitData != null) {
+                for (var index = 0; index < splitData.length; index++) {
+                    selectedData.push(parseInt(splitData[index]));
+                }
+            }
+        }
+
+        if (parseInt(companyId) != 0) {
+            if (!selectedData.includes(parseInt(companyId))) {
+                selectedData.push(parseInt(companyId));
+            }
+            else{
+                const index = selectedData.indexOf(companyId);
+                selectedData.splice(index, 1);
+            }
+        }
+
+        if (selectedData.length > 0 && selectedData != null) {
+            localStorage.setItem('balanceSheetReportSelectedCompany', JSON.stringify(selectedData));
+        }
+    };
+
+    $(window).on('load',function(){
+        localStorage.removeItem('balanceSheetReportSelectedCompany');
+    });
+</script>
+<script>
+    // Disable all months after current month for current year.                                                         -- Yashasvi TBC(17-06-2023)
+    $(document).ready(function () {
+        var year = $("#selectYear").val();
+
+        if (year == "" || year == null || year == "unidentified") {
+            var getDate = new Date();
+            var currentYear = getDate.getFullYear();
+            var currentMonth = (getDate.getMonth() + 1).toString();
+            var startMonth = (getDate.getMonth() + 2);
+            //startMonth = startMonth + 1;
+            var gap = 12 - parseInt(startMonth);
+            if (currentMonth.length <= 1) {
+                startMonth = "0" + (getDate.getMonth() + 2);
+            }
+
+            for (var index = 0; index <= gap; index++) {
+
+                if (startMonth.toString().length <= 1) {
+                    startMonth = "0" + parseInt(startMonth);
+                }
+                $("#selectMonth option[value=" + startMonth + "]").attr("disabled", "disabled");
+                startMonth = parseInt(startMonth) + 1;
+            }
+        }
+        else {
+            var getDate = new Date();
+            var currentYear = getDate.getFullYear();
+            if (parseInt(year) == parseInt(currentYear)) {
+                var currentMonth = (getDate.getMonth() + 1).toString();
+                var startMonth = (getDate.getMonth() + 2);
+                var gap = 12 - parseInt(startMonth);
+                if (currentMonth.length <= 1) {
+                    startMonth = "0" + (getDate.getMonth() + 2);
+                }
+
+                for (var index = 0; index <= gap; index++) {
+                    if (startMonth.toString().length <= 1) {
+                        startMonth = "0" + parseInt(startMonth);
+                    }
+                    $("#selectMonth option[value=" + startMonth + "]").attr("disabled", "disabled");
+                    startMonth = parseInt(startMonth) + 1;
+                }
+            }
+        }
+    });
+
+    $("#selectYear").on('change', function () {
+        var year = $("#selectYear").val();
+        var getDate = new Date();
+        var currentYear = getDate.getFullYear();
+        var currentMonth = (getDate.getMonth() + 1).toString();
+        var startMonth = (getDate.getMonth() + 2);
+        var gap = 12 - parseInt(startMonth);
+
+        if (parseInt(year) == parseInt(currentYear)) {
+            if (currentMonth.length <= 1) {
+                startMonth = "0" + (getDate.getMonth() + 2);
+            }
+
+            for (var index = 0; index <= gap; index++) {
+                if (startMonth.toString().length <= 1) {
+                    startMonth = "0" + parseInt(startMonth);
+                }
+                $("#selectMonth option[value=" + startMonth + "]").attr("disabled", "disabled");
+                startMonth = parseInt(startMonth) + 1;
+            }
+        }
+        else {
+            for (var index = 0; index <= gap; index++) {
+                if (startMonth.toString().length <= 1) {
+                    startMonth = "0" + parseInt(startMonth);
+                }
+                $("#selectMonth option[value=" + startMonth + "]").removeAttr("disabled");
+                startMonth = parseInt(startMonth) + 1;
+            }
+        }
+    });
+</script>
+<script>
+    var selected = new Array();
+    $("#generateSelectedCompanyReport").on('click', function () {
+        var retrievedObject = localStorage.getItem('balanceSheetReportSelectedCompany');
+        
+        if (retrievedObject != null && retrievedObject != "[]") {
+            var removeExtra = retrievedObject.replace("[", "");
+            removeExtra = removeExtra.replace("]", "");
+            var splitData = removeExtra.split(",");
+            if (splitData.length > 0 && splitData != null) {
+                for (var ind = 0; ind < splitData.length; ind++) {
+                    selected.push(parseInt(splitData[ind]));
+                }
+            }
+        }
+
+        if (selected.length == 0) {
+            alert("Please select company(s), for which you want to generate report.!");
+        }
+        else {
+            $mymodal = $("#reportSelectionModal");
+            $mymodal.find("div.modal-body");
+            $mymodal.modal("show");
+        }
+    });
+
+    $("#reportSelectionCloseModal").on('click', function () {
+        window.location.reload();
+    });
+
+    $("#multipleDownloadErrorCloseModal").on('click', function () {
+        window.location.reload();
+    })
+</script>
+<script>
+    $(function () {
+        $("#Insert").hide();
+        $("#View").hide();
+        $(".Update").hide();
+        $(".Delete").hide();
+        $(".Details").hide();
+    });
+</script>
+<script>
+    $(function () {
+        $("#loader").show();
+        var module = $("#Module").val();
+        $.ajax({
+            url: "@Url.Action("GetRolePermissionsName", "Permission")",
+            method: "GET",
+            data: { "Module": "ReportManagement" },
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (RoleResponse) {
+                $("#loader").show();
+                $.ajax({
+                    url: "@Url.Action("GetUserPermissionsName", "Permission")",
+                    method: "GET",
+                    data: { "Module": "ReportManagement" },
+                    async: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (UserResponse) {
+                        $("#loader").show();
+                        if (UserResponse.length > 0) {
+                            for (let i = 0; i < UserResponse.length; i++) {
+                                $("#" + UserResponse[i]).show();
+                                if (UserResponse[i] == "View") {
+                                    $(".Details").show();
+                                }
+                                if (UserResponse[i] == "Update") {
+                                    $("." + UserResponse[i]).show();
+                                }
+                                if (UserResponse[i] == "Delete") {
+                                    $("." + UserResponse[i]).show();
+                                }
+                            }
+                            $("#loader").hide();
+                        }
+                        else if (RoleResponse.length > 0) {
+                            for (let i = 0; i < RoleResponse.length; i++) {
+                                $("#" + RoleResponse[i]).show();
+                                if (RoleResponse[i] == "View") {
+                                    $(".Details").show();
+                                }
+                                if (RoleResponse[i] == "Update") {
+                                    $("." + RoleResponse[i]).show();
+                                }
+                                if (RoleResponse[i] == "Delete") {
+                                    $("." + RoleResponse[i]).show();
+                                }
+                            }
+                            $("#loader").hide();
+
+                        } else {
+                            alert("You don't have any permission for this module.");
+                            $("#loader").hide();
+                        }
+                    }
+                })
+            }
+        });
+        $("#loader").hide();
+    });
+</script>

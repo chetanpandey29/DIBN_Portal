@@ -1,0 +1,114 @@
+﻿@model IEnumerable<DIBN.Models.GetRequests>
+@{
+    ViewData["Title"] = "Get All Service Request Notices";
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" id="View">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title text-center">Service Request Notification</h4>
+                <hr style="height:1px;color:black;" />
+                <div class="table-rep-plugin">
+                    <div class="table-responsive mb-0" data-pattern="priority-columns">
+                        <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th class="align-middle text-center">
+                                        #
+                                    </th>
+                                    <th class="align-middle text-center">
+                                        Requested Service
+                                    </th>
+                                    <th>
+                                        Company Name
+                                    </th>
+                                    <th>
+                                        Requested By
+                                    </th>
+                                    <th>
+                                        Requested On
+                                    </th>
+                                    <th>
+
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var i = 0;
+                                }
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @item.SerialNumber
+                                        </td>
+                                        <td>
+                                            @item.RequestedService
+                                        </td>
+                                        <td>
+                                            @item.CompanyName
+                                        </td>
+                                        <td>
+                                            @item.RequestedBy
+                                        </td>
+                                        <td>
+                                            @item.CreatedOn
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-theme" role="button" onclick="MarkAsRead('@item.SerialNumber')">
+                                                Mark As Read
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    i++;
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+<script>
+    $('#datatable').dataTable({
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+    });
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>
+<script>
+    function MarkAsRead(Id){
+        $.ajax({
+            url: "@Url.Action("MarkAsReadServiceNotification","Home")",
+            method: "GET",
+            data:{"serialNumber":Id},
+            success: function (response) {
+                window.location.reload();
+            }
+        });
+    };
+</script>

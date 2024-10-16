@@ -1,0 +1,391 @@
+﻿@model IEnumerable<DIBN.Areas.Admin.Models.SupportTicketRequest>
+@{
+    ViewData["Title"] = "Index";
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        @foreach (var item in Model)
+        {
+            <h6 class="text-theme float-start">@item.CompanyName</h6>
+            <a href="@Url.Action("Index","Company",new{name="Company"})" class="btn btn-theme float-end" style="margin-bottom:15px;">Back to List</a>
+            <input type="hidden" asp-for="@item.Module" id="Module" name="Module" />
+            <input asp-for="@item.CompanyId" type="hidden" id="companyId" />
+            break;
+        }
+    </div>
+</div>
+<div class="row" id="View">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title text-center">Support Tickets</h4>
+                <hr style="height:1px;" class="text-theme"/>
+                <div class="table-rep-plugin">
+                    <div class="table-responsive mb-0" data-pattern="priority-columns">
+                        <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th class="align-middle text-center">
+                                        #
+                                    </th>
+                                    <th class="align-middle text-center">
+                                        Created By
+                                    </th>
+                                    <th class="align-middle text-center">
+                                        Created Date
+                                    </th>
+                                    <th class="align-middle text-center">
+                                        Assigned Date
+                                    </th>
+                                    <th class="align-middle text-center">
+                                        Company
+                                    </th>
+                                    <th class="align-middle text-center">
+                                        Title
+                                    </th>
+                                    <th class="align-middle text-center">
+                                        Assigned User
+                                    </th>
+                                    <th class="align-middle text-center">
+                                        Status
+                                    </th>
+                                    <th>
+
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var i = 0;
+                                }
+                                @foreach (var item in Model)
+                                {
+                                    @if (@item.TrackingNumber != null && @item.TrackingNumber != "")
+                                    {
+                                        <tr>
+                                            <td class="align-middle text-center">
+                                                @item.TrackingNumber
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                @item.Username
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                @item.CreatedOn
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                @item.AssignedOn
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                @item.CompanyName
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                @item.Title
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                @item.AssignedUser
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                @item.TicketStatus
+                                            </td>
+                                            <td>
+                                                <a href="@Url.Action("TrackYourTicket","SupportTicketRequest",new{Id=@item.TrackingNumber,name=@item.Module,companyId=item.CompanyId,actionMethod="Company"})" class="btn btn-theme Details">
+                                                    Track
+                                                </a>
+                                                <a role="button" class="btn btn-theme Update" onclick="AssignSupportTicketToUser('@item.TrackingNumber');">
+                                                    Assign Support Ticket
+                                                </a>
+                                            </td>
+                                        </tr>
+
+                                        i++;
+                                    }
+
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="SupportTicketRequest" class="modal" tabindex="-1" role="dialog" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Service Request</h5>
+                <button type="button" class="close btn btn-theme" id="SupportTicketModalClose" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="AssignSupportTicket" class="modal" tabindex="-1" role="dialog" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Assign Request</h5>
+                <button type="button" class="close btn btn-theme" id="AssignSupportTicketModalClose" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+<script src="~/bootstrap.min.js"></script>
+
+<script>
+    var flag=false;
+    var table = $('#datatable').DataTable({
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    });
+
+    $('#datatable tbody').on('click', 'td.dtr-control', function () {
+
+            var tr = $(this).closest('tr');
+            var row = table.row(tr);
+            if (!tr.hasClass("shown")) {
+
+                $("#loader").show();
+                row.child.show();
+                tr.addClass('shown');
+                $(".Update").hide();
+                $(".Delete").hide();
+                $(".Details").hide();
+
+                var module = $("#Module").val();
+                $.ajax({
+                    url: "@Url.Action("GetRolePermissionsName", "Permission")",
+                    method: "GET",
+                data: { "Module": "SupportTickets" },
+                    success: function (RoleResponse) {
+                        $("#loader").show();
+                        $.ajax({
+                            url: "@Url.Action("GetUserPermissionsName", "Permission")",
+                            method: "GET",
+                        data: { "Module": "SupportTickets" },
+                            success: function (UserResponse) {
+                                $("#loader").show();
+                                if (UserResponse.length > 0) {
+                                    for (let i = 0; i < UserResponse.length; i++) {
+                                        $("#" + UserResponse[i]).show();
+                                        if (UserResponse[i] == "View") {
+                                            $(".Details").show();
+                                        }
+                                        if (UserResponse[i] == "Update") {
+                                            $("." + UserResponse[i]).show();
+                                        }
+                                        if (UserResponse[i] == "Delete") {
+                                            $(".Delete").show();
+                                        }
+                                    }
+                                    $("#loader").hide();
+                                }
+                                else if (RoleResponse.length > 0) {
+                                    for (let i = 0; i < RoleResponse.length; i++) {
+                                        $("#" + RoleResponse[i]).show();
+                                        if (RoleResponse[i] == "View") {
+                                            $(".Details").show();
+                                        }
+                                        if (RoleResponse[i] == "Update") {
+                                            $("." + RoleResponse[i]).show();
+                                        }
+                                        if (RoleResponse[i] == "Delete") {
+                                            $(".Delete").show();
+                                        }
+                                    }
+                                    $("#loader").hide();
+                                }
+                            }
+                        })
+                    }
+                });
+                $("#loader").hide();
+            }
+            else {
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+        });
+        setInterval(function () {
+
+            if (flag == false) {
+                rezieFunction1();
+            }
+
+        }, 800)
+
+        function rezieFunction1() {
+
+            table.columns.adjust().draw();
+            flag = true;
+        }
+</script>
+
+<script>
+    $("#SupportTicketModalClose").on("click",function(){
+        window.location.reload();
+    });
+    $("#AssignSupportTicketModalClose").on("click",function(){
+        window.location.reload();
+    });
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>
+<script>
+    function CreateSupportTicket(){
+        $("#loader").show();
+        var module = $("#Module").val();
+        $.ajax({
+            url: "@Url.Action("CreateNewSupportTicket","SupportTicketRequest")",
+            method: "GET",
+            data:{"name":module},
+            success: function (response) {
+                $("#loader").hide();
+                $mymodal = $("#SupportTicketRequest");
+                $mymodal.find("div.modal-body").html(response);
+                $mymodal.modal("show");
+            }
+        });
+    };
+</script>
+<script>
+    function AssignSupportTicketToUser(TrackingNumber){
+        $("#loader").show();
+         var module = $("#Module").val();
+        var companyId = $("#companyId").val();
+         $.ajax({
+            url: "@Url.Action("GetEmployeesToAssign","SupportTicketRequest")",
+            method: "GET",
+            data: { "TrackingNumber": TrackingNumber, "Module": module, "actionMethod": "Company", "companyId": companyId },
+            success: function (response) {
+                $("#loader").hide();
+                $mymodal = $("#AssignSupportTicket");
+                $mymodal.find("div.modal-body").html(response);
+                $mymodal.modal("show");
+            }
+        });
+    }
+</script>
+<script>
+    $(function () {
+        $(".Insert").hide();
+        $("#View").hide();
+        $("#View1").hide();
+        $(".Update").hide();
+        $(".Delete").hide();
+        $(".Details").hide();
+    });
+</script>
+<script>
+    $(function () {
+        var module = $("#Module").val();
+        $.ajax({
+            url: "@Url.Action("GetRolePermissionsName", "Permission")",
+            method: "GET",
+            data: { "Module": "SupportTickets" },
+            success: function (RoleResponse) {
+                $.ajax({
+                    url: "@Url.Action("GetUserPermissionsName", "Permission")",
+                    method: "GET",
+                    data: { "Module": "SupportTickets" },
+                    success: function (UserResponse) {
+                        if (UserResponse.length > 0) {
+                            
+                            for (let i = 0; i < UserResponse.length; i++) {
+                                $("#" + UserResponse[i]).show();
+                                if (UserResponse[i] == "View") {
+                                    $(".Details").show();
+                                    $("#View1").show();
+                                }
+                                if (UserResponse[i] == "Update") {
+                                    $("." + UserResponse[i]).show();
+                                }
+                                if (UserResponse[i] == "Delete") {
+                                    $("." + UserResponse[i]).show();
+                                }
+                                if (UserResponse[i] == "Insert") {
+                                    $("." + UserResponse[i]).show();
+                                }
+                            }
+                        }
+                        else if (RoleResponse.length > 0) {
+                            for (let i = 0; i < RoleResponse.length; i++) {
+                                $("#" + RoleResponse[i]).show();
+                                if (RoleResponse[i] == "View") {
+                                    $(".Details").show();
+                                    $("#View1").show();
+                                }
+                                if (RoleResponse[i] == "Update") {
+                                    $("." + RoleResponse[i]).show();
+                                }
+                                if (RoleResponse[i] == "Delete") {
+                                    $("." + RoleResponse[i]).show();
+                                }
+                                if (RoleResponse[i] == "Insert") {
+                                    $("." + RoleResponse[i]).show();
+                                }
+                            }
+
+                        } else {
+                            alert("You don't have any permission for this module.");
+                        }
+                    }
+                })
+            }
+        });
+    });
+</script>
+<script>
+    $(window).resize(function () {
+        var allRows = $('#datatable tbody tr');
+        allRows.each(function () {
+            var tr = $(this).closest('tr');
+            var row = $($.fn.dataTable.tables(true)).DataTable().row(tr);
+            if (tr.hasClass("shown")) {
+                row.child.hide();
+                tr.removeClass('shown');
+                tr.removeClass('parent');
+            }
+        });
+    });
+</script>

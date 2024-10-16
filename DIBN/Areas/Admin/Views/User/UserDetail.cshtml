@@ -1,0 +1,153 @@
+﻿@model DIBN.Areas.Admin.Models.UserViewModel
+
+@{
+    ViewData["Title"] = "UserDetail";
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" name="Module" id="Module" value="@Model.Module" />
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="card-title">
+                        <h5 class="text-dark float-start">@Html.DisplayFor(model => model.FirstName) @Html.Raw(" ") @Html.DisplayFor(model => model.LastName)'s Detail</h5>
+                        @if(Model.IsActive && Model.IsLogin){
+                            <span class="float-end fas fa-check text-success" style="font-size:26px;"></span>
+                        }
+                        else{
+                            <span class="float-end fas fa-times text-danger" style="font-size:26px;"></span>
+                        }
+                    </div>
+                <hr/>
+                </div>
+                <dl class="row">
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.AccountNumber)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.AccountNumber)
+                    </dd>
+                    <dt class="col-sm-4">
+                        Employee Name
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.FirstName) @Html.Raw(" ") @Html.DisplayFor(model => model.LastName)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Nationality)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Nationality)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.PassportNumber)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.PassportNumber)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.PassportExpiryDate)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.PassportExpiryDate)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Designation)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @* @if(Model.Designation == "DIBN")
+                        {
+                         @Html.Raw("DEVOTION")   
+                        }
+                        else
+                        { *@
+                            @Html.DisplayFor(model => model.Designation)
+                        @* } *@
+                        
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.VisaExpiryDate)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.VisaExpiryDate)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.InsuranceCompany)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.InsuranceCompany)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.InsuranceExpiryDate)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.InsuranceExpiryDate)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.EmailID)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.EmailID)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.PhoneNumber)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.PhoneNumber)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.Raw("Is Login Allowed?")
+                    </dt>
+                    <dd class="col-sm-8">
+                        @if (Model.IsLogin)
+                        {
+                            @Html.Raw("Yes")
+                        }
+                        else
+                        {
+                            @Html.Raw("No")
+                        }
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.Raw("Is User Active?")
+                    </dt>
+                    <dd class="col-sm-8">
+                        @if (Model.IsActive)
+                        {
+                            @Html.Raw("Yes")
+                        }
+                        else
+                        {
+                            @Html.Raw("No")
+                        }
+                    </dd>
+                    @*<dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.CountryOfRecidence)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.CountryOfRecidence)
+                    </dd>*@
+                </dl>
+                <div>
+                    <a href="javascript:history.go(-1);" class="btn btn-theme text-white">Back to List</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>

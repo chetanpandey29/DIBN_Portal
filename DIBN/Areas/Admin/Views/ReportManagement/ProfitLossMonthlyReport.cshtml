@@ -1,0 +1,356 @@
+﻿@model DIBN.Areas.Admin.Models.ProfitLossMonthlyReportModel
+@{
+    ViewData["Title"] = "Profit & Loss Monthly Report";
+}
+
+<style>
+    .wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        color: #333333;
+        border: none;
+        background: transparent;
+        font-size: 1rem;
+        line-height: 1.5rem;
+        padding: 1rem 2rem;
+    }
+
+        button > svg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+            button > svg > rect {
+                fill: none;
+                stroke: #333333;
+                stroke-width: 2px;
+                stroke-dasharray: 240 160 240 160;
+                stroke-dashoffset: 0;
+                animation: pathRect 2s linear infinite;
+                width: calc(100% - 2px);
+                height: calc(100% - 2px);
+            }
+
+    @@keyframes pathRect {
+        25% {
+            stroke-dashoffset: 100;
+        }
+
+        50% {
+            stroke-dashoffset: 200;
+        }
+
+        75% {
+            stroke-dashoffset: 300;
+        }
+
+        100% {
+            stroke-dashoffset: 400;
+        }
+    }
+</style>
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <a href="@Url.Action("MainProfitLossReport","ReportManagement")" class="btn btn-theme float-end me-2 mb-2">Back</a>
+        <a role="button" class="btn btn-theme float-end me-2 mb-2 Details" onclick="ExportAsExcel('@Model.MonthNumber','@Model.YearNumber');">Export Excel</a>
+        <a role="button" class="btn btn-theme float-end me-2 mb-2 Details" onclick="ExportAsPdf('@Model.MonthNumber','@Model.YearNumber');">Export PDF</a>
+    </div>
+</div>
+
+<div class="row Details">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="text-center front-text-theme fw-bold">Profit & Loss Monthly Report of @Model.MonthText , @Model.YearNumber</h4>
+                <input type="hidden" name="MonthNumber" id="MonthNumber" value="@Model.MonthNumber" />
+                <input type="hidden" name="YearNumber" id="YearNumber" value="@Model.YearNumber" />
+                <div class="row col-md-12 mt-4 mb-3">
+                    <div class="float-left text-center">
+                        @if (Model.totalProfitLoss > 0)
+                        {
+                            <span class="text-center float-left front-text-theme h6 fw-bold">Profit :</span>
+
+                            <span class="text-center float-left text-success h6 fw-bold"> @Model.totalProfitLoss.ToString("0.00") AED (@Model.profitLossPercentage.ToString("0.00") %) </span>
+                        }
+                        else
+                        {
+                            <span class="text-center float-left front-text-theme h6 fw-bold">Loss :</span>
+
+                            <span class="text-center float-left text-danger h6 fw-bold"> @Model.totalProfitLoss.ToString("0.00") AED (@Model.profitLossPercentage.ToString("0.00") %)</span>
+                        }
+                    </div>
+                </div>
+                <div class="row col-md-12 mt-4 mb-3">
+                    <div class="float-left text-center">
+                        <span class="text-center float-left front-text-theme h6 fw-bold">Total Credit :</span><span class="text-center float-left text-success h6 fw-bold"> @Model.TotalCredit AED</span>
+                        <span class="text-center float-left front-text-theme h6 fw-bold">||</span>
+                        <span class="text-center float-left front-text-theme h6 fw-bold">Total Debit : </span><span class="text-center float-left text-danger h6 fw-bold">-@Model.TotalDebit AED</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-rep-plugin">
+                    <div class="table-responsive mb-0" data-pattern="priority-columns">
+                        <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse:collapse; border-spacing:0; width:100%;">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Transaction Id
+                                    </th>
+                                    <th data-sort='YYYYMMDD'>
+                                        Transaction Date
+                                    </th>
+                                    <th>
+                                        Company
+                                    </th>
+                                    <th>
+                                        Description
+                                    </th>
+                                    <th>
+                                        Grand Total
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-example-modal" id="multipleDownloadErrorModal" role="dialog" data-bs-keyboard="false" data-bs-backdrop="static" style="z-index:10000 !important;">
+    <div class="modal-dialog modal-dialog-centered modal" role="document">
+        <div class="modal-content">
+            <div class="modal-body pt-0">
+                <div class="d-flex justify-content-center align-items-center">
+                    <div class="mt-5">
+                        <div class='wrapper'>
+                            <button>
+                                <span class="fw-bolder fs-5">Downloading...</span>
+                                <svg>
+                                    <rect x="1" y="1"></rect>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 mt-5">
+                    <p class="text-center fw-bolder fs-5">Please wait for while , your report (PDF/Excel) file is currently downloading..</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $.fn.dataTable.ext.errMode = 'none';
+
+        var month = $("#MonthNumber").val();
+        var year = $("#YearNumber").val();
+
+        var url = "@Url.Action("ProfitLossMonthlyPaginationReport","ReportManagement")";
+        url = url + "?month=" + month + "&year=" + year;
+
+        $("#datatable").DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": false,
+            "ajax": {
+                "type": "post",
+                "datatype": "json",
+                "data": function () {
+                    var info = $('#datatable').DataTable().page.info();
+                    $('#datatable').DataTable().ajax.url(
+                        url
+                    );
+                }
+            },
+            "columns": [
+                { "data": "transactionId", "name": "Transaction Id" },
+                { "data": "date", "name": "Transaction Date" },
+                { "data": "companyName", "name": "Company" },
+                { "data": "description", "name": "Description" },
+                {
+                    "data": function (data, full, meta) {
+                        if (data.type == "Debit") {
+                            return '<span class="text-danger">' + data.grandTotal + '</span>';
+                        }
+                        else if (data.type == "Credit" && data.expenseReceiptId != 0) {
+                            return '<span class="text-success">' + data.grandTotal + '</span>';
+                        }
+                        else {
+                            return '---';
+                        }
+                    },
+                    "name": "Grand Total"
+                },
+            ],
+            "language": {
+                'processing': '<div class="spinner-2"><div class="center-div-2"><div class="loader-circle-1"></div></div></div>'
+            },
+            responsive: true,
+            paging: true,
+            pagingType: 'simple_numbers',
+            "bInfo": true,
+            ordering: true,
+            "aLengthMenu": [20, 30, 50],
+            searching: true,
+            dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+        });
+    });
+</script>
+
+<script>
+    function ExportAsExcel(month, year) {
+        $mymodal = $("#multipleDownloadErrorModal");
+        $mymodal.find("div.modal-body");
+        $mymodal.modal("show");
+        $.ajax({
+            url: '@Url.Action("ProfitLossMonthlyReportExcel", "ReportManagement")',
+            type: 'GET',
+            data: { 'month': month, 'year': year },
+            success: function (result) {
+                $mymodal = $("#multipleDownloadErrorModal");
+                $mymodal.find("div.modal-body");
+                $mymodal.modal("hide");
+
+                if (result == "Success") {
+                    var url = "@Url.Action("DownloadProfitLossMonthlyReportExcel","ReportManagement")";
+                    url = url + "?month=" + month + "&year=" + year;
+                    window.location.href = url;
+
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 2000);
+                }
+            },
+            error: function () {
+                alert("Something went wrong please try again after sometimes.");
+                setTimeout(function () {
+                    window.location.reload();
+                }, 2000);
+            }
+        });
+    };
+
+    function ExportAsPdf(month, year) {
+        $mymodal = $("#multipleDownloadErrorModal");
+        $mymodal.find("div.modal-body");
+        $mymodal.modal("show");
+        $.ajax({
+            url: '@Url.Action("ProfitLossMonthlyReportPdf", "ReportManagement")',
+            type: 'GET',
+            data: { 'month': month, 'year': year },
+            success: function (result) {
+                $mymodal = $("#multipleDownloadErrorModal");
+                $mymodal.find("div.modal-body");
+                $mymodal.modal("hide");
+
+                if (result == "Success") {
+                    var url = "@Url.Action("DownloadProfitLossMonthlyReportPdf","ReportManagement")";
+                    url = url + "?month=" + month + "&year=" + year;
+                    window.location.href = url;
+
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 2000);
+                }
+            },
+            error: function () {
+                alert("Something went wrong please try again after sometimes.");
+                setTimeout(function () {
+                    window.location.reload();
+                }, 2000);
+            }
+        });
+    };
+</script>
+<script>
+    $(function () {
+        $("#Insert").hide();
+        $("#View").hide();
+        $(".Update").hide();
+        $(".Delete").hide();
+        $(".Details").hide();
+    });
+</script>
+<script>
+    $(function () {
+        $("#loader").show();
+        var module = $("#Module").val();
+        $.ajax({
+            url: "@Url.Action("GetRolePermissionsName", "Permission")",
+            method: "GET",
+            data: { "Module": "ReportManagement" },
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (RoleResponse) {
+                $("#loader").show();
+                $.ajax({
+                    url: "@Url.Action("GetUserPermissionsName", "Permission")",
+                    method: "GET",
+                    data: { "Module": "ReportManagement" },
+                    async: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (UserResponse) {
+                        $("#loader").show();
+                        if (UserResponse.length > 0) {
+                            for (let i = 0; i < UserResponse.length; i++) {
+                                $("#" + UserResponse[i]).show();
+                                if (UserResponse[i] == "View") {
+                                    $(".Details").show();
+                                }
+                                if (UserResponse[i] == "Update") {
+                                    $("." + UserResponse[i]).show();
+                                }
+                                if (UserResponse[i] == "Delete") {
+                                    $("." + UserResponse[i]).show();
+                                }
+                            }
+                            $("#loader").hide();
+                        }
+                        else if (RoleResponse.length > 0) {
+                            for (let i = 0; i < RoleResponse.length; i++) {
+                                $("#" + RoleResponse[i]).show();
+                                if (RoleResponse[i] == "View") {
+                                    $(".Details").show();
+                                }
+                                if (RoleResponse[i] == "Update") {
+                                    $("." + RoleResponse[i]).show();
+                                }
+                                if (RoleResponse[i] == "Delete") {
+                                    $("." + RoleResponse[i]).show();
+                                }
+                            }
+                            $("#loader").hide();
+
+                        } else {
+                            alert("You don't have any permission for this module.");
+                            $("#loader").hide();
+                        }
+                    }
+                })
+            }
+        });
+        $("#loader").hide();
+    });
+</script>

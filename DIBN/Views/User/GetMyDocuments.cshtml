@@ -1,0 +1,109 @@
+﻿@model DIBN.Models.GetUserDocuments
+@{
+    ViewData["Title"] = "GetMyDocuments";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-10">
+
+    </div>
+    <div class="col-md-2 float-end mb-2">
+        <a href="@Url.Action("Index","User",new{name=@Model.Module})" class="btn btn-theme float-end">Back to list</a>
+    </div>
+</div>
+<div class="row" id="View">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title text-center">Documents(s)</h4>
+                <div class="table-rep-plugin">
+                    <div class="table-responsive mb-0" data-pattern="priority-columns">
+                        <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        #
+                                    </th>
+                                    <th>
+                                        File Name
+                                    </th>
+                                    <th>
+                                        Title
+                                    </th>
+                                    <th>
+                                        Description
+                                    </th>
+                                    <th>
+
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var i = 0;
+                                }
+                                @foreach (var item in Model.Documents)
+                                {
+                                    <tr>
+                                        <td>@(i+1)</td>
+                                        <td>@item.FileName@item.Extension</td>
+                                        <td>@item.Title</td>
+                                        <td>@item.Description</td>
+                                        <td>
+                                            <form asp-action="DownloadSelectedDocument" asp-controller="User" method="get">
+                                                <input type="hidden" asp-for="@item.Id" name="Id"/>
+                                                <input type="hidden" asp-for="@Model.CompanyId" name="CompanyId"/>
+                                                <input type="submit" value="Download" name="Download" class="btn btn-theme"/>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    i++;
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+
+<link href="~/select2/select2.min.css" rel="stylesheet" />
+<script src="~/select2/select2.min.js"></script>
+<script>
+    ////// Open Selection dropdown on focus                                     -- Yashasvi TBC (09-02-2023)
+    $(document).on('focus', '.select2.select2-container', function (e) {
+        if (e.originalEvent && $(this).find(".select2-selection--single").length > 0) {
+            $(this).siblings('select').select2('open');
+        }
+    });
+    $(function() {
+      $('#SelectedDocumentId').select2();
+    });
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>
+<script>
+    $('#datatable').dataTable({
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+    });
+</script>

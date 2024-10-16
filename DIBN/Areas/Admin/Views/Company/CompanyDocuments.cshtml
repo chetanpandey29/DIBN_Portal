@@ -1,0 +1,461 @@
+﻿@model DIBN.Areas.Admin.Models.GetCompanyDocuments
+@{
+    ViewData["Title"] = "CompanyDocuments";
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <h6 class="text-theme float-start"> @Html.Raw("Company Document(") @Model.Company @Html.Raw(")")</h6>
+        <input type="button" value="Back To List" class="btn btn-theme float-end mb-3" onclick="SaveData();"/>
+    </div>
+</div>
+@if (Model.allowedModule.Contains("Insert"))
+{
+    <div class="row" id="Insert">
+        <div class="col-md-12">
+            <div class="card card-primary p-2">
+                <form action="@Url.Action("UploadCompanyDocuments","Company")" enctype="multipart/form-data" method="post" id="uploadCompanyDocumentForm">
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                    <div class="row">
+                        <input type="hidden" asp-for="CompanyId" />
+                        <input type="hidden" asp-for="Module" id="Module" />
+                        <div class="col-md-12">
+                            <div class="form-group ms-2 me-2">
+                                <label asp-for="SelectedDocumentType" class="control-label"></label> <span class="text-danger">*</span>
+                                @Html.DropDownListFor(w => w.SelectedDocumentType, Model.DocumentTypes, "Select Document Type", new { @class = "form-control form-select single-line", @id = "DocumentTypeId", required = (string)null })
+                                <span asp-validation-for="SelectedDocumentType" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-6 float-start">
+                                <div class="form-group ms-2 me-3">
+                                    <label class="control-label">Title</label> <span class="text-danger" id="hideTitle">*</span>
+                                    <input name="Title" class="form-control m-2" type="text" id="Title" />
+                                </div>
+                            </div>
+                            <div class="col-md-6 float-start">
+                                <div class="form-group ms-2 me-3">
+                                    <label class="control-label">Description</label> <span class="text-danger" id="hideDescription">*</span>
+                                    <input name="Description" class="form-control m-2" type="text" id="Description" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-6 float-start">
+                                <div class="form-group ms-2 me-3">
+                                    <label class="control-label">Issue Date</label> <span style="font-weight:bold;">(eg. 2022-01-31)</span>
+                                    <input name="IssueDate" class="form-control m-2 dropdown-menu-right" type="text" id="IssueDate" readonly />
+                                </div>
+                            </div>
+                            <div class="col-md-6 float-start">
+                                <div class="form-group ms-2 me-3">
+                                    <label class="control-label">Expiry Date</label> <span style="font-weight:bold;">(eg. 2022-01-31)</span>
+                                    <input name="ExpiryDate" class="form-control m-2" type="text" id="ExpiryDate" readonly />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group ms-2 me-3">
+                                <label class="control-label">Authority Name</label> <span class="text-danger">*</span>
+                                <input name="AuthorityName" class="form-control m-2" type="text" id="AuthorityName" />
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group ms-2 me-3">
+                                <label class="control-label">Upload File</label>
+                                <input name="formFile" class="form-control m-2" type="file" id="formFile" required />
+                            </div>
+                            <div class="form-group ms-2 mt-2 mb-1">
+                                <input type="submit" value="Upload" id="btnUpdate" class="btn btn-theme" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+@if (Model.allowedModule.Contains("View"))
+{
+    <div class="row" id="View">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-center">Company Document(s)</h4>
+                    <hr style="height:1px;" class="text-theme" />
+                    <div class="table-rep-plugin">
+                        <div class="table-responsive mb-0" data-pattern="priority-columns">
+                            <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            #
+                                        </th>
+                                        <th>
+                                            Documents
+                                        </th>
+                                        <th>
+                                            Authority Name
+                                        </th>
+                                        <th>
+                                            Issue Date
+                                        </th>
+                                        <th>
+                                            Expiry Date
+                                        </th>
+                                        <th>
+
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        var i = 0;
+                                    }
+                                    @foreach (var item in Model.CompanyDocuments)
+                                    {
+                                        <tr>
+                                            <td>@(i + 1)</td>
+                                            <td>
+                                                @item.DocumentTypeName
+                                            </td>
+                                            <td>@item.AuthorityName</td>
+                                            <td>@item.IssueDate</td>
+                                            <td>@item.ExpiryDate</td>
+                                            <td>
+                                                <form asp-action="DownloadCompanyDocuments" asp-controller="Company" class="float-start Details" method="get">
+                                                    <input type="hidden" asp-for="@item.Id" name="Id" />
+                                                    <input type="hidden" asp-for="@item.CompanyId" name="CompanyId" />
+                                                    <input type="submit" value="Download" name="Download" class="btn btn-theme Details" />
+                                                </form>
+                                                @if (Model.allowedModule.Contains("Delete"))
+                                                {
+                                                    <span class="btn btn-theme float-start ms-2 Delete" onclick="RemoveDocument(@item.Id);">
+                                                        <i class="fas fa-trash"></i>
+                                                    </span>
+                                                }
+                                                
+                                                <input type="hidden" asp-for="@item.Module" />
+                                            </td>
+                                        </tr>
+                                        i++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+
+<script src="~/assets/autocomplete/jquery-ui.min.js"></script>
+<link href="~/select2/select2.min.css" rel="stylesheet" />
+<script src="~/select2/select2.min.js"></script>
+<script>
+    jQuery('#uploadCompanyDocumentForm').on('submit', function () {
+        if (jQuery(this).data('form_is_invalid')) {
+            jQuery(this).data('form_is_invalid', false);
+        } else {
+            jQuery(this).find('#btnUpdate').prop('disabled', true);
+        }
+    }).on('invalid-form.validate', function () {
+        jQuery(this).data('form_is_invalid', true);
+    });
+</script>
+<script>
+    $("#btnUpdate").on("click",function(){
+        $("#btnUpdate").attr("disabled","disabled");
+        $("#loader").show();
+        var selectedDocumentType = $("#DocumentTypeId").val();
+        var issueDate = $("#IssueDate").val();
+        var expiryDate = $("#ExpiryDate").val();
+
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
+
+        today = yyyy + '-' + mm + '-' + dd;
+
+        var authorityName = $("#AuthorityName").val();
+        if(selectedDocumentType==""){
+            alert("Please Select Document Type.");
+            $("#DocumentTypeId").focus();
+            $("#loader").hide();
+            $("#btnUpdate").removeAttr("disabled");
+            return false;
+        }
+        else if(authorityName == ""){
+            alert("Please Provide Authority Name.");
+            $("#AuthorityName").focus();
+            $("#loader").hide();
+            $("#btnUpdate").removeAttr("disabled");
+            return false;
+        }
+        else if (!/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(issueDate) || !/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(expiryDate)) {
+            if (!/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(issueDate) && issueDate!="") {
+                alert("Please Enter Valid Date Format for Issue Date.");
+                $('#IssueDate').datepicker('setDate', today);
+                $("#IssueDate").focus();
+                $("#loader").hide();
+                $("#btnUpdate").removeAttr("disabled");
+                return false;
+            }
+            else if (!/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(expiryDate) && expiryDate !="") {
+                alert("Please Enter Valid Date Format for Expiry Date.");
+                $('#ExpiryDate').datepicker('setDate', today);
+                $("#ExpiryDate").focus();
+                $("#loader").hide();
+                $("#btnUpdate").removeAttr("disabled");
+                return false;
+            }
+        }
+        $("#loader").hide();
+        $("#btnUpdate").removeAttr("disabled");
+    })
+</script>
+
+<script>
+
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+
+    $(document).ready(function () {  
+       $("#AuthorityName").autocomplete({  
+           minLength: 0,
+           source: function(request,response) {  
+               $.ajax({  
+                   url: "@Url.Action("GetAuthorityNames","Company")",  
+                   type: "GET",  
+                   dataType: "json",  
+                   data: { prefix: request.term },  
+                   success: function (data) {  
+                       if (data.length > 0) {
+                            response($.map(data, function (item) {
+                                return {
+                                    label: item.n,
+                                    val: item.n
+                                };
+                            }))
+                        }
+                    }  
+               })  
+           },
+           focus: function () {
+                return false;
+            },
+       }); 
+       $('#AuthorityName').on("keydown", function (event) {
+            if (event.keyCode === $.ui.keyCode.TAB && $(this).data("autocomplete").menu.active) {
+                event.preventDefault();
+            }
+        });
+   }); 
+</script>
+
+<script>
+$(function () {
+    $("#IssueDate").datepicker({
+        format: 'yyyy-mm-dd',
+        changeMonth: true,
+        autoclose: true,
+        changeYear: true,
+        todayHighlight: true,
+        orientation: 'bottom left'
+    }).on('changeDate', function (selected) {
+        var minDate = new Date(selected.date);
+        minDate.setDate(minDate.getDate() + 1);
+        $('#ExpiryDate').datepicker('setStartDate', minDate);
+    });
+    $("#ExpiryDate").datepicker({
+        format: 'yyyy-mm-dd',
+        changeMonth: true,
+        changeYear: true,
+        autoclose: true,
+        orientation: 'bottom left',
+        todayHighlight: true,
+    }).on('changeDate', function (selected) {
+        var minDate = new Date(selected.date);
+        minDate.setDate(minDate.getDate() - 1);
+        $('#IssueDate').datepicker('setEndDate', minDate);
+    });
+});
+</script>
+<script>
+    ////// Open Selection dropdown on focus                                     -- Yashasvi TBC (09-02-2023)
+    $(document).on('focus', '.select2.select2-container', function (e) {
+        if (e.originalEvent && $(this).find(".select2-selection--single").length > 0) {
+            $(this).siblings('select').select2('open');
+        }
+    });
+   $(document).ready(function(){
+       $("#hideTitle").hide();
+       $("#hideDescription").hide();
+   });
+   $(function() {
+      $('#DocumentTypeId').select2();
+    });
+</script>
+<script>
+    var table = $('#datatable').DataTable({
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    });
+</script>
+<script>
+    function SaveData(){
+        var module = $("#Module").val();
+        var url ="@Url.Action("Index","Company")";
+        window.location.href=url +"?name=" +module;
+    }
+</script>
+<script>
+    $("#SelectedDocumentType").on('change',function(){
+        var data = $("#SelectedDocumentType").val();
+        if(data==15){
+            $("#Title").attr("required","required");
+            $("#Description").attr("required","required");
+            $("#hideTitle").show();
+            $("#hideDescription").show();
+        }      
+        else{
+            $("#Title").removeAttr("required");
+            $("#Description").removeAttr("required");
+            $("#hideTitle").hide();
+            $("#hideDescription").hide();
+        }
+    });
+</script>
+<script>
+    function RemoveDocument(Id){
+        event.preventDefault();
+        const swalWithBootstrapButtons = Swal.mixin({
+          customClass: {
+            confirmButton: 'ms-3 btn btn-success',
+            cancelButton: 'btn btn-danger'
+          },
+          buttonsStyling: false
+        })
+
+        swalWithBootstrapButtons.fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, delete it!',
+          cancelButtonText: 'No, cancel!',
+          reverseButtons: true,
+          showConfirmButton: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#loader").show();
+                $.ajax({
+                    url: "@Url.Action("RemoveCompanyDocument", "Company")",
+                    method: "GET",
+                    data:{"ID":Id},
+                    success: function (response) {
+                        $("#loader").hide();
+                        swalWithBootstrapButtons.fire({
+                          title: 'Deleted.',
+                          text: "Selected Company Document Deleted Successfully..!!",
+                          icon: 'success'
+                        }).then((result) => {
+                            window.location.reload();
+                        });
+                    }
+                });
+            }
+            else if (
+                result.dismiss === Swal.DismissReason.cancel
+              ) {
+                $("#loader").hide();
+                swalWithBootstrapButtons.fire(
+                  'Cancelled',
+                  'Cancled by User..!! :)',
+                  'error'
+                )
+              }
+        });
+    }
+</script>
+<script>
+    $(function(){
+        
+        const swalWithBootstrapButtons = Swal.mixin({
+          customClass: {
+            confirmButton: 'ms-3 btn btn-success',
+            cancelButton: 'btn btn-danger'
+          },
+          buttonsStyling: false
+        })
+        var message = '@ViewData["Message"]';
+        if(message!=""){
+            if(message.startsWith("Document")){
+                swalWithBootstrapButtons.fire({
+                    title: 'Success.',
+                    text: message,
+                    icon: 'success'
+                }).then((result) => {
+                    message = "";
+                    var CompanyId = $("#CompanyId").val();
+                    var Module = $("#Module").val();
+                    var url ="@Url.Action("CompanyDocuments","Company")";
+                    window.location.href=url+"?Id="+CompanyId+"&name="+Module;
+                });
+            }
+            else if(message.startsWith("Please")){
+                swalWithBootstrapButtons.fire({
+                    title: 'Failed.',
+                    text: message,
+                    icon: 'error'
+                }).then((result) => {
+                    message = "";
+                    var CompanyId = $("#CompanyId").val();
+                    var Module = $("#Module").val();
+                    var url ="@Url.Action("CompanyDocuments","Company")";
+                    window.location.href=url+"?Id="+CompanyId+"&name="+Module;
+                });
+            }
+            else{
+                swalWithBootstrapButtons.fire({
+                    title: 'Failed.',
+                    text: message,
+                    icon: 'error'
+                }).then((result) => {
+                    message = "";
+                    var CompanyId = $("#CompanyId").val();
+                    var Module = $("#Module").val();
+                    var url ="@Url.Action("CompanyDocuments","Company")";
+                    window.location.href=url+"?Id="+CompanyId+"&name="+Module;
+                });
+            }
+        }
+
+    });
+</script>

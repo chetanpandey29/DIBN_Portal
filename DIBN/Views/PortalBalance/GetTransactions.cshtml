@@ -1,0 +1,166 @@
+﻿@model DIBN.Models.CompanyAccountDetails
+
+@{
+    ViewData["Title"] = "Get Transactions";
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <span class="mb-2">
+        <span class="front-text-theme font-size-16">
+            <strong>Current Balance : <span id="FillPortalCurrentBalance">0.0 AED</span></strong>
+        </span>
+        <span class="front-text-theme ms-3 font-size-16">
+            <strong>Balance Used for Expenses : <span id="FillPortalExpenseBalance">0.0 AED</span></strong>
+        </span>
+    </span>
+</div>
+<div class="row" id="View">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title text-center">Company Account</h4>
+                <hr style="height:1px;" class="text-theme"/>
+                <div class="table-rep-plugin">
+                    <div class="table-responsive mb-0" data-pattern="priority-columns">
+                        <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        No.
+                                    </th>
+                                    <th>
+                                        Transaction Id
+                                    </th>
+                                    <th>
+                                        Date
+                                    </th>
+                                    <th>
+                                        Description
+                                    </th>
+                                    <th>
+                                        Credit(AED)
+                                    </th>
+                                    <th>
+                                        Debit(AED)
+                                    </th>
+                                    <th>
+                                        Balance AED
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var i = 0;
+                                }
+                                @foreach (var item in Model.getexpensesofCompanies)
+                                {
+                                    @if (item.Description != null)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @(i+1)
+                                            </td>
+                                            <td>
+                                                @item.TransactionId
+                                            </td>
+                                            <td>
+                                                @item.Date
+                                            </td>
+                                            <td class="text-wrap">
+                                                @item.Description
+                                            </td>
+                                            <td>
+                                                @item.Credit
+                                            </td>
+                                            <td>
+                                                @item.Debit
+                                            </td>
+                                            <td>
+                                                @item.Balance
+                                            </td>
+                                        </tr>
+
+                                        i++;
+                                    }
+
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4">@Html.Raw("Total")</td>
+                                    <td>@Model.TotalCredit</td>
+                                    <td>@Model.TotalDebit</td>
+                                    <td>@Model.TotalBalance</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+<script>
+    $('#datatable').dataTable({
+        paging: true,
+        ordering: false,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    });
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>
+<script>
+    $(function(){
+        $.ajax({
+            url: "@Url.Action("GetPortalBalance", "PortalBalance")",
+            method: "GET",
+            async: false,
+            success:function(response){
+                if(response.balanceAmount!=null && response.balanceAmount !=0)
+                {
+                    if(Math.sign(parseFloat(response.balanceAmount))<0){
+                        $("#FillPortalCurrentBalance").text(response.balanceAmount +" AED");
+                        $("#FillPortalCurrentBalance").addClass("text-danger");
+                    }
+                    else{
+                        $("#FillPortalCurrentBalance").text(response.balanceAmount +" AED");
+                        $("#FillPortalCurrentBalance").addClass("text-success");
+                    }
+                }
+                if(response.remainingPortalBalance!=null && response.remainingPortalBalance!='N/A'){    
+                    $("#FillPortalExpenseBalance").text(response.remainingPortalBalance +" AED");
+                    $("#FillPortalExpenseBalance").addClass("text-danger");
+                }
+                else{
+                    $("#FillPortalExpenseBalance").text("0.0 AED");  
+                    $("#FillPortalExpenseBalance").addClass("text-danger");
+                }
+            }
+        });
+    });
+</script>

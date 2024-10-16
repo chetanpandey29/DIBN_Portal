@@ -1,0 +1,437 @@
+﻿@model DIBN.Models.CompanyViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+@{
+    int index = 0;
+    string[] mobileNumbers = { };
+    string[] Emails = { };
+    int count = 0;
+    int mobileNumbersIndex = 1;
+    int emailIndex = 1;
+}
+
+@if (Model.allowedModule.Contains("View"))
+{
+    @if (Model.userCompanyViewModel != null && Model.userCompanyViewModel.CompanyName != null)
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12 card-title">
+                                <h5 class="text-dark float-start" style="margin-top:10px;"><b>Company Information</b></h5>
+                                <a href="@Url.Action("Index", "UserDocuments",new{name="MyDocuments"})" class="float-end">
+                                    <span class="btn btn-theme " style="color:#fff;font-size:15px">Company Documents <i class="fas fa-file-pdf ms-2" style="font-size:20px"></i></span>
+                                </a>
+                            </div>
+                        </div>
+                        <hr />
+                        <dl class="row">
+                            <dt class="col-sm-4">
+                                @Html.DisplayNameFor(model => model.userCompanyViewModel.AccountNumber)
+                            </dt>
+                            <dd class="col-sm-8">
+                                @Html.DisplayFor(model => model.userCompanyViewModel.AccountNumber)
+                            </dd>
+                            <dt class="col-sm-4">
+                                @Html.DisplayNameFor(model => model.userCompanyViewModel.CompanyType)
+                            </dt>
+                            <dd class="col-sm-8">
+                                @Html.DisplayFor(model => model.userCompanyViewModel.CompanyType)
+                            </dd>
+                            <dt class="col-sm-4">
+                                @Html.DisplayNameFor(model => model.userCompanyViewModel.Username)
+                            </dt>
+                            <dd class="col-sm-8">
+                                @Html.DisplayFor(model => model.userCompanyViewModel.Username)
+                            </dd>
+                            <dt class="col-sm-4">
+                                @Html.DisplayNameFor(model => model.userCompanyViewModel.CompanyName)
+                            </dt>
+                            <dd class="col-sm-8">
+                                @Html.DisplayFor(model => model.userCompanyViewModel.CompanyName)
+                            </dd>
+                            <dt class="col-sm-4">
+                                @Html.DisplayNameFor(model => model.userCompanyViewModel.LabourFileNo)
+                            </dt>
+                            <dd class="col-sm-8">
+                                @Html.DisplayFor(model => model.userCompanyViewModel.LabourFileNo)
+                            </dd>
+                            <dt class="col-sm-4">
+                                @Html.Raw("Is Company Active?")
+                            </dt>
+                            <dd class="col-sm-8">
+                                @if (Model.userCompanyViewModel.IsActive)
+                                {
+                                    @Html.Raw("Yes")
+                                }
+                                else
+                                {
+                                    @Html.Raw("No")
+                                }
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+
+                        <div class="row">
+                            <div class="card-title">
+                                <h5 class="text-dark"><b>Company Primary Contact Details</b></h5>
+                            </div>
+                        </div>
+                        <hr />
+                        <dl class="row">
+                            <dt class="col-sm-4">
+                                @Html.DisplayNameFor(model => model.userCompanyViewModel.MobileNumber)
+                            </dt>
+                            @if (@Model.userCompanyViewModel.MobileNumber.Contains(","))
+                            {
+                                mobileNumbers = @Model.userCompanyViewModel.MobileNumber.Split(",");
+                                count = mobileNumbers.Count() - 1;
+
+                                for (var i = 0; i <= count; i++)
+                                {
+
+                                    @Html.Raw("" + @mobileNumbersIndex + ".") @Html.Raw(" ") @Html.Raw(mobileNumbers[i])
+                                    mobileNumbersIndex++;
+                                    <br />
+                                }
+                            }
+                            else
+                            {
+                                <dd class="col-sm-8">
+                                    @Html.DisplayFor(model => model.userCompanyViewModel.MobileNumber)
+                                </dd>
+                            }
+                        </dl>
+                        <dl class="row">
+                            <dt class="col-sm-4">
+                                @Html.DisplayNameFor(model => model.userCompanyViewModel.EmailID)
+                            </dt>
+                            @if (@Model.userCompanyViewModel.EmailID.Contains(","))
+                            {
+                                Emails = @Model.userCompanyViewModel.EmailID.Split(",");
+                                count = Emails.Count() - 1;
+
+                                for (var i = 0; i <= count; i++)
+                                {
+
+                                    @Html.Raw("" + @emailIndex + ".") @Html.Raw(" ") @Html.Raw(Emails[i])
+                                    emailIndex++;
+                                    <br />
+                                }
+                            }
+                            else
+                            {
+                                <dd class="col-sm-8">
+                                    @Html.DisplayFor(model => model.userCompanyViewModel.EmailID)
+                                </dd>
+                            }
+
+
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.userCompanyViewModel.companyShareholders.Count > 0)
+        {
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+
+                            <div class="row">
+                                <div class="card-title">
+                                    <h5 class="text-dark"><b>Shareholder Details</b></h5>
+                                </div>
+                            </div>
+                            <hr />
+                            <dl class="row">
+                                @foreach (var item in Model.userCompanyViewModel.companyShareholders)
+                                {
+                                    index = index + 1;
+                                    <dt class="col-sm-4">
+                                        @Html.DisplayNameFor(model => item.ShareholderName) @Html.Raw("-" + index)
+                                    </dt>
+                                    <dd class="col-sm-8">
+                                        @Html.DisplayFor(model => item.ShareholderName)
+                                    </dd>
+                                    <dt class="col-sm-4">
+                                        @Html.DisplayNameFor(model => item.ShareholderSharePercentage) @Html.Raw("-" + index)
+                                    </dt>
+                                    <dd class="col-sm-8">
+                                        @Html.DisplayFor(model => item.ShareholderSharePercentage)@Html.Raw("%")
+                                    </dd>
+                                }
+
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="card-title">
+                                <h5 class="text-dark"><b>License Details</b></h5>
+                            </div>
+                        </div>
+                        <hr />
+                        <dl class="row">
+                            <dt class="col-sm-4">
+                                @Html.DisplayNameFor(model => Model.userCompanyViewModel.LicenseType)
+                            </dt>
+                            <dd class="col-sm-8">
+                                @Html.DisplayFor(model => Model.userCompanyViewModel.LicenseType)
+                            </dd>
+                            <dt class="col-sm-4">
+                                @Html.DisplayNameFor(model => Model.userCompanyViewModel.LicenseStatus)
+                            </dt>
+                            <dd class="col-sm-8">
+                                @Html.DisplayFor(model => Model.userCompanyViewModel.LicenseStatus)
+                            </dd>
+                            <dt class="col-sm-4">
+                                @Html.DisplayNameFor(model => Model.userCompanyViewModel.LicenseIssueDate)
+                            </dt>
+                            <dd class="col-sm-8">
+                                @Html.DisplayFor(model => Model.userCompanyViewModel.LicenseIssueDate)
+                            </dd>
+                            <dt class="col-sm-4">
+                                @Html.DisplayNameFor(model => Model.userCompanyViewModel.LicenseExpiryDate)
+                            </dt>
+                            <dd class="col-sm-8">
+                                @Html.DisplayFor(model => Model.userCompanyViewModel.LicenseExpiryDate)
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="card-title">
+                                <h5 class="text-dark"><b>Lease Details</b></h5>
+                            </div>
+                        </div>
+                        <hr />
+                        <dl class="row">
+                            <dt class="col-sm-4">
+                                @Html.DisplayNameFor(model => Model.userCompanyViewModel.LeaseFacilityType)
+                            </dt>
+                            <dd class="col-sm-8">
+                                @Html.DisplayFor(model => Model.userCompanyViewModel.LeaseFacilityType)
+                            </dd>
+                            <dt class="col-sm-4">
+                                @Html.DisplayNameFor(model => Model.userCompanyViewModel.LeaseStartDate)
+                            </dt>
+                            <dd class="col-sm-8">
+                                @Html.DisplayFor(model => Model.userCompanyViewModel.LeaseStartDate)
+                            </dd>
+                            <dt class="col-sm-4">
+                                @Html.DisplayNameFor(model => Model.userCompanyViewModel.LeaseExpiryDate)
+                            </dt>
+                            <dd class="col-sm-8">
+                                @Html.DisplayFor(model => Model.userCompanyViewModel.LeaseExpiryDate)
+                            </dd>
+                            <dt class="col-sm-4">
+                                @Html.DisplayNameFor(model => Model.userCompanyViewModel.LeaseStatus)
+                            </dt>
+                            <dd class="col-sm-8">
+                                @Html.DisplayFor(model => Model.userCompanyViewModel.LeaseStatus)
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title text-center">Company(s)</h4>
+                        <hr style="height:1px;" class="text-theme" />
+                        <div class="table-rep-plugin">
+                            <div class="table-responsive mb-0" data-pattern="priority-columns">
+                                <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                #
+                                            </th>
+                                            <th>
+
+                                            </th>
+                                            <th>
+                                                Company Name
+                                            </th>
+                                            <th>
+                                                Phone Number
+                                            </th>
+                                            <th>
+                                                Email ID
+                                            </th>
+                                            <th>
+                                                Authority
+                                            </th>
+                                            <th>
+                                                Company Status
+                                            </th>
+                                            <th>
+
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            var j = 1;
+                                        }
+                                        @foreach (var item in Model.userCompanies)
+                                        {
+                                            @if (item.CompanyName != null)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        @j
+                                                    </td>
+                                                    <td>
+                                                        @item.AccountNumber
+                                                    </td>
+                                                    <td>
+                                                        @item.CompanyName
+                                                    </td>
+                                                    <td title="@item.MobileNumber">
+                                                        @if (item.MobileNumber.Contains(","))
+                                                        {
+                                                            var _index = item.MobileNumber.IndexOf(",");
+                                                            var mobileNumber = item.MobileNumber.Substring(0, _index);
+                                                            mobileNumber = mobileNumber + "...";
+                                                            @Html.Raw(mobileNumber)
+                                                        }
+                                                        else
+                                                        {
+                                                            @item.MobileNumber
+                                                        }
+                                                    </td>
+                                                    <td title="@item.EmailID">
+                                                        @if (item.EmailID.Contains(","))
+                                                        {
+                                                            var _index = item.EmailID.IndexOf(",");
+                                                            var emailId = item.EmailID.Substring(0, _index);
+                                                            emailId = emailId + "...";
+                                                            @Html.Raw(emailId)
+                                                        }
+                                                        else
+                                                        {
+                                                            @item.EmailID
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        @item.LicenseType
+                                                    </td>
+                                                    <td>
+                                                        @if (item.IsActive)
+                                                        {
+                                                            <p>Active</p>
+                                                        }
+                                                        else
+                                                        {
+                                                            <p>De-Active</p>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        @if (item.IsActive)
+                                                        {
+                                                            @if (Model.allowedPermissions.Contains("CompanyServices"))
+                                                            {
+                                                                <a class="btn btn-theme" href="@Url.Action("Index","CompanyService",new{name="CompanyServices",CompanyId=@item.Id})">
+                                                                    Company Service
+                                                                </a>
+                                                            }
+                                                            @if (Model.allowedPermissions.Contains("EmployeeServices"))
+                                                            {
+                                                                <a class="btn btn-theme" href="@Url.Action("Index","EmployeeService",new{name="EmployeeServices",CompanyId=@item.Id})">
+                                                                    Employee Service
+                                                                </a>    
+                                                            }
+                                                            @if (Model.allowedPermissions.Contains("MyRequests"))
+                                                            {
+                                                                <a class="btn btn-theme" href="@Url.Action("Index","ServiceRequests",new{name="MyRequests",CompanyId=@item.Id})">
+                                                                    Service Request
+                                                                </a>
+                                                            }
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+                                            else
+                                            {
+                                                <tr>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td><p class="text-center">No data found.</p></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+
+                                            }
+
+                                            j++;
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+<input type="hidden" name="Module" id="Module" value="@Model.Module" />
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+<script>
+    $('#datatable').DataTable({
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    });
+</script>

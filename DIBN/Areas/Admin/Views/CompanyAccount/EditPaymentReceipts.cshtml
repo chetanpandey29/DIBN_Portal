@@ -1,0 +1,251 @@
+﻿@model DIBN.Areas.Admin.Models.GetPaymentTransactionReceipt
+<div class="row">
+    <form asp-action="EditsPaymentReceipt" method="post" id="editPaymentReceipt">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div>
+            <input asp-for="Id" class="form-control" type="hidden"/> 
+            <input asp-for="CompanyId" class="form-control" type="hidden"/> 
+            <input asp-for="PaymentId" class="form-control" type="hidden"/> 
+        </div>
+        <div class="form-group">
+            <label asp-for="SerialNumber" class="control-label"></label>
+            <input asp-for="SerialNumber" class="form-control" readonly required/> 
+            <span asp-validation-for="SerialNumber" class="text-danger" ></span> 
+        </div>
+        <div class="form-group">
+            <label asp-for="CompanyName" class="control-label"></label>
+            <input asp-for="CompanyName" class="form-control" readonly required/> 
+            <span asp-validation-for="CompanyName" class="text-danger" ></span> 
+        </div>
+        <div class="form-group">
+            <label asp-for="Amount" class="control-label"></label>
+            <input asp-for="Amount" type="text" class="form-control" id="Amount12" step=".01" maxlength="10" onkeyup="ValidAlphabet(this)" onfocusout="ValidAlphabet(this)" onkeypress="ValidTextLength(this)" oninvalid="this.setCustomValidity('Please Enter Amount.')" oninput="this.setCustomValidity('')" required/> 
+            <span asp-validation-for="Amount" class="text-danger" ></span> 
+        </div>
+        <div class="form-group">
+            <label asp-for="Quantity" class="control-label"></label>
+            <input asp-for="Quantity" type="number" class="form-control" data-toggle="touchspin" id="Quantity12" readonly />
+            <span asp-validation-for="Quantity" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="TotalAmount" class="control-label"></label>
+            <input asp-for="TotalAmount" type="text" class="form-control" id="TotalAmount12" step=".01"  required readonly/> 
+            <span asp-validation-for="TotalAmount" class="text-danger" ></span> 
+        </div>
+        <div class="form-group">
+            <label asp-for="OnAccount" class="control-label"></label>
+            <textarea asp-for="OnAccount" class="form-control" oninvalid="this.setCustomValidity('Please Enter Details which you want to display for On Account Of.')" 
+            oninput="this.setCustomValidity('')" maxlength="200" rows="3" cols="30" required></textarea> 
+            <span asp-validation-for="OnAccount" class="text-danger" ></span> 
+        </div>
+        <div class="form-group">
+            <label asp-for="Through" class="control-label"></label>
+            <textarea asp-for="Through" class="form-control text-wrap" maxlength="200" rows="3" cols="30"></textarea> 
+            <span asp-validation-for="Through" class="text-danger" ></span> 
+        </div>
+        <div class="form-group">
+            <label asp-for="CreatedOn" class="control-label"></label> <span style="font-weight:bold;">(eg. 2022-01-31)</span>
+            <input asp-for="CreatedOn" class="form-control" data-toggle="datepicker" id="CreatedOn" placeholder="yyyy-mm-dd" oninvalid="this.setCustomValidity('Please Select Date.')" oninput="this.setCustomValidity('')" required readonly/> 
+            <span asp-validation-for="CreatedOn" class="text-danger" ></span> 
+        </div>
+        <div class="modal-footer">
+            <div class="form-group">
+                <input type="submit" id="btnSubmit" value="Update" class="btn btn-theme" />
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $(function () {
+        var today = new Date();
+        $("#CreatedOn").datepicker({
+            format: 'yyyy-mm-dd',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            todayHighlight: true,
+            endDate: "today",
+            maxDate: today
+        }).on('changeDate', function (ev) {
+            $(this).datepicker('hide');
+        });
+    });
+</script>
+<script>
+    $("#Quantity12").TouchSpin({
+        min: 1,
+        max: 20,
+        boostat: 5,
+        maxboostedstep: 10
+    });
+</script>
+<script>
+    $("#Quantity12").on("change",function(){
+        $("#TotalAmount12").val(0);
+        var amount = $("#Amount12").val();
+        var quantity = $("#Quantity12").val();
+        var totalAmount = parseFloat(amount) * parseInt(quantity);
+        if(isNaN(totalAmount)){
+            totalAmount = 0;
+        }
+        $("#TotalAmount12").val(parseFloat(totalAmount).toFixed(2));
+    });
+    $("#Amount12").on("keyup",function(){
+        $("#TotalAmount").val(0);
+        var amount = $("#Amount12").val();
+        var quantity = $("#Quantity12").val();
+        var totalAmount = parseFloat(amount) * parseInt(quantity);
+        if(isNaN(totalAmount)){
+            totalAmount = 0;
+        }
+        $("#TotalAmount12").val(parseFloat(totalAmount).toFixed(2));
+    });
+
+    $("#Quantity12").on("focus", function () {
+        $("#TotalAmount12").val(0);
+        var amount = $("#Amount12").val();
+        var quantity = $("#Quantity12").val();
+        var totalAmount = parseFloat(amount) * parseInt(quantity);
+        if (isNaN(totalAmount)) {
+            totalAmount = 0;
+        }
+        $("#TotalAmount12").val(parseFloat(totalAmount).toFixed(2));
+    });
+    $("#Amount12").on("focus", function () {
+        $("#TotalAmount").val(0);
+        var amount = $("#Amount12").val();
+        var quantity = $("#Quantity12").val();
+        var totalAmount = parseFloat(amount) * parseInt(quantity);
+        if (isNaN(totalAmount)) {
+            totalAmount = 0;
+        }
+        $("#TotalAmount12").val(parseFloat(totalAmount).toFixed(2));
+    });
+</script>
+<script>
+    function ValidAlphabet(data) {
+        var code = (event.which) ? event.which : event.keyCode;  
+        if (!(code>= 48 && code <=57) || !(code >=96 && code <=105) || code == 54 || code == 189 || code == 219 || code==57) {
+            if (code != 32 && code != 190) {
+                var digits = $(data).val();
+                var lastValue = digits.substring(digits.length - 1);
+                digits = digits.replace(/[^(\.\s)[^0-9-]/g, '');
+                if (lastValue == "^" || lastValue == "-" || lastValue == "(" || lastValue == ")" || lastValue == "[") {
+                    var lastIndex = digits.indexOf(lastValue);
+                    var currentText = digits.substring(0, lastIndex);
+                    digits = currentText;
+                    digits = digits.replace(lastValue, '');
+                }
+                else if (digits.includes("-") || digits.includes("^") || digits.includes("(")|| digits.includes(")")|| digits.includes("[")) {
+                    if (digits.includes("-")) {
+                        var lastIndex = digits.lastIndexOf("-");
+                        var currentText = digits.substring(lastIndex+1, digits.length);
+                        digits = currentText;
+                    }
+                    else if (digits.includes("^")) {
+                        var lastIndex = digits.lastIndexOf("^");
+                        var currentText = digits.substring(lastIndex+1, digits.length);
+                        digits = currentText;
+                    }
+                    else if (digits.includes("(")) {
+                        var lastIndex = digits.lastIndexOf("(");
+                        var currentText = digits.substring(lastIndex+1, digits.length);
+                        digits = currentText;
+                    }
+                    else if (digits.includes(")")) {
+                        var lastIndex = digits.lastIndexOf(")");
+                        var currentText = digits.substring(lastIndex+1, digits.length);
+                        digits = currentText;
+                    }
+                    else if (digits.includes("[")) {
+                        var lastIndex = digits.lastIndexOf("[");
+                        var currentText = digits.substring(lastIndex+1, digits.length);
+                        digits = currentText;
+                    }
+                }
+                else if (digits.replace(/[^.]/g, "").length > 1) {
+                   lastValue = digits.substring(digits.length - 1);
+                    var lastIndex = digits.indexOf(lastValue);
+                    var currentText = digits.substring(lastIndex, digits.length);
+                    if (currentText.replace(/[^.]/g, "").length > 1) {
+                        var currentDigits1 = digits.slice(0, lastIndex+1);
+                        digits = currentDigits1;
+                    }
+                    else {
+                        var currentDigits = digits.slice(0,lastIndex);
+                        digits = currentDigits;
+                    }
+
+                }
+                $(data).val(digits);
+            }
+            else if (digits.replace(/[^.]/g, "").length > 1) {
+                lastValue = digits.substring(digits.length - 1);
+                var lastIndex = digits.indexOf(lastValue);
+                var currentText = digits.substring(lastIndex, digits.length);
+                if (currentText.replace(/[^.]/g, "").length > 1) {
+                    var currentDigits1 = digits.slice(0, lastIndex+1);
+                    digits = currentDigits1;
+                }
+                else {
+                    var currentDigits = digits.slice(0,lastIndex);
+                    digits = currentDigits;
+                }
+
+                $(data).val(digits);
+            }
+        }
+    } 
+     function ValidTextLength(data) {
+        
+        var digits = $(data).val();
+         var currentDigits = digits.split(".");
+        if (digits.includes(".") == true) {
+            if (currentDigits[1].length >= 2) {
+                event.preventDefault();
+            }
+        }
+    }
+</script>
+
+<script>
+    $("#btnSubmit").on('click', function() {
+        var amount1 = $("#Amount12").val();
+        var quantity = $("#Quantity12").val();
+        var totalAmount = ((parseFloat(amount1) * parseInt(quantity)));
+        $("#TotalAmount12").val(parseFloat(totalAmount).toFixed(2));
+
+        var dateString = $("#CreatedOn").val();
+        var amount = $("#Amount12").val();
+        $("#Amount12").val(parseFloat(amount).toFixed(2));
+        if (!/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(dateString)) {
+            
+            alert("Please Enter Valid Date Format for Payment Receipt Date.");
+            var today = new Date();
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+
+            today = yyyy + '-' + mm + '-' + dd;
+            $('#CreatedOn').datepicker('setDate', today);
+            $("#CreatedOn").focus();
+            return false;
+        }
+        if (isNaN(parseFloat(amount))) {
+            alert("Please Provide Valid Amount.");
+            $("#Amount2").val(parseFloat(amount).toFixed(2));
+            return false;
+        }
+    });
+</script>
+<script>
+    jQuery('#editPaymentReceipt').on('submit', function () {
+        if (jQuery(this).data('form_is_invalid')) {
+            jQuery(this).data('form_is_invalid', false);
+        } else {
+            jQuery(this).find('#btnSubmit').prop('disabled', true);
+        }
+    }).on('invalid-form.validate', function () {
+        jQuery(this).data('form_is_invalid', true);
+    });
+</script>

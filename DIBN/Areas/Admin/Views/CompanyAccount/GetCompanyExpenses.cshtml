@@ -1,0 +1,126 @@
+﻿@model DIBN.Areas.Admin.Models.GetAllExpenses
+@{
+    ViewData["Title"] = "GetCompanyExpenses";
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title text-center">Company Expense(s)</h4>
+                <hr style="height:1px;" class="text-theme"/>
+                <div class="table-rep-plugin">
+                    <div class="table-responsive mb-0" data-pattern="priority-columns">
+                        <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        #
+                                    </th>
+                                    <th>
+                                        Task
+                                    </th>
+                                    <th>
+                                        Amount
+                                    </th>
+                                    <th>
+                                        Quantity
+                                    </th>
+                                    <th>
+                                        Total Amount
+                                    </th>
+                                    <th>
+
+                                    </th>
+                                    <th>
+
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var j = 0;
+                                }
+                                @if(Model.portalBalanceExpenses!=null && Model.portalBalanceExpenses.Count > 0)
+                                {
+                                    @foreach (var item in Model.portalBalanceExpenses)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @(j+1)
+                                            </td>
+                                            <td>
+                                                @item.Title
+                                            </td>
+                                            <td>
+                                                @item.Amount
+                                            </td>
+                                            <td>
+                                                @item.Quantity
+                                            </td>
+                                            <td>
+                                                @item.TotalAmount
+                                            </td>
+                                            <td>
+                                                <span class="btn btn-theme Update" onclick="Update(@item.Id)">
+                                                    <i class="fas fa-edit"></i>
+                                                </span>
+                                                <span class="btn btn-theme Delete" onclick="RemoveExpenses(@item.Id,@item.TotalAmount)">
+                                                    <i class="fas fa-trash"></i>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <form asp-action="DownloadReceipt" asp-controller="PortalBalanceExpense" method="get">
+                                                    <input type="hidden" asp-for="@item.Id" name="ReceiptId"/>
+                                                    <input type="hidden" asp-for="@item.ExpenseReceiptId" name="ExpenseReceiptId"/>
+                                                    <input type="submit" value="Download" name="Download Receipt" class="btn btn-theme"/>
+                                                </form>
+                                            </td>
+                                        </tr>
+
+                                        j++;
+                                    }
+                                }
+                                
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+<!-- Bootrstrap touchspin -->
+<link href="~/assets/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css" rel="stylesheet" />
+<script src="~/assets/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js"></script>
+
+<script>
+     $('#datatable').dataTable({
+        paging: true,
+        ordering: false,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+    });
+
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>
+

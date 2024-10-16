@@ -1,0 +1,575 @@
+﻿@model DIBN.Areas.Admin.Models.MainCompanyEmployeesModel
+@{
+    ViewData["Title"] = "GetMainCompanyEmployees";
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        @if (Model.allowedModule.Contains("View"))
+        {
+            <a href="@Url.Action("ExportToPdfMain","User",new{area="Admin"})" class="btn btn-theme mb-3 float-end ms-3 Details">Export(Pdf)</a>
+            <a href="@Url.Action("ExportToExcelMain","User",new{area="Admin"})" class="btn btn-theme mb-3 float-end ms-3 Details">Export(Excel)</a>
+        }
+        @if (Model.allowedModule.Contains("Insert"))
+        {
+            <button class="btn btn-theme mb-3 float-end" onclick="AddNew();" id="Insert">Create</button>
+        }
+        <input type="hidden" name="Module" id="Module" value="@Model.Module" />
+    </div>
+</div>
+@if (Model.allowedModule.Contains("View"))
+{
+    <div class="row" id="View">
+        <div class="col-md-12 p-0">
+            <div class="col-md-3 col-sm-12 col ps-1 float-start">
+                <div class="card bg-blue p-3 mb-0 Suitable text-white text-center text-break font-weight-4 font-size-16" style="border-radius:15px 15px 0px 0px;">
+                    Active Employee(s)
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-12 col ps-1 float-start">
+                <div class="card p-3 Benefits mb-0 text-break border-theme-top border-theme-left border-theme-right text-theme text-center font-weight-4 font-size-16" style="border-radius:15px 15px 0px 0px;">
+                    In-Active Employee(s)
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 col-sm-12 col-12 ps-1 float-start cssanimation fadeInBottom" style="background:#F8F8F8;" id="Suitable">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-rep-plugin">
+                            <div class="table-responsive mb-0" data-pattern="priority-columns">
+                                <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                DIBN No.
+                                            </th>
+                                            <th>
+                                                Name
+                                            </th>
+                                            <th>
+                                                Nationality
+                                            </th>
+                                            <th>
+                                                Designation
+                                            </th>
+                                            <th>
+                                                Passport No.
+                                            </th>
+                                            <th>
+                                                Passport Expiry Date
+                                            </th>
+                                            <th>
+                                                Visa Expiry Date
+                                            </th>
+                                            <th>
+                                                Insurance Company
+                                            </th>
+                                            <th>
+                                                Insurance Expiry Date
+                                            </th>
+                                            <th>
+
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 col-sm-12 col-12 ps-1 float-start d-none cssanimation fadeInBottom" style="background:#F8F8F8;" id="Benefits">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-rep-plugin">
+                            <div class="table-responsive mb-0" data-pattern="priority-columns">
+                                <table id="datatable-1" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                DIBN No.
+                                            </th>
+                                            <th>
+                                                Name
+                                            </th>
+                                            <th>
+                                                Nationality
+                                            </th>
+                                            <th>
+                                                Designation
+                                            </th>
+                                            <th>
+                                                Passport No.
+                                            </th>
+                                            <th>
+                                                Passport Expiry Date
+                                            </th>
+                                            <th>
+                                                Visa Expiry Date
+                                            </th>
+                                            <th>
+                                                Insurance Company
+                                            </th>
+                                            <th>
+                                                Insurance Expiry Date
+                                            </th>
+                                            <th>
+
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+
+<script>
+    $(document).ready(function () {
+        var flag = false;
+        var url = "@Url.Action("GetAllCompanyActiveMainCompanyEmployeesWithPagination","User")";
+
+        var table = $('#datatable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "ajax": {
+                "type": "post",
+                "datatype": "json",
+                "data": function () {
+                    var info = $('#datatable').DataTable().page.info();
+                    $('#datatable').DataTable().ajax.url(
+                        url
+                    );
+                }
+            },
+            "columns": [
+                { "data": "accountNumber", "name": "DIBN No." },
+                {
+                    "data": function (data, full, meta) {
+                        return data.firstName + ' ' + data.lastName;
+                    },
+                    "name": "Name"
+                },
+                { "data": "nationality", "name": "Nationality" },
+                {"data": function (data, full, meta) {
+                    return data.designation;
+                }, "name": "Designation" },
+                { "data": "passportNumber", "name": "Passport No." },
+                { "data": "passportExpiryDate", "name": "Passport Expiry Date" },
+                { "data": "visaExpiryDate", "name": "Visa Expiry Date" },
+                { "data": "insuranceCompany", "name": "Insurance Company" },
+                { "data": "insuranceExpiryDate", "name": "Insurance Expiry Date" },
+                {
+                    "data": function (data, full, meta) {
+                        var module = $("#Module").val();
+                        var getUserDetails = "GetUserDetail(" + data.id + ")";
+                        var applyPermission = "ApplyUserPermission(" + data.id + ",'" + module + "')";
+                        var updateUser = "UpdateUser(" + data.id + ")";
+                        var removeUser = "RemoveUser(" + data.id + ")";
+                        var viewDocuments = "ViewDocuments(" + data.id + ")";
+
+                        var returnKey = "";
+                        if ('@Model.allowedModule.Contains("View")' == "True") {
+                            returnKey = '<span class="btn btn-theme Details ms-1" onclick=' + getUserDetails + '><i class="fas fa-eye"></i></span>';
+                        }
+                        if ('@Model.allowedUserPermissionModule.Contains("View")' == "True") {
+                            returnKey = returnKey + '<span class="btn btn-theme ms-1 UserPermissions" onclick=' + applyPermission +'><i class="fas fa-user"></i></span>';
+                        }
+                        if ('@Model.allowedModule.Contains("Update")' == "True") {
+                            returnKey = returnKey + '<span class="btn btn-theme Update ms-1" onclick=' + updateUser +'><i class="fas fa-edit"></i></span>';
+                        }
+                        if ('@Model.allowedModule.Contains("Delete")' == "True") {
+                            returnKey = returnKey + '<span class="btn btn-theme Delete ms-1" onclick=' + removeUser +'><i class="fas fa-trash"></i></span>';
+                        }
+                        if ('@Model.allowedModule.Contains("View")' == "True") {
+                            returnKey = returnKey + '<button class="btn btn-theme ms-1 Details" onclick=' + viewDocuments + '>Documents</button>';
+                        }
+                        return returnKey;
+                    },
+                    "name": ""
+                },
+            ],
+            "responsive": true,
+            "deferRender": true,
+            "language": {
+                'processing': '<div class="spinner-2"><div class="center-div-2"><div class="loader-circle-1"></div></div></div>'
+            },
+            paging: true,
+            pagingType: 'simple_numbers',
+            ordering: true,
+            searching: true,
+            "aLengthMenu": [20, 30, 50],
+            dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+        });
+
+        var coll = document.getElementsByClassName("Suitable");
+
+        for (var i = 0; i < coll.length; i++) {
+
+            coll[i].addEventListener("click", function () {
+                $("#Suitable").removeClass("d-none");
+                $("#Benefits").addClass("d-none");
+                $(".Suitable").addClass("bg-blue").removeClass("border-theme");
+                $(".Suitable").closest("div").addClass("text-white").removeClass("text-theme");
+                if ($(".Benefits").hasClass("bg-blue")) {
+                    $(".Benefits").removeClass("bg-blue").addClass("border-theme-top").addClass("border-theme-left").addClass("border-theme-right");
+                    $(".Benefits").closest("div").addClass("text-theme").removeClass("text-white");
+                }
+            });
+        }
+
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        var coll = document.getElementsByClassName("Benefits");
+        for (var i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function () {
+                if ($.fn.dataTable.isDataTable('#datatable-1')) {
+                    $('#datatable-1').DataTable().destroy();
+                    $('#datatable-1').empty();
+                }
+                var flag = false;
+                var url = "@Url.Action("GetAllCompanyInActiveMainCompanyEmployeesWithPagination","User")";
+
+                var table = $('#datatable-1').DataTable({
+                    "processing": true,
+                    "serverSide": true,
+                    "filter": true,
+                    "ajax": {
+                        "type": "post",
+                        "datatype": "json",
+                        "data": function () {
+                            var info = $('#datatable-1').DataTable().page.info();
+                            $('#datatable-1').DataTable().ajax.url(
+                                url
+                            );
+                        }
+                    },
+                    "columns": [
+                        { "data": "accountNumber", title: "DIBN No.", name: "DIBN No." },
+                        {
+                            "data": function (data, full, meta) {
+                                return data.firstName + ' ' + data.lastName;
+                            },
+                            title: "Name",
+                            name: "Name"
+                        },
+                        { "data": "nationality", title: "Nationality", name: "Nationality" },
+                        {"data": function (data, full, meta) {
+                            return data.designation;
+                        }, title: "Designation", name: "Designation" },
+                        { "data": "passportNumber", title: "Passport No.", name: "Passport No." },
+                        { "data": "passportExpiryDate", title: "Passport Expiry Date" , name: "Passport Expiry Date" },
+                        { "data": "visaExpiryDate", title: "Visa Expiry Date", name: "Visa Expiry Date" },
+                        { "data": "insuranceCompany", title: "Insurance Company", name: "Insurance Company" },
+                        { "data": "insuranceExpiryDate", title: "Insurance Expiry Date", name: "Insurance Expiry Date" },
+                        {
+                            "data": function (data, full, meta) {
+                                var module = $("#Module").val();
+                                var getUserDetails = "GetUserDetail(" + data.id + ")";
+                                var applyPermission = "ApplyUserPermission(" + data.id + ",'" + module + "')";
+                                var updateUser = "UpdateUser(" + data.id + ")";
+                                var removeUser = "RemoveUser(" + data.id + ")";
+                                var viewDocuments = "ViewDocuments(" + data.id + ")";
+
+                                var returnKey = "";
+                                if ('@Model.allowedModule.Contains("View")' == "True") {
+                                    returnKey = '<span class="btn btn-theme Details ms-1" onclick=' + getUserDetails + '><i class="fas fa-eye"></i></span>';
+                                }
+                                if ('@Model.allowedModule.Contains("Update")' == "True") {
+                                    returnKey = returnKey + '<span class="btn btn-theme Update ms-1" onclick=' + updateUser + '><i class="fas fa-edit"></i></span>';
+                                }
+                                if ('@Model.allowedModule.Contains("Delete")' == "True") {
+                                    returnKey = returnKey + '<span class="btn btn-theme Delete ms-1" onclick=' + removeUser + '><i class="fas fa-trash"></i></span>';
+                                }
+                                if ('@Model.allowedModule.Contains("View")' == "True") {
+                                    returnKey = returnKey + '<button class="btn btn-theme ms-1" onclick=' + viewDocuments + '>Documents</button>';
+                                }
+
+                                return returnKey;
+                            },
+                            title: "",
+                            name: ""
+                        },
+                    ],
+                    "responsive": true,
+                    "deferRender": true,
+                    "language": {
+                        'processing': '<div class="spinner-2"><div class="center-div-2"><div class="loader-circle-1"></div></div></div>'
+                    },
+                    paging: true,
+                    pagingType: 'simple_numbers',
+                    ordering: true,
+                    searching: true,
+                    "aLengthMenu": [20, 30, 50],
+                    dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                });
+
+                $("#Suitable").addClass("d-none");
+                $("#Benefits").removeClass("d-none");
+                $(".Benefits").addClass("bg-blue").removeClass("border-theme");
+                $(".Benefits").closest("div").addClass("text-white").removeClass("text-theme");
+                if ($(".Suitable").hasClass("bg-blue")) {
+                    $(".Suitable").removeClass("bg-blue").addClass("border-theme-top").addClass("border-theme-left").addClass("border-theme-right");
+                    $(".Suitable").closest("div").addClass("text-theme").removeClass("text-white");
+                }
+            });
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+
+    function ViewDocuments(Id) {
+        var Module = $("#Module").val();
+        var url = "@Url.Action("UploadMainCompanyUserDocument","User")";
+        window.location.href = url + "?UserId=" + Id + "&name=" + Module;
+    };
+
+    function getDetailsOfUser(Id) {
+        $.ajax({
+            url: "@Url.Action("GetRoleCounts", "Company")",
+            method: "GET",
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                if (response != 2) {
+                    var Module = $("#Module").val();
+                    var url = "@Url.Action("GetDetailsOfUser","User")";
+                    url = url + "?UserId=" + Id + "&name=" + Module;
+                    window.open(url);
+                }
+                else {
+                    alert("You can not login into this User Account Currently ,as you already have logged in two Accounts.");
+                }
+            }
+        });
+
+    }
+</script>
+<script>
+    function AddNew() {
+        var module = $("#Module").val();
+        var url = "@Url.Action("AddNewEmployeeForMainCompany","User")";
+        window.location.href = url + "?name=" + module;
+    };
+    function UpdateUser(Id) {
+        var module = $("#Module").val();
+
+        var url = "@Url.Action("EditEmployeeofMainCompany","User")";
+        window.location.href = url + "?Id=" + Id + "&name=" + module;
+    };
+    function GetUserDetail(Id) {
+        var module = $("#Module").val();
+
+        var url = "@Url.Action("UserDetail","User")";
+        window.location.href = url + "?UserId=" + Id + "&name=" + module;
+    };
+</script>
+<script>
+    function RemoveUser(Id) {
+        event.preventDefault();
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'ms-3 btn btn-success',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: false
+        })
+
+        swalWithBootstrapButtons.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true,
+            showConfirmButton: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#loader").show();
+                $.ajax({
+                    url: "@Url.Action("Delete", "User")",
+                    method: "GET",
+                    data: { "Id": Id, "mainCompany": 1 },
+                    success: function (response) {
+                        $("#loader").hide();
+                        if (parseInt(response) < 0) {
+                            swalWithBootstrapButtons.fire({
+                                title: 'Error.',
+                                text: "Currently You can not delete this User as this user is already associate with Company.",
+                                icon: 'error'
+                            }).then((result) => {
+                                window.location.reload();
+                            });
+                        }
+                        else {
+                            swalWithBootstrapButtons.fire({
+                                title: 'Deleted.',
+                                text: "User Deleted Successfully..!!",
+                                icon: 'success'
+                            }).then((result) => {
+                                window.location.reload();
+                            });
+                        }
+                    }
+                });
+            }
+            else if (
+                result.dismiss === Swal.DismissReason.cancel
+            ) {
+                $("#loader").hide();
+                swalWithBootstrapButtons.fire(
+                    'Cancelled',
+                    'Cancled by User..!! :)',
+                    'error'
+                )
+            }
+        });
+    }
+</script>
+<script>
+    function ApplyUserPermission(Id, Module) {
+        var url = "@Url.Action("AddUserPermission","User")";
+        window.location.href = url + "?Id=" + Id + "&name=" + Module;
+    }
+</script>
+<script>
+    $("#searchByValueCmp").on('change', function () {
+        var selectedValue = $("#searchByValueCmp").val();
+
+        if (selectedValue == "Passport Expiry Date") {
+            $("#searchedValueCmp").val("");
+            $("#searchedValueCmp").datepicker({
+                format: 'dd-mm-yyyy',
+                changeMonth: true,
+                changeYear: true,
+                autoclose: true,
+                todayHighlight: true,
+            })
+
+            $("#searchedValueCmp").attr("readonly", "readonly");
+        }
+        else if (selectedValue == "Visa Expiry Date") {
+            $("#searchedValueCmp").val("");
+            $("#searchedValueCmp").datepicker({
+                format: 'dd-mm-yyyy',
+                changeMonth: true,
+                changeYear: true,
+                autoclose: true,
+                todayHighlight: true,
+            })
+
+            $("#searchedValueCmp").attr("readonly", "readonly");
+        }
+        else if (selectedValue == "Insurance Expiry Date") {
+            $("#searchedValueCmp").val("");
+            $("#searchedValueCmp").datepicker({
+                format: 'dd-mm-yyyy',
+                changeMonth: true,
+                changeYear: true,
+                autoclose: true,
+                todayHighlight: true,
+            })
+
+            $("#searchedValueCmp").attr("readonly", "readonly");
+        }
+        else {
+            $("#searchedValueCmp").datepicker("destroy");
+            $("#searchedValueCmp").removeAttr("readonly");
+            $("#searchedValueCmp").val("");
+        }
+    });
+
+    $("#searchByValueEmp").on('change', function () {
+        var selectedValue = $("#searchByValueEmp").val();
+
+        if (selectedValue == "Passport Expiry Date") {
+            $("#searchedValueEmp").val("");
+            $("#searchedValueEmp").datepicker({
+                format: 'dd-mm-yyyy',
+                changeMonth: true,
+                changeYear: true,
+                autoclose: true,
+                todayHighlight: true,
+            })
+
+            $("#searchedValueEmp").attr("readonly", "readonly");
+        }
+        else if (selectedValue == "Visa Expiry Date") {
+            $("#searchedValueEmp").val("");
+            $("#searchedValueEmp").datepicker({
+                format: 'dd-mm-yyyy',
+                changeMonth: true,
+                changeYear: true,
+                autoclose: true,
+                todayHighlight: true,
+            })
+
+            $("#searchedValueEmp").attr("readonly", "readonly");
+        }
+        else if (selectedValue == "Insurance Expiry Date") {
+            $("#searchedValueEmp").val("");
+            $("#searchedValueEmp").datepicker({
+                format: 'dd-mm-yyyy',
+                changeMonth: true,
+                changeYear: true,
+                autoclose: true,
+                todayHighlight: true,
+            })
+
+            $("#searchedValueEmp").attr("readonly", "readonly");
+        }
+        else {
+            $("#searchedValueEmp").datepicker("destroy");
+            $("#searchedValueEmp").removeAttr("readonly");
+            $("#searchedValueEmp").val("");
+        }
+    });
+
+    function ClearFilterToDatatable() {
+        window.location.reload();
+    }
+</script>

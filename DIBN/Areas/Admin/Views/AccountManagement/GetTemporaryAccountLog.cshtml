@@ -1,0 +1,184 @@
+﻿@{
+    ViewData["Title"] = "Get Temporary Account Log";
+}
+<div class="row">
+    <div class="col-md-12">
+        <a href="@Url.Action("TemporaryAccountManagement","AccountManagement")" class="btn btn-theme float-end mb-2">Back</a>
+    </div>
+</div>
+<div class="row" id="View">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-rep-plugin">
+                    <div class="table-responsive mb-0" data-pattern="priority-columns">
+                        <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        #
+                                    </th>
+                                    <th width="800">
+                                        Log Message
+                                    </th>
+                                    <th>
+                                        Created By
+                                    </th>
+                                    <th>
+                                        Created On
+                                    </th>
+                                    <th>
+                                        Modify By
+                                    </th>
+                                    <th>
+                                        Modify On
+                                    </th>
+                                    <th>
+                                        Approved By
+                                    </th>
+                                    <th>
+                                        Approved On
+                                    </th>
+                                    <th>
+                                        Rejected By
+                                    </th>
+                                    <th>
+                                        Rejected On
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+<script>
+    $(function () {
+        $("#Insert").hide();
+        $("#View").hide();
+        $(".Update").hide();
+        $(".Delete").hide();
+        $(".Details").hide();
+    });
+
+    $(function () {
+        $.ajax({
+            url: "@Url.Action("GetRolePermissionsName", "Permission")",
+            method: "GET",
+            data: { "Module": "AccountManagement" },
+            success: function (RoleResponse) {
+                $.ajax({
+                    url: "@Url.Action("GetUserPermissionsName", "Permission")",
+                    method: "GET",
+                    data: { "Module": "AccountManagement" },
+                    success: function (UserResponse) {
+                        if (UserResponse.length > 0) {
+                            for (let i = 0; i < UserResponse.length; i++) {
+                                $("#" + UserResponse[i]).show();
+                                if (UserResponse[i] == "View") {
+                                    $(".Details").show();
+                                }
+                                if (UserResponse[i] == "Update") {
+                                    $("." + UserResponse[i]).show();
+                                }
+                                if (UserResponse[i] == "Delete") {
+                                    $("." + UserResponse[i]).show();
+                                }
+                            }
+                        }
+                        else if (RoleResponse.length > 0) {
+                            for (let i = 0; i < RoleResponse.length; i++) {
+                                $("#" + RoleResponse[i]).show();
+                                if (RoleResponse[i] == "View") {
+                                    $(".Details").show();
+                                }
+                                if (RoleResponse[i] == "Update") {
+                                    $("." + RoleResponse[i]).show();
+                                }
+                                if (RoleResponse[i] == "Delete") {
+                                    $("." + RoleResponse[i]).show();
+                                }
+                            }
+
+                        } else {
+                            alert("You don't have any permission for this module.");
+                        }
+                    }
+                })
+            }
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        var url = "@Url.Action("GetTemporaryAccountManagementLogWithPagination","AccountManagement")";
+
+        var table = $('#datatable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": false,
+            "ajax": {
+                "type": "post",
+                "datatype": "json",
+                "data": function () {
+                    $('#datatable').DataTable().ajax.url(
+                        url
+                    );
+                }
+            },
+            "columns": [
+                {"data":"index","name":"#"},
+                {
+                    "data": function (data, full, meta) {
+                        return "<span class='text-wrap'>" + data.message + "</span>";
+                    },
+                    "name": "Log Message"
+                },
+                { "data": "createdBy", "name": "Created By" },
+                { "data": "createdOn", "name": "Created On" },
+                { "data": "modifyBy", "name": "Modify By" },
+                { "data": "modifyOn", "name": "Modify On" },
+                { "data": "approvedBy", "name": "Approved By" },
+                { "data": "approvedOn", "name": "Approved On" },
+                { "data": "rejectedBy", "name": "Rejected By" },
+                { "data": "rejectedOn", "name": "Rejected On" },
+            ],
+            columnDefs: [
+                { "width": "80%", "targets": 1 },
+                {
+                    "targets": 0,
+                    "orderable": false
+                }
+            ],
+            "responsive": true,
+            "deferRender": true,
+            "language": {
+                'processing': '<div class="spinner-2"><div class="center-div-2"><div class="loader-circle-1"></div></div></div>'
+            },
+            paging: true,
+            ordering: true,
+            "order": [[1, 'asc']],
+            searching: true,
+            "autoWidth": false,
+            "aLengthMenu": [20, 30, 50],
+            dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+        });
+    });
+
+</script>

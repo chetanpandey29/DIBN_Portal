@@ -1,0 +1,308 @@
+﻿@model DIBN.Models.GetRequestCompleteDetails
+@{
+    ViewData["Title"] = "TrackServiceRequest";
+    string Companyname = null;
+    string username = null;
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+@if (Model.allowedModule.Contains("View"))
+{
+    <div id="View">
+        <div class="row">
+            <div class="col-12">
+                <h4 class="text-theme">
+                    @foreach (var title in Model.getRequestDetails)
+                    {
+                        Companyname = @title.CompanyName;
+                        username = @title.RequestedBy;
+                        <strong>@title.RequestedService</strong>
+                        @Html.Raw("(") <strong>Requested By : @title.CompanyName @Html.Raw("-") @title.RequestedBy</strong> @Html.Raw(")")
+                        <input type="hidden" name="SerialNumber" id="SerialNumber" value="@title.SerialNumber" />
+                        <input type="hidden" name="RequestedService" id="RequestedService" value="@title.RequestedService" />
+                        <input type="hidden" name="ServiceId" id="ServiceId" value="@title.ServiceId" />
+                        <input type="hidden" name="FormId" id="FormId" value="@title.FormId" />
+                        <input type="hidden" name="CompanyId" id="CompanyId" value="@title.CompanyId" />
+                        <input type="hidden" name="serviceRequestType" id="serviceRequestType" value="@Model.serviceRequestType" />
+                        <input type="hidden" name="isCompany" id="isCompany" value="@Model.isCompany" />
+
+                        <a href="@Url.Action("Index","ServiceRequests",new{name=@Model.Module})" class="btn btn-theme float-end mb-2">
+                            Back
+                        </a>
+                        break;
+                    }
+                </h4>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    @foreach (var item in Model.getRequestDetails)
+                    {
+                        <div class="card-title btn-theme p-2 px-3">
+                            <div class="col-md-12">
+                                <span class="col-md-7 ps-3 float-start">
+                                    @Html.Raw("#")@item.SerialNumber @Html.Raw("|")
+                                    <span class="badge bg-pill bg-soft-blue font-size-13">@item.Status</span>
+                                </span>
+                                <div class="col-md-5 ps-3 float-start">
+                                    <span class="float-start text-light clearfix">
+                                        @item.RequestedBy
+                                    </span>
+                                    <span class="float-start ms-2 me-2">|</span>
+                                    <span class="float-start text-light">
+                                        Date : @item.CreatedOn
+                                    </span>
+                                    <span class="float-start ms-2 me-2">|</span>
+                                    <span class="float-start text-light">
+                                        @item.CreatedTime
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        break;
+                    }
+                    <div class="card-body row">
+                        <div class="card-title"><h6>Uploaded Data By @Companyname (@username): </h6></div>
+                        <hr class="text-theme" style="height:1.5px;" />
+                        @foreach (var data in Model.getRequestDetails)
+                        {
+                            <div class="col-md-12">
+                                <span class="float-start text-dark clearfix p-3">
+                                    @data.FieldName @Html.Raw(":")
+                                </span>
+                                @if (data.FileName != null && data.FileName != "")
+                                {
+                                    <span class="float-start text-theme clearfix p-3">
+                                        <a href="@Url.Action("GetServiceRequestDocument","ServiceRequests",new{SerialNumber=@data.SerialNumber,FileName=@data.FileName,companyId=@data.CompanyId,serviceId=@data.ServiceId})">@data.FileName</a>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="float-start text-theme clearfix p-3">
+                                        @data.FieldValue
+                                    </span>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @foreach (var item in Model.getRequestResponses)
+        {
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-title btn-theme p-2 px-3">
+                            <div class="col-md-12">
+                                <span class="col-md-7 ps-3 float-start clearfix">
+                                    @Html.Raw("#")@item.SerialNumber @Html.Raw("|")
+                                    <span class="badge bg-pill bg-soft-blue font-size-13">@item.Status</span>
+                                </span>
+                                <div class="col-md-5 ps-3 float-start">
+                                    <span class="float-start text-light clearfix">
+                                        @item.RequestedBy
+                                    </span>
+                                    <span class="float-start ms-2 me-2">|</span>
+                                    <span class="float-start text-light">
+                                        Date : @item.CreatedOn
+                                    </span>
+                                    <span class="float-start ms-2 me-2">|</span>
+                                    <span class="float-start text-light">
+                                        @item.CreatedTime
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="col-md-12">
+                                <span class="text-dark clearfix p-3">
+                                    @item.Description
+                                </span>
+                                @if (@item.serviceRequestDocuments != null && @item.serviceRequestDocuments.Count > 0)
+                                {
+                                    <hr class="text-theme" style="height:1.5px;" />
+                                    <div class="ms-3 me-3 float-start d-flex justify-content-between">
+                                        <h6 class="ms-1">
+                                            Documents
+                                        </h6>
+                                        <div class="">
+                                            @foreach (var data in item.serviceRequestDocuments)
+                                            {
+
+                                                <span class="ms-1 float-start">
+                                                    <a href="@Url.Action("GetServiceRequestDocument","ServiceRequests",new{SerialNumber=@item.SerialNumber,FileName=@data.FileName,companyId=@data.CompanyId,serviceId=@data.ServiceResponseId})"> @Html.Raw(": ") @data.FileName</a>
+                                                </span>
+
+                                            }
+                                        </div>
+                                    </div>
+                                    <hr class="col-12 text-theme" style="height:1.5px;" />
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        @if (Model.allowedModule.Contains("Insert"))
+        {
+            @foreach (var status in Model.getRequestDetails)
+            {
+                @if (@Model.CompanyId == 1)
+                {
+                    @if (@Model.lastStatus == "Pending")
+                    {
+                        <div class="row">
+                            <div class="col-12">
+                                <form asp-action="ApproveRequest" asp-controller="ServiceRequests" class="float-start Insert">
+                                    @foreach (var item in Model.getRequestDetails)
+                                    {
+                                        <input type="hidden" asp-for="@item.SerialNumber" name="SerialNumber" />
+                                        <input type="hidden" name="Status" value="0" />
+                                        <input type="hidden" name="serviceRequestType" id="serviceRequestType" value="@Model.serviceRequestType" />
+                                        <input type="hidden" name="isCompany" id="isCompany" value="@Model.isCompany" />
+                                    }
+                                    <input type="submit" class="btn btn-theme ms-3 Insert" value="Approve" />
+                                </form>
+                                <button class="btn btn-theme ms-3 Insert" onclick="RejectService();">
+                                    Reject
+                                </button>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        @if (@Model.CompanyId == 1)
+                        {
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button onclick="AddResponse();" class="btn btn-theme mb-3 Insert">
+                                        New Comment
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    }
+                }
+
+                break;
+            }
+        }
+    </div>
+}
+
+<div id="RejectService" class="modal" tabindex="-1" data-bs-keyboard="false" data-bs-backdrop="static" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Reject Service</h5>
+                <button type="button" class="close btn btn-theme" id="RejectServiceModalClose" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="RejectRequest" asp-controller="ServiceRequests">
+                    @foreach (var item in Model.getRequestDetails)
+                    {
+                        <input type="hidden" asp-for="@item.UserId" name="UserId" />
+                        <input type="hidden" asp-for="@item.CompanyId" name="CompanyId" />
+                        <input type="hidden" asp-for="@item.FormId" name="FormId" />
+                        <input type="hidden" asp-for="@item.ServiceId" name="ServiceId" />
+                        <input type="hidden" asp-for="@item.RequestedService" name="Title" />
+                        <input type="hidden" asp-for="@item.SerialNumber" name="SerialNumber" />
+                        <input type="hidden" name="AssignedTo" value="0" />
+                        <input type="hidden" name="StatusId" value="4" />
+                        <input type="hidden" name="serviceRequestType" id="serviceRequestType" value="@Model.serviceRequestType" />
+                        <input type="hidden" name="isCompany" id="isCompany" value="@Model.isCompany" />
+                        <input type="hidden" name="StepId" id="StepId" value="0" />
+                    }
+                    <div class="form-group">
+                        <label class="control-label">Comment</label>
+                        <textarea cols="20" rows="5" class="form-control" name="Description" data-val-required="Please Enter Reason For Rejecting This Service." required></textarea>
+                        <span class="text-danger"></span>
+                    </div>
+                    <input type="submit" class="btn btn-theme ms-3 mt-3" value="Submit" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="ServiceRequest" class="modal" tabindex="-1" data-bs-keyboard="false" data-bs-backdrop="static" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Response To Service</h5>
+                <button type="button" class="close btn btn-theme" id="ServiceRequestModalClose" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" name="Module" id="Module" value="@Model.Module" />
+<script src="~/bootstrap.min.js"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+<script>
+    function RejectService() {
+        $mymodal = $("#RejectService");
+        $mymodal.modal("show");
+    }
+
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>
+<script>
+    $("#ServiceRequestModalClose").on("click", function () {
+        window.location.reload();
+    });
+
+    $("#RejectServiceModalClose").on("click", function () {
+        window.location.reload();
+    });
+</script>
+
+<script>
+    function AddResponse() {
+        $("#loader").show();
+        var module = $("#Module").val();
+        var SerialNumber = $("#SerialNumber").val();
+        var ServiceId = $("#ServiceId").val();
+        var FormId = $("#FormId").val();
+        var CompanyId = $("#CompanyId").val();
+        var serviceRequestType = $("#serviceRequestType").val();
+        var isCompany = $("#isCompany").val();
+        var RequestedService = $("#RequestedService").val();
+        $.ajax({
+            url: "@Url.Action("ResponseToService","ServiceRequests")",
+            method: "GET",
+            data: { "SerialNumber": SerialNumber, "ServiceId": ServiceId, "FormId": FormId, "CompanyId": CompanyId, "RequestedService": RequestedService, "name": module, "serviceRequestType": serviceRequestType, "isCompany": isCompany },
+            success: function (response) {
+                $("#loader").hide();
+                $mymodal = $("#ServiceRequest");
+                $mymodal.find("div.modal-body").html(response);
+                $mymodal.modal("show");
+            }
+        });
+    };
+</script>
+

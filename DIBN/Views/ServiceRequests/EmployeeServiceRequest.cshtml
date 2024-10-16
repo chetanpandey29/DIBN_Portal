@@ -1,0 +1,320 @@
+﻿@model DIBN.Models.GetAllRequests
+@{
+    ViewData["Title"] = "Index";
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" asp-for="@Model.Module" id="Module" />
+<div class="row">
+    <div class="col-md-12 float-start">
+        <div class="col-md-3 col-lg-2 col-sm-6 float-start">
+            <div class="card p-0">
+                <div class="card-body p-2">
+                    <div class="d-flex justify-content-evenly">
+                        <h6 class="float-end col-md-6 mt-2 ms-2"><b>Filter :</b></h6>
+                        <select class="float-end col-md-6" id="ServiceStatus" asp-for="@Model.SelectedStatus" onchange="showRequest();">
+                            <option value="">All</option>
+                            <option value="0">Open</option>
+                            <option value="3">Closed</option>
+                            <option value="4">Rejected</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="row" id="View">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title text-center">Employee Service Request(s)</h4>
+                <hr style="height:1px;" class="text-theme" />
+                <div class="table-rep-plugin">
+                    <div class="table-responsive mb-0" data-pattern="priority-columns">
+                        <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th class="align-middle text-center">
+                                        #
+                                    </th>
+                                    <th class="align-middle text-center">
+                                        Created By
+                                    </th>
+                                    <th class="align-middle text-center">
+                                        Created Date
+                                    </th>
+                                    <th class="align-middle text-center">
+                                        Company Name
+                                    </th>
+                                    <th class="align-middle text-center">
+                                        Service Request Type
+                                    </th>
+                                    <th class="align-middle text-center">
+                                        Applicant Name
+                                    </th>
+                                    <th class="align-middle text-center">
+                                        Status
+                                    </th>
+                                    <th>
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var i = 0;
+                                }
+                                @foreach (var item in Model.getRequests)
+                                {
+                                    @if (@item.SerialNumber != null)
+                                    {
+                                        <tr>
+                                            <td class="align-middle text-center">
+                                                @item.SerialNumber
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                @item.RequestedBy
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                @item.CreatedOn
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                @item.CompanyName
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                @item.RequestedService
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                @item.ApplicantName
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                @item.Status
+                                            </td>
+                                            <td>
+                                                <a href="@Url.Action("TrackServiceRequest","ServiceRequests",new{SerialNumber=@item.SerialNumber,name=@Model.Module})" class="btn btn-theme">
+                                                    Track
+                                                </a>
+                                            </td>
+                                        </tr>
+
+                                        i++;
+                                    }
+
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+
+<script src="~/bootstrap.min.js"></script>
+<link href="~/select2/select2.min.css" rel="stylesheet" />
+<script src="~/select2/select2.min.js"></script>
+<script>
+    jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+        "date-dmy-pre": function (a) {
+            if (a == null || a == "") {
+                return 0;
+            }
+            var date = a.split('-');
+            return (date[2] + date[1] + date[0]) * 1;
+        },
+
+        "date-dmy-asc": function (a, b) {
+            return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+        },
+
+        "date-dmy-desc": function (a, b) {
+            return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+        }
+    });
+
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>
+
+<script>
+    $('#datatable').dataTable({
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+        "aoColumnDefs": [
+            { "sType": "date-dmy", "aTargets": [2] }
+        ]
+    });
+    $('#datatable1').dataTable({
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+        "aoColumnDefs": [
+            { "sType": "date-dmy", "aTargets": [2] }
+        ]
+    });
+    ////// Open Selection dropdown on focus                                     -- Yashasvi TBC (09-02-2023)
+    $(document).on('focus', '.select2.select2-container', function (e) {
+        if (e.originalEvent && $(this).find(".select2-selection--single").length > 0) {
+            $(this).siblings('select').select2('open');
+        }
+    });
+    $(function () {
+        $('#Companies').select2();
+    });
+</script>
+<script>
+    $(function () {
+        $("#Insert").hide();
+        $("#View").hide();
+        $("#View1").hide();
+        $(".Update").hide();
+        $(".Delete").hide();
+        $(".Details").hide();
+    });
+</script>
+<script>
+    $(function () {
+        $("#loader").show();
+        var module = $("#Module").val();
+        $.ajax({
+            url: "@Url.Action("GetRolePermissionsName", "UserPermission")",
+            method: "GET",
+            data: { "Module": module },
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (RoleResponse) {
+                $.ajax({
+                    url: "@Url.Action("GetUserPermissionsName", "UserPermission")",
+                    method: "GET",
+                    data: { "Module": module },
+                    async: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (UserResponse) {
+
+                        if (UserResponse.length > 0) {
+                            for (let i = 0; i < UserResponse.length; i++) {
+                                if (UserResponse[i] == "PermissionCount") {
+                                    alert("You don't have any permission for this module.");
+                                    var url = "@Url.Action("Index","Home")";
+                                    url = url + "?name=HomePage";
+                                    window.location.href = url;
+                                } else {
+                                    $("#" + UserResponse[i]).show();
+                                    if (UserResponse[i] == "View") {
+                                        $(".Details").show();
+                                        $("#View1").show();
+                                    }
+                                    if (UserResponse[i] == "Update") {
+                                        $("." + UserResponse[i]).show();
+                                    }
+                                    if (UserResponse[i] == "Delete") {
+                                        $("." + UserResponse[i]).show();
+                                    }
+                                }
+
+                            }
+                            $("#loader").hide();
+                        }
+                        else if (RoleResponse.length > 0) {
+                            for (let i = 0; i < RoleResponse.length; i++) {
+                                if (RoleResponse[i] == "PermissionCount") {
+                                    alert("You don't have any permission for this module.");
+                                    var url = "@Url.Action("Index","Home")";
+                                    url = url + "?name=HomePage";
+                                    window.location.href = url;
+                                }
+                                else {
+                                    $("#" + RoleResponse[i]).show();
+                                    if (RoleResponse[i] == "View") {
+                                        $(".Details").show();
+                                        $("#View1").show();
+                                    }
+                                    if (RoleResponse[i] == "Update") {
+                                        $("." + RoleResponse[i]).show();
+                                    }
+                                    if (RoleResponse[i] == "Delete") {
+                                        $("." + RoleResponse[i]).show();
+                                    }
+                                }
+
+                            }
+                            $("#loader").hide();
+                        } else {
+                            alert("You don't have any permission for this module.");
+                            $("#loader").hide();
+                        }
+                    }
+                })
+
+            }
+        });
+    });
+</script>
+
+<script>
+    $("#Companies").on("change", function () {
+        var selected = $("#Companies").val();
+        var module = $("#Module").val();
+        var url = "@Url.Action("Index", "ServiceRequests")";
+        url = url + "?name=" + module + "&Company=" + selected;
+        window.location.href = url;
+    });
+
+    $(function () {
+        $('#ServiceStatus').select2();
+    });
+</script>
+
+<script>
+    function showRequest() {
+
+        var _selectedValue = $("#ServiceStatus").val();
+        if (_selectedValue != "") {
+            var url = "@Url.Action("EmployeeServiceRequest","ServiceRequests")";
+            url = url + "?name=MyRequests&Status=" + _selectedValue;
+            window.location.href = url;
+        }
+        else {
+            var url = "@Url.Action("EmployeeServiceRequest","ServiceRequests")";
+            url = url + "?name=MyRequests";
+            window.location.href = url;
+        }
+    };
+</script>

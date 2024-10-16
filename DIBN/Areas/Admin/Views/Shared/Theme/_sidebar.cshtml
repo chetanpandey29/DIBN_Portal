@@ -1,0 +1,240 @@
+﻿<!-- ========== Left Sidebar Start ========== -->
+<div class="vertical-menu">
+    <!-- LOGO -->
+    <div class="navbar-brand-box" style="padding:5px;">
+        <a class="logo logo-dark text-center mt-2">
+            <span class="logo-sm">
+                <img src="~/DIBN_Logo.png" alt="" height="35" width="60">
+            </span>
+            <span class="logo-lg" style="margin-right:25px;">
+                <img src="~/DIBN_Logo.png" alt="" height="75" width="140">
+            </span>
+        </a>
+
+        <a class="logo logo-light text-center mt-2">
+            <span class="logo-sm">
+                <img src="~/DIBN_Logo.png" alt="" height="35" width="60">
+            </span>
+            <span class="logo-lg" style="margin-right:25px;">
+                <img src="~/DIBN_Logo.png" alt="" height="75" width="140">
+            </span>
+        </a>
+    </div>
+
+    <button type="button" class="btn btn-sm px-3 font-size-16 header-item waves-effect vertical-menu-btn">
+        <i class="fas fa-fw fa-bars"></i>
+    </button>
+
+    <div data-simplebar class="sidebar-menu-scroll">
+
+        <!--- Sidemenu -->
+        <div id="sidebar-menu">
+            <!-- Left Menu Start -->
+            <ul class="metismenu p-0 list-unstyled" id="side-menu">
+                <li class="menu-title mt-3" style="color:#243c7c;">Menu</li>
+            </ul>
+        </div>
+        <!-- Sidebar -->
+    </div>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#main-loader").show();
+        $.ajax({
+            url: "@Url.Action("GetAllowedModuleList", "Home")",
+            method: "GET",
+            success: function (response) {
+                if (response.length > 0) {
+                    if (response.includes("HomePage")) {
+                        $("#side-menu").append('<li id="HomePage"><a href="@Url.Action("Index", "Home", new { area = "admin", name = "HomePage" })"><i class="uil-home-alt"></i><span class="text-wrap">Dashboard</span></a></li>');
+                    }
+
+                    if (response.includes("RoleManagement") || response.includes("RolePermission")) {
+                        if (response.includes("RoleManagement") && response.includes("RolePermission")) {
+                            $("#side-menu").append('<li id="ACM" onclick="showAcm()"><a href="javascript:void(0);" class="has-arrow waves-effect"><i class="uil-window-section"></i><span class="text-wrap">ACM</span></a><ul class="sub-menu mm-collapse" id="acmSubMenu"  aria-expanded="true"><li id="RoleManagement"><a href=@Url.Action("Index", "Role", new { area = "admin", name = "RoleManagement" })><i class="far fa-dot-circle"></i><span class="text-wrap">Role Management</span></a></li><li id="RolePermission"><a href="@Url.Action("RolePermission", "Permission", new { area = "admin", name = "RolePermission" })"><i class="far fa-dot-circle"></i><span class="text-wrap">Role Permission</span></a></li></ul></li>');
+                        }
+                        else if (response.includes("RoleManagement")) {
+                            $("#side-menu").append('<li id="ACM" onclick="showAcm()"><a href="javascript:void(0);" class="has-arrow waves-effect"><i class="uil-window-section"></i><span class="text-wrap">ACM</span></a><ul class="sub-menu mm-collapse" id="acmSubMenu" aria-expanded="true"><li id="RoleManagement"><a href=@Url.Action("Index", "Role", new { area = "admin", name = "RoleManagement" })><i class="far fa-dot-circle"></i><span class="text-wrap">Role Management</span></a></li></ul></li>');
+                        }
+                        else if (response.includes("RolePermission")) {
+                            $("#side-menu").append('<li id="ACM" onclick="showAcm()"><a href="javascript:void(0);" class="has-arrow waves-effect"><i class="uil-window-section"></i><span class="text-wrap">ACM</span></a><ul class="sub-menu mm-collapse" id="acmSubMenu" aria-expanded="true"><li id="RolePermission"><a href="@Url.Action("RolePermission", "Permission", new { area = "admin", name = "RolePermission" })"><i class="far fa-dot-circle"></i><span class="text-wrap">Role Permission</span></a></li></ul></li>');
+                        }
+                    }
+
+                    if (response.includes("Company") || response.includes("CompanyDocumentType") || response.includes("CompanySubType")) {
+                        var appendStr = '<li id="Company" onclick="showCompanySubMenu()"><a href="javascript: void(0);" class="has-arrow waves-effect"><i class="fas fa-city"></i><span class="text-wrap">Company(s)</span></a><ul class="sub-menu mm-collapse" id="companySubMenu" aria-expanded="true">';
+                        if (response.includes("Company")) {
+                            appendStr = appendStr + '<li><a href="@Url.Action("Index", "Company", new { area = "admin", name = "Company" })"><i class="far fa-dot-circle"></i><span class="text-wrap">Company(s)</span></a></li>';
+                        }
+                        if (response.includes("CompanyDocumentType")) {
+                            appendStr = appendStr + '<li id="CompanyDocumentType"><a href="@Url.Action("Index", "CompanyDocumentType", new { area = "admin", name = "CompanyDocumentType" })"><i class="far fa-dot-circle"></i><span class="text-wrap">Company Document Type(s)</span></a></li>';
+                        }
+                        if (response.includes("CompanySubType")) {
+                            appendStr = appendStr + '<li id="CompanySubType"><a href="@Url.Action("Index", "CompanySubType", new { area = "admin", name = "CompanySubType" })"><i class="far fa-dot-circle"></i><span class="text-wrap">Company Type(s)</span></a></li>';
+                        }
+                        appendStr = appendStr + '</ul></li>';
+                        $("#side-menu").append(appendStr);
+                    }
+
+                    if (response.includes("Shareholders") || response.includes("OtherCompanyEmployee") || response.includes("OtherCompanyOwner")) {
+                        var appendStr = '<li id="ShareholdersBlock" onclick="showShareholderSubmenu()"><a href="javascript: void(0);" class="has-arrow waves-effect"><i class="fas fa-user-tie"></i><span class="font-size-14 text-wrap">Shareholders/Director</span></a><ul class="sub-menu mm-collapse" id="shareholderSubmenu" aria-expanded="true">';
+                        if (response.includes("Shareholders")) {
+                            appendStr = appendStr + '<li id="Shareholders"><a href="@Url.Action("Index", "Shareholders", new { name = "Shareholders" })"><i class="far fa-dot-circle"></i><span class="text-wrap">Shareholders/Director</span></a></li>';
+                        }
+                        if (response.includes("OtherCompanyEmployee")) {
+                            appendStr = appendStr + '<li id="OtherCompanyEmployee"><a href="@Url.Action("Index", "User", new { area = "admin", name = "OtherCompanyEmployee" })"><i class="far fa-dot-circle"></i><span class="text-wrap">Other Company(s) Employees</span></a></li>';
+                        }
+                        if (response.includes("OtherCompanyOwner")) {
+                            appendStr = appendStr + '<li id="OtherCompanyOwner"><a href=@Url.Action("OtherCompanyOwner", "User", new { area = "admin", name = "OtherCompanyOwner" })><i class="far fa-dot-circle"></i><span class="text-wrap">Other Company(s) Owner</span></a></li>';
+                        }
+                        appendStr = appendStr + '</ul></li>';
+                        $("#side-menu").append(appendStr);
+                    }
+
+                    if (response.includes("DIBNEmployee") || response.includes("SalesPerson") || response.includes("RMTeam")) {
+                        var appendStr = '<li id="DibnTeam" onclick="showDDIBNSubMenu()"><a href="javascript: void(0);" class="has-arrow waves-effect"><i class="fas fa-users"></i><span class="text-wrap">DIBN Team</span></a><ul class="sub-menu mm-collapse" id="showDDIBNSubMenu" aria-expanded="true">';
+                        if (response.includes("DIBNEmployee")) {
+                            appendStr = appendStr + '<li id="DIBNEmployee"><a href=@Url.Action("GetMainCompanyEmployees", "User", new { area = "admin", name = "DIBNEmployee" })><i class="far fa-dot-circle"></i><span class="text-wrap">Operational Team</span></a></li>';
+                        }
+                        if (response.includes("SalesPerson")) {
+                            appendStr = appendStr + '<li id="SalesPerson"><a href=@Url.Action("Index", "SalesPerson", new { area = "admin", name = "SalesPerson" })><i class="far fa-dot-circle"></i><span class="text-wrap">Sales Team</span></a></li>';
+                        }
+                        if (response.includes("RMTeam")) {
+                            appendStr = appendStr + '<li id="RMTeam"><a href=@Url.Action("Index", "RMTeam", new { area = "admin", name = "RMTeam" })><i class="far fa-dot-circle"></i><span class="text-wrap">RM Team</span></a></li>';
+                        }
+                        appendStr = appendStr + '</ul></li>';
+                        $("#side-menu").append(appendStr);
+                    }
+
+                    if (response.includes("CompanyServices") || response.includes("EmployeeServices") || response.includes("MyRequests") || response.includes("ServiceRequestStatus")) {
+                        var appendStr = '<li id="Services" onclick="showServiceSubMenu()"><a href="javascript: void(0);" class="has-arrow waves-effect"><i class="fas fa-cogs"></i><span class="text-wrap">Services</span></a><ul class="sub-menu mm-collapse" id="showServiceSubMenu" aria-expanded="true">';
+                        if (response.includes("CompanyServices")) {
+                            appendStr = appendStr + '<li id="CompanyServices"><a href="@Url.Action("Index", "CompanyServices", new { area = "admin", name = "CompanyServices" })"><i class="far fa-dot-circle"></i><span class="text-wrap">Company Services</span></a></li>';
+                        }
+                        if (response.includes("EmployeeServices")) {
+                            appendStr = appendStr + '<li id="EmployeeServices"><a href="@Url.Action("Index", "EmployeeService", new { area = "admin", name = "EmployeeServices" })"><i class="far fa-dot-circle"></i><span class="text-wrap">Employee Services</span></a></li>';
+                        }
+                        if (response.includes("MyRequests")) {
+                            appendStr = appendStr + '<li id="MyRequests1"><a href="@Url.Action("ServiceRequest", "ServiceRequests", new { area = "admin", name = "MyRequests" })"><i class="far fa-dot-circle"></i><span class="text-wrap">Service Request(s)</span></a></li>';
+                        }
+                        if (response.includes("ServiceRequestStatus")) {
+                            appendStr = appendStr + '<li id="ServiceRequestStatus"><a href="@Url.Action("Index", "ServiceRequestStatus", new { area = "admin", name = "ServiceRequestStatus" })"><i class="far fa-dot-circle"></i><span class="text-wrap">Service Request Status</span></a></li>';
+                        }
+                        appendStr = appendStr + '</ul></li>';
+                        $("#side-menu").append(appendStr);
+                    }
+
+                    if (response.includes("Invoice")) {
+                        $("#side-menu").append('<li id="Invoice"><a href="@Url.Action("Index", "CompanyInvoice", new { area = "admin", name = "Invoice" })"><i class="fas fa-file-alt"></i><span class="text-wrap">Invoices</span></a></li>');
+                    }
+
+                    if (response.includes("DocumentChecklist")) {
+                        $("#side-menu").append('<li id="DocumentChecklist"><a href="@Url.Action("Index", "Document", new { area = "admin", name = "DocumentChecklist" })"><i class="fas fa-check-square"></i><span class="text-wrap">Document Checklist</span></a></li>');
+                    }
+                    
+                    if (response.includes("Notification")) {
+                        $("#side-menu").append('<li id="Notification"><a href="@Url.Action("Index", "Notifications", new { area = "admin", name = "Notification" })"><i class="fas fa-bell"></i><span class="text-wrap">Notifications</span></a></li>');
+                    }
+                }
+                $("#main-loader").hide();
+            }
+        });
+    })
+    
+    function showAcm() {
+        if ($("#acmSubMenu").hasClass("mm-collapse")) {
+            $("#acmSubMenu").removeClass("mm-collapse");
+        }
+        else { $("#acmSubMenu").addClass("mm-collapse"); }
+    }
+
+    function showCompanySubMenu() {
+        if ($("#companySubMenu").hasClass("mm-collapse")) {
+            $("#companySubMenu").removeClass("mm-collapse");
+        }
+        else { $("#companySubMenu").addClass("mm-collapse"); }
+    }
+
+    function showShareholderSubmenu() {
+        if ($("#shareholderSubmenu").hasClass("mm-collapse")) {
+            $("#shareholderSubmenu").removeClass("mm-collapse");
+        }
+        else { $("#shareholderSubmenu").addClass("mm-collapse"); }
+    }
+
+    function showDDIBNSubMenu() {
+        if ($("#showDDIBNSubMenu").hasClass("mm-collapse")) {
+            $("#showDDIBNSubMenu").removeClass("mm-collapse");
+        }
+        else { $("#showDDIBNSubMenu").addClass("mm-collapse"); }
+    }
+
+    function showServiceSubMenu() {
+        if ($("#showServiceSubMenu").hasClass("mm-collapse")) {
+            $("#showServiceSubMenu").removeClass("mm-collapse");
+        }
+        else { $("#showServiceSubMenu").addClass("mm-collapse"); }
+    }
+
+</script>
+<script>
+    document.onkeypress = function (event) {
+        event = (event || window.event);
+        if (event.keyCode == 123) {
+            return false;
+        }
+    }
+    document.onmousedown = function (event) {
+        event = (event || window.event);
+        if (event.keyCode == 123) {
+            return false;
+        }
+    }
+    document.onkeydown = function (event) {
+        event = (event || window.event);
+        if (event.keyCode == 123) {
+            return false;
+        }
+    }
+</script>
+<script>
+    document.addEventListener('contextmenu', event => event.preventDefault());  // To disable right click
+
+    $(function () {
+        $("#showNavBar1").hide();
+        $("#hideNavBar1").show();
+    });
+    $(document).ready(function () {
+        $.ajax({
+            url: "@Url.Action("GetLoggedInUser","Home")",
+            method: "GET",
+            success: function (response) {
+                $("#hideNavBar1").hide();
+                $("#showNavBar1").show();
+            }
+        });
+    });
+
+
+    //// Check whether logged in user has permission to login or has is active allowed and not deleted                  -- Yashasvi (22-05-2023)
+    $(function () {
+        $.ajax({
+            url: "@Url.Action("GetLoggedInUserStatus", "Home")",
+            method: "POST",
+            async: false,
+            success: function (response) {
+                var url = "@Url.Action("Logout","Account")";
+                if (parseInt(response.isDelete) == 1) {
+                    window.location.href = url;
+                }
+                else if (parseInt(response.isActive) == 1) {
+                    window.location.href = url;
+                }
+                else if (parseInt(response.isLoggedIn) == 1) {
+                    window.location.href = url;
+                }
+            }
+        })
+    })
+</script>

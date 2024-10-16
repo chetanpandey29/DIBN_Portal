@@ -1,0 +1,379 @@
+﻿@model DIBN.Areas.Admin.Models.CompanyViewModel
+
+@{
+    ViewData["Title"] = "Index";
+    int index = 0;
+    int userIndex = 0;
+    int companyOwnerCount = 0;
+    int shareholderCount = 0;
+}
+@{
+    string[] mobileNumbers = { };
+    string[] Emails = { };
+    int count = 0;
+    int mobileNumbersIndex = 1;
+    int emailIndex = 1;
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+    </div>
+    <div class="col-md-6">
+        <div class="col-md-4 float-end">
+            <a href="javascript:history.go(-1);" class="btn btn-theme float-end" style="margin-bottom:15px;">Back to List</a>
+            <a href="@Url.Action("GetCompanyWiseLog","Company",new{companyId=Model.Id,name=Model.Module})" class="btn btn-theme float-end me-2" style="margin-bottom:15px;">Company Log</a>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="card-title">
+                        <h5 class="text-dark float-start"><b>Company Information</b></h5>
+                        @if (Model.companyUsers.Count() > 0)
+                        {
+                            var user = Model.companyUsers.Where(x => x.IsLogin == true && x.IsActive == true);
+                            if (user.Count() > 0 && Model.IsActive)
+                            {
+                                <span class="float-end fas fa-check text-success" style="font-size:26px;"></span>
+                            }
+                            else
+                            {
+                                <span class="float-end fas fa-times text-danger" style="font-size:26px;"></span>
+                            }
+                        }
+                        else
+                        {
+                            @if (Model.IsActive)
+                            {
+                                <span class="float-end fas fa-check text-success" style="font-size:26px;"></span>
+                            }
+                            else
+                            {
+                                <span class="float-end fas fa-times text-danger" style="font-size:26px;"></span>
+                            }
+                        }
+                    </div>
+                </div>
+                <hr />
+                <dl class="row">
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.AccountNumber)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.AccountNumber)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.CompanyTypeName)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.CompanyTypeName)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Username)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Username)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.CompanyName)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.CompanyName)
+                    </dd>
+                    @*<dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.ShareCapital)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.ShareCapital)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.CompanyRegistrationNumber)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.CompanyRegistrationNumber)
+                    </dd>*@
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.LabourFileNo)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.LabourFileNo)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.Raw("Is Company Active?")
+                    </dt>
+                    <dd class="col-sm-8">
+                        @if (Model.IsActive)
+                        {
+                            @Html.Raw("Yes")
+                        }
+                        else
+                        {
+                            @Html.Raw("No")
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="card-title">
+                        <h5 class="text-dark"><b>Company Primary Contact Details</b></h5>
+                    </div>
+                </div>
+                <hr />
+                <dl class="row">
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.MobileNumber)
+                    </dt>
+                    @if (@Model.MobileNumber.Contains(","))
+                    {
+                        mobileNumbers = @Model.MobileNumber.Split(",");
+                        count = mobileNumbers.Count() - 1;
+
+                        for (var i = 0; i <= count; i++)
+                        {
+
+                            @Html.Raw(""+@mobileNumbersIndex+".") @Html.Raw(" ") @Html.Raw(mobileNumbers[i])
+                            mobileNumbersIndex++;
+                            <br />
+                        }
+                    }
+                    else
+                    {
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.MobileNumber)
+                        </dd>
+                    }
+                </dl>
+                <dl class="row">
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.EmailID)
+                    </dt>
+                    @if (@Model.EmailID.Contains(","))
+                    {
+                        Emails = @Model.EmailID.Split(",");
+                        count = Emails.Count() - 1;
+
+                        for (var i = 0; i <= count; i++)
+                        {
+
+                            @Html.Raw(""+@emailIndex+".") @Html.Raw(" ") @Html.Raw(Emails[i])
+                            emailIndex++;
+                            <br />
+                        }
+                    }
+                    else
+                    {
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.EmailID)
+                        </dd>
+                    }
+
+
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+@if (Model.companyUsers.Count > 0)
+{
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="card-title">
+                            <h5 class="text-dark"><b>Company Owner Details</b></h5>
+                        </div>
+                    </div>
+                    <hr />
+                    <dl class="row">
+                        @foreach (var item in Model.companyUsers)
+                        {
+                            companyOwnerCount = Model.companyUsers.Count;
+                            userIndex = userIndex + 1;
+                            <dt class="col-sm-4">
+                                @Html.Raw("Company Owner ") @Html.Raw("-"+userIndex)
+                            </dt>
+                            <dd class="col-sm-8">
+                                @Html.DisplayFor(model => item.UserName) @Html.Raw("("+item.UserAccountNumber+")")
+                            </dd>
+                            <dt class="col-sm-4">
+                                @Html.Raw("Is Company Owner ") @Html.Raw("-"+userIndex) @Html.Raw("Active ?")
+                            </dt>
+                            <dd class="col-sm-8">
+                                @if (item.IsActive)
+                                {
+                                    @Html.Raw("Yes")
+                                }
+                                else
+                                {
+                                    @Html.Raw("No")
+                                }
+                            </dd>
+                            <dt class="col-sm-4">
+                                @Html.Raw("Is Login Allowed for Company Owner ") @Html.Raw("-"+userIndex) @Html.Raw(" ?")
+                            </dt>
+                            <dd class="col-sm-8">
+                                @if (item.IsLogin)
+                                {
+                                    @Html.Raw("Yes")
+                                }
+                                else
+                                {
+                                    @Html.Raw("No")
+                                }
+                            </dd>
+                            @if (@companyOwnerCount != userIndex)
+                            {
+                                <hr style="height:1.5px;"/>
+                            }   
+                        }
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (Model.companyShareholders.Count > 0)
+{
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="row">
+                        <div class="card-title">
+                            <h5 class="text-dark"><b>Shareholder Details</b></h5>
+                        </div>
+                    </div>
+                    <hr />
+                    <dl class="row">
+                        @foreach (var item in Model.companyShareholders)
+                        {
+                            index = index + 1;
+                            <dt class="col-sm-4">
+                                @Html.DisplayNameFor(model => item.ShareholderName) @Html.Raw("-"+index)
+                            </dt>
+                            <dd class="col-sm-8">
+                                @Html.DisplayFor(model => item.ShareholderName)
+                            </dd>
+                            <dt class="col-sm-4">
+                                @Html.DisplayNameFor(model => item.ShareholderSharePercentage) @Html.Raw("-"+index)
+                            </dt>
+                            <dd class="col-sm-8">
+                                @Html.DisplayFor(model => item.ShareholderSharePercentage)@Html.Raw("%")
+                            </dd>
+                        }
+
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="card-title">
+                        <h5 class="text-dark"><b>License Details</b></h5>
+                    </div>
+                </div>
+                <hr />
+                <dl class="row">
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.LicenseType)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.LicenseType)
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.LicenseStatus)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.LicenseStatus)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.LicenseIssueDate)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.LicenseIssueDate)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.LicenseExpiryDate)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.LicenseExpiryDate)
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="card-title">
+                        <h5 class="text-dark"><b>Lease Details</b></h5>
+                    </div>
+                </div>
+                <hr />
+                <dl class="row">
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.LeaseFacilityType)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.LeaseFacilityType)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.LeaseStartDate)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.LeaseStartDate)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.LeaseExpiryDate)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.LeaseExpiryDate)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.LeaseStatus)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.LeaseStatus)
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" name="Module" id="Module" value="@Model.Module" />
+<script>
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>

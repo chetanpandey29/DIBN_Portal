@@ -1,0 +1,241 @@
+﻿@model IEnumerable<DIBN.Areas.Admin.Models.GetDownloadDocumentListModel>
+@{
+    ViewData["Title"] = "Downloaded Document(s)";
+}
+<style>
+    .badge-warning{
+        font-size: 15px !important;
+        background: #FFC107 !important;
+        color: #fff !important;
+        padding: 7px !important;
+        border-radius: 5px 5px;
+    }
+
+    .badge-danger{
+        font-size: 15px !important;
+        background: #DC3545 !important;
+        color: #fff !important;
+        padding: 7px !important;
+        border-radius: 5px 5px;
+    }
+
+    .badge-success{
+        font-size: 15px !important;
+        background: #28A745 !important;
+        color: #fff !important;
+        padding: 7px !important;
+        border-radius: 5px 5px;
+    }
+</style>
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+    <a href="javascript:history.go(-1);" class="btn btn-theme float-end" style="margin-bottom:15px;">Back to List</a>
+    </div>
+</div>
+<div class="row" id="View">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title text-center">Document(s)</h4>
+                <div class="table-rep-plugin">
+                    <div class="table-responsive mb-0" data-pattern="priority-columns">
+                        <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        #
+                                    </th>
+                                    <th>
+                                        File Name
+                                    </th>
+                                    <th>
+                                        Email Address
+                                    </th>
+                                    <th>
+                                        Selected Date Range
+                                    </th>
+                                    <th>
+                                        Status
+                                    </th>
+                                    <th>
+                                        Sended By
+                                    </th>
+                                    <th>
+
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var i = 0;
+                                }
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@(i + 1)</td>
+                                        <td>
+                                            @item.FileName
+                                        </td>
+                                        <td>
+                                            @item.EmailAddress
+                                        </td>
+                                        <td>
+                                           @Html.Raw(@item.minDate +'-'+@item.maxDate)
+                                        </td>
+                                        <td>
+                                            @if (item.SendedStatus =="Pending")
+                                            {
+                                                <span class="badge-warning">@item.SendedStatus</span>
+                                            }
+                                            else if(item.SendedStatus == "Fail")
+                                            {
+                                                <span class="badge-danger">@item.SendedStatus</span>
+                                            }
+                                            else if(item.SendedStatus =="Success")
+                                            {
+                                                <span class="badge-success">@item.SendedStatus</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @item.CreatedBy
+                                        </td>
+                                        <td>
+                                            @if (item.FileName.Contains(".pdf"))
+                                            {
+                                                <button class="btn btn-theme" onclick="ResendPdfReportOnEmail('@item.FromDate','@item.ToDate','@item.EmailAddress');">Re-Send</button>
+                                            }
+                                            else
+                                            {
+                                                <button class="btn btn-theme" onclick="ResendExcelReportOnEmail('@item.FromDate','@item.ToDate','@item.EmailAddress');">Re-Send</button>
+                                            }
+                                        </td>
+                                    </tr>
+
+                                    i++;
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/bootstrap.min.js"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+<script>
+    var table = $('#datatable').DataTable({
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    });
+
+    $(document).ready(function () {
+        $("#loader").hide();
+    })
+
+    function ResendPdfReportOnEmail(fromDate, toDate, emailAddress) {
+        
+        $.ajax({
+            url: '@Url.Action("SavePDFDownloadDocumentList", "AccountManagement")',
+            type: 'POST',
+            data: { 'fromDate': fromDate, 'toDate': toDate, "emailAddress": emailAddress },
+            success: function (result) {
+                var fileName = result;
+                if (result != "") {
+                    $mymodal = $("#sendPdfFileModal");
+                    $mymodal.find("div.modal-body");
+                    $mymodal.modal("hide");
+
+                    const swalWithBootstrapButtons = Swal.mixin({
+                        customClass: {
+                            confirmButton: 'ms-3 btn btn-success',
+                            cancelButton: 'btn btn-danger'
+                        },
+                        buttonsStyling: false
+                    })
+
+                    swalWithBootstrapButtons.fire({
+                        title: 'Success.',
+                        html: "<b>We are generating your PDF file for selected Range and will send it on your email address within 5-10 min.</b>",
+                        icon: 'success'
+                    }).then((result) => {
+                        $('#FromDate').val("");
+                        $('#ToDate').val("");
+
+                        $.ajax({
+                            url: '@Url.Action("ExportPdfEmail", "AccountManagement")',
+                            type: 'POST',
+                            data: { 'FromDate': fromDate, 'ToDate': toDate, "emailAddress": emailAddress, "fileName": fileName }
+                        });
+                    });
+                }
+            }
+        });
+    }
+    
+    function ResendExcelReportOnEmail(fromDate, toDate, emailAddress) {
+        
+        $.ajax({
+            url: '@Url.Action("SaveExcelDownloadDocumentList", "AccountManagement")',
+            type: 'POST',
+            data: { 'fromDate': fromDate, 'toDate': toDate, "emailAddress": emailAddress },
+            success: function (result) {
+                var fileName = result;
+                if (result != "") {
+                    $mymodal = $("#sendPdfFileModal");
+                    $mymodal.find("div.modal-body");
+                    $mymodal.modal("hide");
+
+                    const swalWithBootstrapButtons = Swal.mixin({
+                        customClass: {
+                            confirmButton: 'ms-3 btn btn-success',
+                            cancelButton: 'btn btn-danger'
+                        },
+                        buttonsStyling: false
+                    })
+
+                    swalWithBootstrapButtons.fire({
+                        title: 'Success.',
+                        html: "<b>We are generating your Excel file for selected Range and will send it on your email address within 5-10 min.</b>",
+                        icon: 'success'
+                    }).then((result) => {
+                        $('#FromDate').val("");
+                        $('#ToDate').val("");
+
+                        $.ajax({
+                            url: '@Url.Action("ExportAsExcelEmail", "AccountManagement")',
+                            type: 'POST',
+                            data: { 'FromDate': fromDate, 'ToDate': toDate, "emailAddress": emailAddress, "fileName": fileName }
+                        });
+                    });
+                }
+            }
+        });
+    }
+</script>

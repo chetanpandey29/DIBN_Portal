@@ -1,0 +1,454 @@
+﻿@model DIBN.Areas.Admin.Models.HomePageViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+<link href="~/apexcharts-bundle/dist/apexcharts.css" rel="stylesheet" />
+
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+@if (Model.allowedModule.Contains("View"))
+{
+    <div id="View">
+        <div class="row">
+            @if (Model.allowedPermission.Contains("Company") || Model.allowedPermission.Contains("OtherCompanyEmployee") || Model.allowedPermission.Contains("OtherCompanyOwner"))
+            {
+                <div class="col-lg-6 col-xl-6 col-md-6 col-sm-12 align-items-center float-start Company10">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="page-title-box text-center">
+                                <h4 class="text-center text-theme"><strong>DIBN</strong></h4>
+                            </div>
+                            <div class="d-flex justify-content-center">
+                                @if (Model.allowedPermission.Contains("Company"))
+                                {
+                                    <div class="col col-md-6 col-xl-5 col-sm-6 float-start Company10">
+                                        <div class="card card-box-shadow">
+                                            <div class="card-body py-0 px-0 m-1">
+                                                <a href="@Url.Action("Index","Company",new{area="Admin",name="Company"})">
+                                                    <h6 class="text-break text-center justify-content-center ms-2 text-truncate front-text-theme"><strong>Company(s)</strong></h6>
+                                                    <div class="mx-auto d-flex justify-content-center flex-wrap">
+                                                        <i class="fas fa-handshake fa-2x text-theme"></i>
+                                                    </div>
+                                                    <h6 class="text-center front-text-theme mt-3 mb-1"><strong>@Model.CountofCompany</strong></h6>
+                                                    <h6 class="text-center front-text-theme mt-3 mb-1"><strong>@Model.CountOfMainLandCmp @Html.Raw("/") @Model.CountOfCFreezoneCmp</strong></h6>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div> <!-- end col-->
+                                }
+                                @if (Model.allowedPermission.Contains("OtherCompanyEmployee") || Model.allowedPermission.Contains("OtherCompanyOwner"))
+                                {
+                                    <div class="col col-md-6 col-xl-5 col-sm-6 float-start ms-2 Employees10">
+                                        <div class="card card-box-shadow">
+                                            <div class="card-body py-0 px-0 m-1">
+                                                <a href="@Url.Action("Index","User",new{area="Admin",name="OtherCompanyEmployee"})">
+                                                    <h6 class="text-break text-center text-truncate front-text-theme"><strong>Employee (s)</strong></h6>
+                                                    <div class="mx-auto d-flex justify-content-center flex-wrap">
+                                                        <i class="fas fa-users fa-2x text-theme"></i>
+                                                    </div>
+                                                    <h6 class="text-center mt-3 mb-1 front-text-theme"><strong>@Model.CountofEmployees</strong></h6>
+                                                    <h6 class="text-center mt-3 mb-1 front-text-theme"><strong>@Model.CountofMainCompanyEmp @Html.Raw("/") @Model.CountofOtherCompanyEmp</strong></h6>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div> <!-- end col-->
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (Model.allowedPermission.Contains("MyRequests"))
+            {
+                <div class="col-lg-6 col-xl-6 col-md-6 col-sm-12 align-items-center float-start MyRequests10">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="page-title-box text-center">
+                                <h4 class="text-center text-theme"><strong>Services</strong></h4>
+                            </div>
+                            <div class="d-flex justify-content-center">
+                                <div class="col col-md-4 col-xl-4 col-sm-4 overflow-auto float-start">
+                                    <a href="@Url.Action("ServiceRequest", "ServiceRequests",new{area="admin",name="MyRequests",Status=0})">
+                                        <div class="card card-box-shadow">
+                                            <div class="card-body py-0 px-0 m-1">
+                                                <h6 class="text-break text-center text-truncate ms-4 me-4 front-text-theme"><strong>Open</strong></h6>
+                                                <div class="mx-auto d-flex justify-content-center flex-wrap">
+                                                    <i class="fas fa-cogs fa-2x text-theme"></i>
+                                                </div>
+                                                <h6 class="text-center mt-3 mb-1 front-text-theme"><strong>@Model.CountofOpenServie</strong></h6>
+                                                <h6 class="text-center mt-3 mb-1 front-text-theme"><strong>Services</strong></h6>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div> <!-- end col-->
+                                <div class="col col-md-4 col-xl-4 col-sm-4 overflow-auto float-start ms-2">
+                                    <a href="@Url.Action("ServiceRequest", "ServiceRequests",new{area="admin",name="MyRequests",Status=3})">
+                                        <div class="card card-box-shadow">
+                                            <div class="card-body py-0 px-0 m-1">
+                                                <h6 class="text-break text-center text-truncate ms-4 me-4 front-text-theme"><strong>Closed</strong></h6>
+                                                <div class="mx-auto d-flex justify-content-center flex-wrap">
+                                                    <i class="fas fa-cogs fa-2x text-theme"></i>
+                                                </div>
+                                                <h6 class="text-center mt-3 mb-1 front-text-theme"><strong>@Model.CountofCloseService</strong></h6>
+                                                <h6 class="text-center mt-3 mb-1 front-text-theme"><strong>Services</strong></h6>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div> <!-- end col-->
+                                <div class="col col-md-4 col-xl-4 col-sm-4 overflow-auto float-start ms-2">
+                                    <a href="@Url.Action("ServiceRequest", "ServiceRequests",new{area="admin",name="MyRequests",Status=4})">
+                                        <div class="card card-box-shadow">
+                                            <div class="card-body py-0 px-0 m-1">
+                                                <h6 class="text-break text-center text-truncate ms-4 me-4 front-text-theme"><strong>Rejected</strong></h6>
+                                                <div class="mx-auto d-flex justify-content-center flex-wrap">
+                                                    <i class="fas fa-cogs fa-2x text-theme"></i>
+                                                </div>
+                                                <h6 class="text-center mt-3 mb-1 front-text-theme"><strong>@Model.CountofRejectedService</strong></h6>
+                                                <h6 class="text-center mt-3 mb-1 front-text-theme"><strong>Services</strong></h6>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div> <!-- end col-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        @if (Model.allowedPermission.Contains("Company"))
+        {
+            <div class="row">
+                <div class="col-md-6 Company10">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="float-start">Company(s)</h6>
+                            <button id="yearlyReport" class="btn btn-theme float-end me-2">Yearly</button>
+                            <button id="monthlyReport" class="btn btn-theme float-end me-2">Monthly</button>
+                            <button id="weeklyReport" class="btn btn-theme float-end me-2">Weekly</button>
+                        </div>
+                        <div class="card-body">
+                            <div id="loadCompanyGraph">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<input asp-for="@Model.Module" id="Module" type="hidden" />
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script src="~/apexcharts-bundle/dist/apexcharts.js"></script>
+<script src="~/apexcharts-bundle/dist/apexcharts.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        if ('@Model.allowedPermission.Contains("Company")' == 'True') {
+            LoadWeeklyReport();
+        }
+    });
+
+    function LoadWeeklyReport() {
+        $("#loadCompanyGraph").empty();
+        $.ajax({
+            url: "@Url.Action("GetWeeklyCompanySubTypeReport", "Home")",
+            method: "GET",
+            success: function (response) {
+                if (response.length > 0) {
+                    var xaxis = new Array();
+                    var mainLand = new Array();
+                    var freezone = new Array();
+
+                    for (var index = 0; index < response.length; index++) {
+                        xaxis.push(response[index].companySubType);
+                        mainLand.push(response[index].totalMainlandCompanies);
+                        freezone.push(response[index].totalFreezoneCompanies);
+                    }
+
+                    var options = {
+                        series: [
+                            {
+                                data: mainLand,
+                                name: "Mainland"
+                            }, {
+                                data: freezone,
+                                name: "Freezone"
+                            }],
+                        chart: {
+                            type: 'bar',
+                            height: 430,
+                            zoom: {
+                                enabled: false
+                            },
+                            toolbar: {
+                                show: false,
+                                tools: {
+                                    download: false
+                                }
+                            }
+                        },
+                        plotOptions: {
+                            bar: {
+                                horizontal: false,
+                                dataLabels: {
+                                    position: 'top',
+                                },
+                            }
+                        },
+                        dataLabels: {
+                            enabled: false,
+                            offsetX: -6,
+                            style: {
+                                fontSize: '12px',
+                                colors: ['#fff']
+                            }
+                        },
+                        stroke: {
+                            show: true,
+                            width: 1,
+                            colors: ['#fff']
+                        },
+                        tooltip: {
+                            shared: true,
+                            intersect: false
+                        },
+                        xaxis: {
+                            categories: xaxis,
+                        },
+                        yaxis: {
+                            min: 0,
+                            tickAmount: 10,
+                            labels: {
+                                formatter: function (val, index) {
+                                    return val;
+                                }
+                            }
+                        },
+                        colors: [ 
+                            "#2b4380",
+                            "#e31e25"
+                        ],
+                    };
+
+                    var chart = new ApexCharts(document.querySelector("#loadCompanyGraph"), options);
+                    chart.render();
+                }
+                else {
+                    $("#loadCompanyGraph").append("<div class='row'><div class='col-md-12'><div class='d-flex align-content-center justify-content-center'><h6 class='text-center'>No data Found.!!</h6></div></div></div>");
+                }
+            }
+        })
+    }
+
+    $("#weeklyReport").on("click", function () {
+        LoadWeeklyReport();
+    });
+    
+    $("#monthlyReport").on("click", function () {
+        $("#loadCompanyGraph").empty();
+        $.ajax({
+            url: "@Url.Action("GetMonthlyCompanySubTypeReport", "Home")",
+            method: "GET",
+            success: function (response) {
+                if (response.length > 0) {
+                    var xaxis = new Array();
+                    var mainLand = new Array();
+                    var freezone = new Array();
+
+                    for (var index = 0; index < response.length; index++) {
+                        xaxis.push(response[index].companySubType);
+                        mainLand.push(response[index].totalMainlandCompanies);
+                        freezone.push(response[index].totalFreezoneCompanies);
+                    }
+
+                    var options = {
+                        series: [
+                            {
+                                data: mainLand,
+                                name: "Mainland"
+                            }, {
+                                data: freezone,
+                                name: "Freezone"
+                            }],
+                        chart: {
+                            type: 'bar',
+                            height: 430,
+                            zoom: {
+                                enabled: false
+                            },
+                            toolbar: {
+                                show: false,
+                                tools: {
+                                    download: false
+                                }
+                            }
+                        },
+                        plotOptions: {
+                            bar: {
+                                horizontal: false,
+                                dataLabels: {
+                                    position: 'top',
+                                },
+                            }
+                        },
+                        dataLabels: {
+                            enabled: false,
+                            offsetX: -6,
+                            style: {
+                                fontSize: '12px',
+                                colors: ['#fff']
+                            }
+                        },
+                        stroke: {
+                            show: true,
+                            width: 1,
+                            colors: ['#fff']
+                        },
+                        tooltip: {
+                            shared: true,
+                            intersect: false
+                        },
+                        xaxis: {
+                            categories: xaxis,
+                        },
+                        yaxis: {
+                            min: 0,
+                            tickAmount: 10,
+                            labels: {
+                                formatter: function (val, index) {
+                                    return val;
+                                }
+                            }
+                        },
+                        colors: [
+                            "#2b4380",
+                            "#e31e25"
+                        ],
+                    };
+
+                    var chart = new ApexCharts(document.querySelector("#loadCompanyGraph"), options);
+                    chart.render();
+                }
+                else {
+                    $("#loadCompanyGraph").append("<div class='row'><div class='col-md-12'><div class='d-flex align-content-center justify-content-center'><h6 class='text-center'>No data Found.!!</h6></div></div></div>");
+                }
+            }
+        })
+    })
+
+    $("#yearlyReport").on("click", function () {
+        $("#loadCompanyGraph").empty();
+        $.ajax({
+            url: "@Url.Action("GetYearlyCompanySubTypeReport", "Home")",
+            method: "GET",
+            success: function (response) {
+                if (response.length > 0) {
+                    var xaxis = new Array();
+                    var mainLand = new Array();
+                    var freezone = new Array();
+
+                    for (var index = 0; index < response.length; index++) {
+                        xaxis.push(response[index].companySubType);
+                        mainLand.push(response[index].totalMainlandCompanies);
+                        freezone.push(response[index].totalFreezoneCompanies);
+                    }
+
+                    var options = {
+                        series: [
+                            {
+                                data: mainLand,
+                                name: "Mainland"
+                            }, {
+                                data: freezone,
+                                name: "Freezone"
+                            }],
+                        chart: {
+                            type: 'bar',
+                            height: 430,
+                            zoom: {
+                                enabled: false
+                            },
+                            toolbar: {
+                                show: false,
+                                tools: {
+                                    download: false
+                                }
+                            }
+                        },
+                        plotOptions: {
+                            bar: {
+                                horizontal: false,
+                                dataLabels: {
+                                    position: 'top',
+                                },
+                            }
+                        },
+                        dataLabels: {
+                            enabled: false,
+                            offsetX: -6,
+                            style: {
+                                fontSize: '12px',
+                                colors: ['#fff']
+                            }
+                        },
+                        stroke: {
+                            show: true,
+                            width: 1,
+                            colors: ['#fff']
+                        },
+                        tooltip: {
+                            shared: true,
+                            intersect: false
+                        },
+                        xaxis: {
+                            categories: xaxis,
+                        },
+                        yaxis: {
+                            min: 0,
+                            tickAmount: 10,
+                            labels: {
+                                formatter: function (val, index) {
+                                    return val;
+                                }
+                            }
+                        },
+                        colors: [
+                            "#2b4380",
+                            "#e31e25"
+                        ],
+                    };
+
+                    var chart = new ApexCharts(document.querySelector("#loadCompanyGraph"), options);
+                    chart.render();
+                }
+                else {
+                    $("#loadCompanyGraph").append("<div class='row'><div class='col-md-12'><div class='d-flex align-content-center justify-content-center'><h6 class='text-center'>No data Found.!!</h6></div></div></div>");
+                }
+            }
+        })
+    })
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>
+<script>
+    function CompanyDetails(Id) {
+        var url = "@Url.Action("GetSelectedCompanyDetails", "Company")";
+        window.location.href = url + "?CompanyId=" + Id;
+    }
+    function GetUserDetail(Id) {
+        var url = "@Url.Action("UserDetail", "User")";
+        window.location.href = url + "?UserId=" + Id + "&name=Employees";
+    }
+</script>

@@ -1,0 +1,360 @@
+﻿@model DIBN.Areas.Admin.Models.UserViewModel
+
+@{
+    ViewData["Title"] = "Create Employee";
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <h4 class="card-title">Add New Employee</h4>
+    </div>
+    <div class="col-md-4">
+        <a href="javascript:history.go(-1);" class="btn btn-theme float-end" style="margin-bottom:15px;">Back to List</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="CreateNewEmployees" asp-area="admin" method="post" id="createNewEmployees">
+                    <div class="row">
+                        @Html.ValidationSummary("", new { @class = "text-danger" })
+                        <input asp-for="Id" class="form-control" type="hidden" />
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="RoleId" class="control-label"></label> <span class="text-danger">*</span>
+                            @Html.ListBoxFor(model => model.RoleId, new MultiSelectList(Model.Roles, "Value", "Text"), new { @class = "form-control form-select single-line", multiple = "multiple", id = "RoleIds" })
+                            <span asp-validation-for="RoleId" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="CompanyId" class="control-label"></label> <span class="text-danger">*</span>
+                            @Html.DropDownListFor(w => w.CompanyId, Model.Companies, "Select Company", new { @class = "form-control form-select single-line", @id = "Companies" ,@onchange="GetCompanyType(this)", required = (string)null})
+                            <span asp-validation-for="CompanyId" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="AccountNumber" class="control-label"></label> <span class="text-danger">*</span>
+                            <input asp-for="AccountNumber" id="accountNumber" class="form-control" />
+                            <span asp-validation-for="AccountNumber" class="text-danger"></span>
+                        </div>
+                       @*  <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="Password" class="control-label"></label> <span class="text-danger">*</span>
+                            <div class="input-group"> *@
+                                <input asp-for="Password" type="hidden" class="form-control" value="TEST" />
+                                @* <div class="input-group-prepend">
+                                    <span class="input-group-text btn btn-theme" id="show_password"><i class="fas fa-eye-slash icon"></i></span>
+                                </div>
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+                        </div> *@
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="FirstName" class="control-label"></label> <span class="text-danger">*</span>
+                            <input asp-for="FirstName" class="form-control" />
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="LastName" class="control-label"></label> <span class="text-danger">*</span>
+                            <input asp-for="LastName" class="form-control" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="Nationality" class="control-label"></label> <span class="text-danger">*</span>
+                            @Html.DropDownListFor(w => w.Nationality, Model.Countries, new { @class = "form-control form-select single-line select-box", required = (string)null })
+                            <span asp-validation-for="Nationality" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="EmailID" class="control-label"></label> <span class="text-danger">*</span>
+                            <input asp-for="EmailID" id="EmailID" type="email" class="form-control"/>
+                            <span asp-validation-for="EmailID" class="text-danger"></span>
+                            <div>
+                                <span id="EmailValidation" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3" id="MobileNumberBlock">
+                            <label asp-for="PhoneNumber" class="control-label"></label> <span class="text-danger">*</span>
+                            <div class="d-flex">
+                                <div class="col-md-4 col-lg-4">
+                                    @Html.DropDownListFor(w => w.MCountry, Model.Countries, new { @class = "form-control form-select single-line select-box", @onchange = "GetDialingCodeOfCountry(this.value)", required = (string)null })
+                                </div>
+                                <div class="col-md-8 col-lg-8">
+                                    <input asp-for="PhoneNumber" class="form-control" id="PhoneNumber" maxlength="20" onkeyup="ValidAlphabet(this)"/>
+                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="Designation" class="control-label"></label> <span class="text-danger">*</span>
+                            <input asp-for="Designation" class="form-control" />
+                            <span asp-validation-for="Designation" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="CountryOfRecidence" class="control-label"></label> <span class="text-danger">*</span>
+                            <input asp-for="CountryOfRecidence" class="form-control" />
+                            <span asp-validation-for="CountryOfRecidence" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="PassportNumber" class="control-label"></label> 
+                            <input asp-for="PassportNumber" class="form-control" />
+                            <span asp-validation-for="PassportNumber" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="PassportExpiryDate" class="control-label"></label> <span style="font-weight:bold;">(eg. 2022-01-31)</span> 
+                            <input asp-for="PassportExpiryDate" class="form-control" id="PassportExpiryDate" readonly/>
+                            <span asp-validation-for="PassportExpiryDate" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="VisaExpiryDate" class="control-label"></label>  <span style="font-weight:bold;">(eg. 2022-01-31)</span> 
+                            <input asp-for="VisaExpiryDate" class="form-control" id="VisaExpiryDate" readonly/>
+                            <span asp-validation-for="VisaExpiryDate" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="InsuranceCompany" class="control-label"></label>
+                            <input asp-for="InsuranceCompany" class="form-control" />
+                            <span asp-validation-for="InsuranceCompany" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="InsuranceExpiryDate" class="control-label"></label> <span style="font-weight:bold;">(eg. 2022-01-31)</span> 
+                            <input asp-for="InsuranceExpiryDate" class="form-control" id="InsuranceExpiryDate" readonly/>
+                            <span asp-validation-for="InsuranceExpiryDate" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3" id="EmployeeCardExpiryDateBlock" hidden>
+                            <label asp-for="EmployeeCardExpiryDate" class="control-label"></label> <span style="font-weight:bold;">(eg. 2022-01-31)</span> 
+                            <input asp-for="EmployeeCardExpiryDate" class="form-control" id="EmployeeCardExpiryDate" readonly/>
+                            <span asp-validation-for="EmployeeCardExpiryDate" class="text-danger"></span>
+                        </div>
+                        <div class=" col-md-12 float-start ms-2 me-3 mt-2">
+                            <div class="form-group form-check" id="IsLoginBlock">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" asp-for="IsLogin" type="checkbox" /> @Html.DisplayNameFor(model => model.IsLogin)
+                                </label>
+                            </div>
+                            <div class="form-group form-check" id="IsActiveBlock">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" asp-for="IsActive" type="checkbox" /> @Html.DisplayNameFor(model => model.IsActive)
+                                </label>
+                            </div>
+                        </div>
+                        <input type="hidden" name="Module" id="Module" value="@Model.Module" />
+                        <input type="hidden" name="CompanyType" id="CompanyType" />
+                        <div class="form-group m-3">
+                            <input type="submit" id="btnSubmit" value="Submit" class="btn btn-theme" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<link href="~/select2/select2.min.css" rel="stylesheet" />
+<script src="~/select2/select2.min.js"></script>
+<script>
+    jQuery('#createNewEmployees').on('submit', function () {
+        if (jQuery(this).data('form_is_invalid')) {
+            jQuery(this).data('form_is_invalid', false);
+        } else {
+            jQuery(this).find('#btnSubmit').prop('disabled', true);
+        }
+    }).on('invalid-form.validate', function () {
+        jQuery(this).data('form_is_invalid', true);
+    });
+</script>
+<script>
+    function ValidAlphabet(data) {    
+	    var code = (event.which) ? event.which : event.keyCode;    
+	    if (!(code>= 48 && code <=57) || !(code >=96 && code <=105) || code == 54 || code == 189 || code == 219 || code==57) {
+		    if (code != 32 && code != 190) {
+			    var digits = $(data).val();
+			    var lastValue = digits.substring(digits.length - 1);
+			    digits = digits.replace(/[^(\+\s)[^0-9-]/g, '');
+			    if (lastValue == "^" || lastValue == "-" || lastValue == "(" || lastValue == ")" || lastValue == "[") {
+				    digits = digits.replace(lastValue, '');
+			    }
+			    $(data).val(digits);
+		    }
+	    }
+    };
+
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>
+<script>
+    $(function () {
+        $("#VisaExpiryDate").datepicker({
+            format: 'yyyy-mm-dd',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            todayHighlight: true,
+        });
+        $("#InsuranceExpiryDate").datepicker({
+            format: 'yyyy-mm-dd',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            todayHighlight: true,
+        });
+        $("#PassportExpiryDate").datepicker({
+            format: 'yyyy-mm-dd',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            todayHighlight: true,
+        });
+        $("#EmployeeCardExpiryDate").datepicker({
+            format: 'yyyy-mm-dd',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            todayHighlight: true,
+        });
+    });
+    ////// Open Selection dropdown on focus                                     -- Yashasvi TBC (09-02-2023)
+    $(document).on('focus', '.select2.select2-container', function (e) {
+        if (e.originalEvent && $(this).find(".select2-selection--single").length > 0) {
+            $(this).siblings('select').select2('open');
+        }
+    });
+    $(function() {
+      $('#Companies').select2();
+    });
+    $(function() {
+      $('.select-box').select2();
+    });
+    $(function() {
+      $('#RoleIds').select2();
+    });
+</script>
+<script>
+    $("#btnSubmit").on('click', function() {
+        $("#loader").show();
+        var visa = $("#VisaExpiryDate").val();
+        var insurance = $("#InsuranceExpiryDate").val();
+        var passport = $("#PassportExpiryDate").val();
+        var employee = $("#EmployeeCardExpiryDate").val();
+        var companyType = $("#CompanyType").val();
+
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
+
+        today = yyyy + '-' + mm + '-' + dd;
+
+        if (!/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(visa) || !/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(insurance) || !/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(passport)) {
+            if (!/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(visa) && visa!="N/A" && visa!="") {
+                alert("Please Enter Valid Date Format for Visa Expiry Date.");
+                $('#VisaExpiryDate').datepicker('setDate', today);
+                $("#VisaExpiryDate").focus();
+                $("#loader").hide();
+                return false;
+            }
+            else if (!/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(insurance) && insurance!="N/A" && insurance!="") {
+                alert("Please Enter Valid Date Format for Insurance Expiry Date.");
+                $('#InsuranceExpiryDate').datepicker('setDate', today);
+                $("#InsuranceExpiryDate").focus();
+                $("#loader").hide();
+                return false;
+            }
+            else if (!/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(passport) && passport!="N/A" && passport!="") {
+                alert("Please Enter Valid Date Format for Passport Expiry Date.");
+                $('#PassportExpiryDate').datepicker('setDate', today);
+                $("#PassportExpiryDate").focus();
+                $("#loader").hide();
+                return false;
+            }
+        }
+        else if (companyType == "Dubai Mainland") {
+            if (!/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(employee) && employee!="N/A" && employee!="") {
+                alert("Please Enter Valid Date Format for Employment Expiry Date.");
+                $('#EmployeeCardExpiryDate').datepicker('setDate', today);
+                $("#EmployeeCardExpiryDate").focus();
+                $("#loader").hide();
+                return false;
+            }
+        }
+        $("#loader").hide();
+    });
+</script>
+<script type="text/javascript">  
+    $(document).ready(function () {  
+        $('#show_password').hover(function show() {  
+            $('#Password').attr('type', 'text');  
+            $('.icon').removeClass('fas fa-eye-slash').addClass('fas fa-eye');  
+        },  
+        function () {  
+            $('#Password').attr('type', 'password');  
+            $('.icon').removeClass('fas fa-eye').addClass('fas fa-eye-slash');  
+        });   
+    });  
+
+
+    function GetDialingCodeOfCountry(value){
+        $.ajax({
+            url: "@Url.Action("GetDialingCodeOfCountry", "Company")",
+            method: "GET",
+            data:{'Country':value},
+            success: function (response) {
+                $("#PhoneNumber").val(response);
+            }
+        });
+    };
+
+    $(function(){
+        $.ajax({
+            url: "@Url.Action("GetAccountNumber", "User")",
+            method: "GET",
+            success: function (response) {
+                $("#accountNumber").val(response);
+            }
+        });
+
+    });
+
+</script>  
+<script>
+    function CheckExistanceOfEmail(){
+        event.preventDefault();
+        var email = $("#EmailID").val();
+        $("#EmailValidation").hide();
+        $.ajax({
+            url:"@Url.Action("CheckEmailExistance","User")",
+            mehod:"GET",
+            data:{"Email":email},
+            success:function(response){
+                if(response == -1){
+                    $("#EmailValidation").show();
+                    $("#EmailValidation").text(email +" already exists.");
+                }
+            }
+        });
+    };
+
+
+    function GetCompanyType(Id){
+        
+        var _company = $("#Companies :selected").val();
+        $.ajax({
+            url:"@Url.Action("GetCompanyType","User")",
+            mehod:"GET",
+            data:{"CompanyId":_company},
+            success:function(response){
+                if(response == "Dubai Mainland"){
+                    $("#CompanyType").val(response);
+                    $("#EmployeeCardExpiryDateBlock").removeAttr('hidden');
+                }
+                else{
+                    $("#EmployeeCardExpiryDateBlock").attr('hidden','hidden');
+                }
+            }
+        });
+    };
+</script>

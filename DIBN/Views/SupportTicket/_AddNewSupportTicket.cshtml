@@ -1,0 +1,68 @@
+﻿@model DIBN.Models.SupportTicketViewModel
+<div class="row">
+    <form asp-action="AddSupportTicket" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        @if (@Model.Role.StartsWith("Sales"))
+        {
+            <div class="form-group">
+                <label asp-for="Companies" class="control-label"></label>
+                @Html.DropDownListFor(w => w.CompanyId, @Model.Companies, new { @class = "form-control form-select single-line",@id="Companies", required = (string)null })
+            </div>
+        }
+        else
+        {
+            <input type="hidden" asp-for="CompanyId" />
+        }
+        <div class="form-group">
+            <label asp-for="Title" class="control-label"></label>
+            <input asp-for="Title" class="form-control" oninvalid="this.setCustomValidity('Please Enter Title for your Employee Service Request.')" oninput="this.setCustomValidity('')" required/> 
+            <span asp-validation-for="Title" class="text-danger" ></span> 
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Description" class="control-label"></label>
+            <textarea asp-for="Description" class="form-control" oninvalid="this.setCustomValidity('Please Enter Description for your Employee Service Request.')" oninput="this.setCustomValidity('')" required rows="5" cols="20">
+
+            </textarea>
+            <span asp-validation-for="Description" class="text-danger" ></span> 
+        </div>
+        <div class="form-group">
+            <label asp-for="FormFile" class="control-label"></label>
+            <input name="FormFile" class="form-control m-2" type="file" id="FormFile" multiple/>
+            <span asp-validation-for="FormFile" class="text-danger" ></span> 
+        </div>
+        <input type="hidden" name="Module" id="Module" value="@Model.Module" />
+        
+        <input type="hidden" asp-for="UserId" />
+        <input type="hidden" asp-for="SalesPersonId" />
+        <input type="hidden" asp-for="ParentId" value="0" />
+        <input type="hidden" asp-for="TicketStatusId" value="1"/>
+        
+        <div class="modal-footer">
+            <div class="form-group">
+                <input type="submit" value="Send" class="btn btn-theme" />
+            </div>
+        </div>
+    </form>
+</div>
+
+<link href="~/select2/select2.min.css" rel="stylesheet" />
+<script src="~/select2/select2.min.js"></script>
+<script>
+    $('form').submit(function () {
+        $('input[type="submit"]').attr('disabled', 'disabled');
+        alert("Please Wait for a while,We are currently submitting Your Response.");
+    });
+</script>
+<script>
+    ////// Open Selection dropdown on focus                                     -- Yashasvi TBC (09-02-2023)
+    $(docu ment).on('focus', '.select2.select2-container', function (e) {
+        if (e.originalEvent && $(this).find(".select2-selection--single").length > 0) {
+            $(this).siblings('select').select2('open');
+        }
+    });
+    $(function() {
+        $('#Companies').select2();
+    });
+
+</script>

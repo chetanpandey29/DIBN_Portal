@@ -1,0 +1,20 @@
+﻿@model DIBN.Areas.Admin.Models.ChangeEnquiryStatusModel
+
+<div class="row">
+    <form asp-action="SaveChangedStatusOfEnquiry" asp-controller="Home" method="post">
+        <div class="form-group">
+            <div class="form-group">
+                <label class="control-label">Enquiry Status</label> <span class="text-danger">*</span>
+                @Html.DropDownListFor(w => w.Status, Model.StatusItems, new { @class = "form-control form-select single-line",@id="StatusIds",required = (string)null })
+            </div>
+        </div>
+
+        <input asp-for="@Model.RequestId" type="hidden" />
+        <input asp-for="@Model.EnquiryNumber" type="hidden" />
+        <div class="modal-footer">
+            <div class="form-group">
+                <input type="submit" value="Change" class="btn btn-theme" />
+            </div>
+        </div>
+    </form>
+</div>

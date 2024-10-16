@@ -1,0 +1,159 @@
+﻿<style>
+    .bell-font{
+        background: #243c7c26 !important;
+        color: #243c7c !important;
+        font-weight: bold;
+        font-size: 11px !important;
+    }
+</style>
+<header id="page-topbar">
+    <div id="hideNavBar">
+        <div class="navbar-header">
+            <div class="d-flex">
+                <!-- LOGO -->
+                <div class="navbar-brand-box" style="padding:0;">
+                    <a href=@Url.Action("Index", "Home",new{area="admin",name="HomePage"}) class="logo logo-dark">
+                        <span class="logo-sm">
+                            <img src="~/DIBN_Logo.png" alt="" height="30">
+                        </span>
+                        <span class="logo-lg">
+                            <img src="~/DIBN_Logo.png" alt="" height="20">
+                        </span>
+                    </a>
+
+                    <a href=@Url.Action("Index", "Home",new{area="admin",name="HomePage"}) class="logo logo-light">
+                        <span class="logo-sm">
+                            <img src="~/DIBN_Logo.png" alt="" height="30">
+                        </span>
+                        <span class="logo-lg">
+                            <img src="~/DIBN_Logo.png" alt="" height="20">
+                        </span>
+                    </a>
+                </div>
+
+                <button type="button" class="btn btn-sm px-3 font-size-16 header-item waves-effect vertical-menu-btn">
+                    <i class="fas fa-fw fa-bars"></i>
+                </button>
+                <div class="dropdown d-inline-block ms-3">
+                    <button type="button" class="btn header-item noti-icon waves-effect" id="page-header-notifications-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="uil-bell front-text-theme"></i>
+                        <span class="badge rounded-pill bell-font" id="notificationCount"></span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right" id="notificationMessage">
+                        
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex">
+                <div class="dropdown d-none d-lg-inline-block">
+                    <span class="btn header-item waves-effect align-middle mt-4 text-wrap overflow-hidden text-truncate "><i class="fas fa-question-circle"></i> &nbsp;<span class="front-text-theme">Help Center</span></span>
+                </div>
+                <div class="dropdown d-none d-lg-inline-block" id="dibnlivesupport">
+                    <span class="btn header-item waves-effect align-middle mt-4 text-wrap overflow-hidden text-truncate"><i class="fas fa-comments"></i> &nbsp;<span class="front-text-theme">DIBN Live Support</span></span>
+                </div>
+                <div class="dropdown d-none d-lg-inline-block">
+                    <span class="btn header-item waves-effect align-middle mt-4 text-wrap overflow-hidden text-truncate "><i class="fas fa-phone-alt"></i>&nbsp; <span class="front-text-theme">+97143421947</span></span>
+                </div>
+                <div class="dropdown d-inline-block">
+                    <button type="button" class="btn header-item waves-effect mt-2 text-truncate" id="page-header-user-dropdown"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="d-xl-inline-block d-none ms-1 fw-medium font-size-15 align-middle text-truncate">
+                            <i class="fas fa-globe"></i>&nbsp; <span class="front-text-theme">DIBN BUSINESS SERVICES</span>
+                        </span>
+                        <i class="uil-angle-down d-none d-xl-inline-block font-size-15 "></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <!-- item-->
+                        <a class="dropdown-item" href="@Url.Action("Index", "CompanyServices",new{area="admin",name="CompanyServices"})"><i class="uil uil-user-circle font-size-18 align-middle  me-1" style="color:#243c7c;"></i> <span class="align-middle front-text-theme">Access Company Services</span></a>
+                        <a class="dropdown-item" href="@Url.Action("Index", "EmployeeService",new{area="admin",name="EmployeeServices"})"><i class="uil uil-wallet font-size-18 align-middle me-1" style="color:#243c7c;"></i> <span class="align-middle front-text-theme">Access Employees Services</span></a>
+                        <a class="dropdown-item" href="@Url.Action("ServiceRequest", "ServiceRequests",new{area="admin",name="MyRequests"})"><i class="uil uil-wallet font-size-18 align-middle me-1" style="color:#243c7c;"></i> <span class="align-middle front-text-theme">Track Your Request</span></a>
+                    </div>
+                </div>
+                <div class="dropdown d-inline-block">
+                    <button type="button" class="btn header-item waves-effect mt-2 text-truncate" id="page-header-user-dropdown"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="d-xl-inline-block ms-1 fw-medium font-size-15 align-middle text-truncate "><i class="fas fa-cog"></i>&nbsp;<span class="front-text-theme">Settings</span></span>
+                        <i class="uil-angle-down d-xl-inline-block font-size-15 "></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <!-- item-->
+                        <a class="dropdown-item" href="@Url.Action("ClearCache","Home",new{area="Admin"})" style="color:#243c7c;">
+                        <i class="fas fa-trash-alt font-size-18 align-middle overflow-hidden" style="color:#243c7c;"></i>
+                            <span class="align-middle overflow-hidden text-truncate front-text-theme">Clear Cache</span>
+                        </a>
+                        <a class="dropdown-item" href="@Url.Action("Logout","Account",new{area=""})"><i class="uil uil-sign-out-alt font-size-18 align-middle overflow-hidden" style="color:#243c7c;"></i> <span class="align-middle overflow-hidden text-truncate front-text-theme">Sign out</span></a>
+                    </div>
+                </div>
+                <input type="hidden" name="support" id="supportid" />
+            </div>
+        </div>
+    </div>
+</header>
+
+<script src="@Url.Content("~/lib/jquery/dist/jquery.min.js")"></script>
+
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: "@Url.Action("GetCurrentNotificationCount","Home")",
+            method: "POST",
+            success: function (response) {
+                var _url = "@Url.Action("GetRequestNotifications","Notifications")";
+                _url = _url + "?name=Notification";
+                if (response != null) {
+                    var _count = parseInt($("#notificationCount").text());
+                    if (isNaN(_count)) {
+                        _count = 0;
+                    }
+                    _count = _count + parseInt(response);
+                    if (_count > 0) {
+                        var _message = "<a class='dropdown-item' href=" + _url + " style='color:#333D51;'>"
+                            + "<span class='align-middle'><strong> You have " + _count + " New Notification.</strong></span></a>";
+
+
+                        $("#notificationCount").text(_count);
+
+
+                        $("#notificationMessage").html(_message);
+                    }
+                    else {
+                        var _message = "<a class='dropdown-item' href=" + _url + " style='color:#333D51;'>"
+                            + "<span class='align-middle'><strong>No Notification Found.</strong></span></a>";
+                        $("#notificationCount").text(parseInt(_count));
+                        $("#notificationMessage").html(_message);
+                    }
+                }
+                else {
+                    var _message = "<a class='dropdown-item' href=" + _url + " style='color:#333D51;'>"
+                        + "<span class='align-middle'><strong>No Notification Found.</strong></span></a>";
+                    $("#notificationCount").text(parseInt(_count));
+                    $("#notificationMessage").html(_message);
+                }
+            }
+        });
+    });
+</script>
+
+
+@* <script>
+    $("#dibnlivesupport").on('click', function () {
+
+        var supprort = $("#supportid").val();
+        if (supprort == "") {
+            $("#supportid").val("true");
+            var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+            (function () {
+                var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+                s1.async = true;
+                s1.src = 'https://embed.tawk.to/62848be4b0d10b6f3e72c2c5/1g3as4tf4';
+                s1.charset = 'UTF-8';
+                s1.setAttribute('crossorigin', '*');
+                s0.parentNode.insertBefore(s1, s0);
+            })();
+        }
+        else {
+            window.location.reload();
+        }
+    });
+</script> *@

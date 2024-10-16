@@ -1,0 +1,47 @@
+﻿@model DIBN.Areas.Admin.Models.GetRequestResponsesModel
+<div class="row">
+
+    <form asp-action="AddServiceResponse" asp-controller="ServiceRequests" asp-area="Admin" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <div class="form-group">
+                <label asp-for="StatusId" class="control-label"></label> <span class="text-danger">*</span>
+                @Html.DropDownListFor(w => w.StatusId, Model.StatusList, new { @class = "form-control form-select single-line",@id="StatusIds" })
+                <span asp-validation-for="StatusId" class="text-danger"></span>
+            </div>
+            <span asp-validation-for="StatusId" class="text-danger" ></span> 
+        </div>
+        <div class="form-group">
+            <label asp-for="Description" class="control-label"></label>
+            <textarea asp-for="Description" class="form-control" oninvalid="this.setCustomValidity('Please Enter Description for your Service Request.')" oninput="this.setCustomValidity('')" required rows="5" cols="20">
+
+            </textarea>
+            <span asp-validation-for="Description" class="text-danger" ></span> 
+        </div>
+        <div class="form-group">
+            <label class="control-label">Document</label>
+            <input name="formFile" class="form-control m-2" type="file" id="formFile"/>
+            <span asp-validation-for="formFile" class="text-danger" ></span> 
+        </div>
+        <input type="hidden" asp-for="CompanyId" />
+        <input type="hidden" asp-for="UserId" />
+        <input type="hidden" asp-for="SerialNumber" />
+        <input type="hidden" asp-for="StepId" />
+        <input type="hidden" asp-for="ServiceId" />
+        <input type="hidden" asp-for="FormId" />
+        <input type="hidden" asp-for="serviceRequestType" />
+        
+        <div class="modal-footer">
+            <div class="form-group">
+                <input type="submit" value="Send" class="btn btn-theme" />
+            </div>
+        </div>
+    </form>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    $('form').submit(function () {
+        alert("Please Wait for a while,We are currently submitting Your Response.");
+        $('input[type="submit"]').attr('disabled', 'disabled');
+    });
+</script>

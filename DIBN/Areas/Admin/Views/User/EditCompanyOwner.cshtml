@@ -1,0 +1,247 @@
+﻿@model DIBN.Areas.Admin.Models.UserViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <h4 class="card-title">Update Onwer Details</h4>
+    </div>
+    <div class="col-md-4">
+        <a href="javascript:history.go(-1);" class="btn btn-theme float-end" style="margin-bottom:15px;">Back to List</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="EditCompanyOwners" asp-area="admin" method="post" id="editCompanyOwners">
+                    <div class="row">
+                        @Html.ValidationSummary("", new { @class = "text-danger" })
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input asp-for="Id" class="form-control" type="hidden" id="userId" />
+                        <input asp-for="companyOwner" class="form-control" type="hidden" value="true"/>
+                        <input asp-for="Action" value="OtherCompanyOwner" class="form-control" type="hidden" />
+                        <input asp-for="returnAction" value="EditCompanyOnwer" class="form-control" type="hidden" />
+                        <input asp-for="RoleId[0]" type="hidden" class="form-control" />
+                        <input asp-for="Role" class="control-label" hidden="hidden" />
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="CompanyId" class="control-label"></label> <span class="text-danger">*</span>
+                            @Html.DropDownListFor(w => w.CompanyId, Model.Companies, "Select Company", new { @class = "form-control form-select single-line", @id = "Companies", required = (string)null })
+                            <span asp-validation-for="CompanyId" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="AccountNumber" class="control-label"></label> <span class="text-danger">*</span>
+                            <input asp-for="AccountNumber" id="accountNumber" class="form-control" readonly/>
+                            <span asp-validation-for="AccountNumber" class="text-danger"></span>
+                            <div>
+                                <span id="AccountNumberValidation" class="text-danger"></span>
+                            </div>
+                        </div>
+                       @*  <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="Password" class="control-label"></label> <span class="text-danger">*</span>
+                            <div class="input-group">
+                                <input asp-for="Password" type="password" class="form-control" onfocus="CheckExistanceOfAccountNumber();" value="@Model.Password" />
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text btn btn-theme" id="show_password"><i class="fas fa-eye-slash icon"></i></span>
+                                </div>
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+                        </div> *@
+                        <input asp-for="Password" type="hidden" class="form-control" value="TEST" />
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="FirstName" class="control-label"></label> <span class="text-danger">*</span>
+                            <input asp-for="FirstName" class="form-control" />
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="LastName" class="control-label"></label> <span class="text-danger">*</span>
+                            <input asp-for="LastName" class="form-control" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="Nationality" class="control-label"></label> <span class="text-danger">*</span>
+                            @Html.DropDownListFor(w => w.Nationality, Model.Countries, new { @class = "form-control form-select single-line select-box", required = (string)null })
+                            <span asp-validation-for="Nationality" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                            <label asp-for="EmailID" class="control-label"></label> <span class="text-danger">*</span>
+                            <input asp-for="EmailID" class="form-control" type="email"/>
+                            <span asp-validation-for="EmailID" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-5 float-start ms-2 me-3" id="MobileNumberBlock">
+                            <label asp-for="PhoneNumber" class="control-label"></label> <span class="text-danger">*</span>
+                            <div class="d-flex">
+                                <div class="col-md-4 col-lg-4">
+                                    @Html.DropDownListFor(w => w.MCountry, Model.Countries, new { @class = "form-control form-select single-line select-box", @onchange = "GetDialingCodeOfCountry(this.value)", required = (string)null })
+                                </div>
+                                <div class="col-md-8 col-lg-8">
+                                    <input asp-for="PhoneNumber" class="form-control" id="PhoneNumber" onkeyup="ValidAlphabet(this)" maxlength="20" />
+                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                            <input asp-for="CountryOfRecidence" type="hidden" class="form-control" />
+                            <input asp-for="PassportNumber" type="hidden" class="form-control" />
+                            <input asp-for="PassportExpiryDate" type="hidden" class="form-control" id="PassportExpiryDate" readonly/>
+                            <input asp-for="VisaExpiryDate" type="hidden" class="form-control" id="VisaExpiryDate" readonly/>
+                            <input asp-for="InsuranceCompany" type="hidden" class="form-control" />
+                            <input asp-for="InsuranceExpiryDate" type="hidden" class="form-control" id="InsuranceExpiryDate" readonly/>
+                            <input asp-for="EmployeeCardExpiryDate" type="hidden" class="form-control" id="EmployeeCardExpiryDate" readonly />
+                        <div class=" col-md-12 float-start ms-2 me-3 mt-2">
+                            <div class="form-group form-check" id="IsLoginBlock">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" asp-for="IsLogin" type="checkbox" /> @Html.DisplayNameFor(model => model.IsLogin)
+                                </label>
+                            </div>
+                            <div class="form-group form-check" id="IsActiveBlock">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" asp-for="IsActive" type="checkbox" /> @Html.DisplayNameFor(model => model.IsActive)
+                                </label>
+                            </div>
+                        </div>
+                        <input type="hidden" name="Module" id="Module" value="@Model.Module" />
+                        <div class="form-group m-3">
+                            <input type="submit" value="Save" class="btn btn-theme" id="btnSubmit" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<link href="~/select2/select2.min.css" rel="stylesheet" />
+<script src="~/select2/select2.min.js"></script>
+<script>
+    jQuery('#editCompanyOwners').on('submit', function () {
+        if (jQuery(this).data('form_is_invalid')) {
+            jQuery(this).data('form_is_invalid', false);
+        } else {
+            jQuery(this).find('#btnSubmit').prop('disabled', true);
+        }
+    }).on('invalid-form.validate', function () {
+        jQuery(this).data('form_is_invalid', true);
+    });
+</script>
+<script>
+    function ValidAlphabet(data) {    
+	    var code = (event.which) ? event.which : event.keyCode;    
+	    if (!(code>= 48 && code <=57) || !(code >=96 && code <=105) || code == 54 || code == 189 || code == 219 || code==57) {
+		    if (code != 32 && code != 190) {
+			    var digits = $(data).val();
+			    var lastValue = digits.substring(digits.length - 1);
+			    digits = digits.replace(/[^(\+\s)[^0-9-]/g, '');
+			    if (lastValue == "^" || lastValue == "-" || lastValue == "(" || lastValue == ")" || lastValue == "[") {
+				    digits = digits.replace(lastValue, '');
+			    }
+			    $(data).val(digits);
+		    }
+	    }
+    };
+
+    $(document).ready(function () {
+        $("#loader").hide();
+        $("#AccountNumberValidation").hide();
+    });
+
+    $("#accountNumber").on('keyup', function () {
+        var accountNumber = $("#accountNumber").val();
+        $("#AccountNumberValidation").hide();
+        var userId = $("#userId").val();
+        $.ajax({
+            url: "@Url.Action("CheckAccountNumberExistance", "User")",
+            method: "GET",
+            data: { "AccountNumber": accountNumber, "userId": userId },
+            success: function (response) {
+
+                if (response == -1) {
+                    $("#AccountNumberValidation").show();
+                    $("#AccountNumberValidation").text(accountNumber + " aleady exists.");
+                }
+            }
+        });
+    });
+</script>
+<script>
+    $(function () {
+        $("#VisaExpiryDate").datepicker({
+            format: 'yyyy-mm-dd',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            todayHighlight: true,
+        });
+        $("#InsuranceExpiryDate").datepicker({
+            format: 'yyyy-mm-dd',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            todayHighlight: true,
+        });
+        $("#PassportExpiryDate").datepicker({
+            format: 'yyyy-mm-dd',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            todayHighlight: true,
+        });
+        $("#EmployeeCardExpiryDate").datepicker({
+            format: 'yyyy-mm-dd',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            todayHighlight: true,
+        });
+    });
+    ////// Open Selection dropdown on focus                                     -- Yashasvi TBC (09-02-2023)
+    $(document).on('focus', '.select2.select2-container', function (e) {
+        if (e.originalEvent && $(this).find(".select2-selection--single").length > 0) {
+            $(this).siblings('select').select2('open');
+        }
+    });
+    $(function() {
+      $('#Companies').select2();
+    });
+    $(function() {
+      $('.select-box').select2();
+    });
+    $(function() {
+      $('#RoleIds').select2();
+    });
+</script>
+<script type="text/javascript">  
+    $(document).ready(function () {  
+        $('#show_password').hover(function show() {  
+            $('#Password').attr('type', 'text');  
+            $('.icon').removeClass('fas fa-eye-slash').addClass('fas fa-eye');  
+        },  
+        function () {  
+            $('#Password').attr('type', 'password');  
+            $('.icon').removeClass('fas fa-eye').addClass('fas fa-eye-slash');  
+        });   
+    });  
+
+
+    function GetDialingCodeOfCountry(value){
+        $.ajax({
+            url: "@Url.Action("GetDialingCodeOfCountry", "Company")",
+            method: "GET",
+            data:{'Country':value},
+            success: function (response) {
+                $("#PhoneNumber").val(response);
+            }
+        });
+    };
+</script>  

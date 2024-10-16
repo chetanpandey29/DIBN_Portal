@@ -1,0 +1,261 @@
+﻿@model IEnumerable<DIBN.Areas.Admin.Models.LogsModel>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="row" id="View">
+    <div class="col-md-12">
+        <div class="col-md-3 float-start mb-3">
+            <h4 class="card-title text-center">Activity Log(s)</h4>
+        </div>
+        <div class="col-md-9 float-end mb-3">
+            <input type="button" id="LogIds" value="Delete(Selected)" class="btn btn-theme float-end"/>
+            <input type="button" id="DeleteAllLog" value="Empty Logs" class="btn btn-theme float-end me-3"/>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="col-md-12">
+                    <div class="table-rep-plugin">
+                        <div class="table-responsive mb-0" data-pattern="priority-columns">
+                            <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" value="0" id="checkAll" class="form-check-input">
+                                        </th>
+                                        <th>
+                                            Message
+                                        </th>
+                                        <th>
+                                            Message Type
+                                        </th>
+                                        <th>
+                                            Created On
+                                        </th>
+                                        <th>
+                                            Username
+                                        </th>
+                                        <th>
+
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td><input type="checkbox" value="@item.Id" id="LogId" name="Id" class="selectAll positionRight form-check-input"></td>
+                                            <td title="@item.Message">
+                                                @if (item.Message.Length > 100)
+                                                {
+                                                    var _message = item.Message.Substring(0, 100);
+                                                    _message = _message + "....";
+                                                    @Html.Raw(_message)
+                                                }
+                                                else
+                                                {
+                                                    @item.Message
+                                                }
+                                            </td>
+                                            <td>@item.Level</td>
+                                            <td>@item.TimeStamp</td>
+                                            <td>@item.Username</td>
+                                            <td>
+                                                <span class="btn btn-theme Delete" onclick="RemoveLog(@item.Id)">
+                                                    <i class="fas fa-trash"></i>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+
+<script>
+    $('#checkAll').click(function () {
+        $('.selectAll').prop('checked', this.checked);
+    });
+</script>
+
+<script>
+    $('#datatable').dataTable({
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    });
+</script>
+<script>
+    function RemoveLog(Id){
+        event.preventDefault();
+        const swalWithBootstrapButtons = Swal.mixin({
+          customClass: {
+            confirmButton: 'ms-3 btn btn-success',
+            cancelButton: 'btn btn-danger'
+          },
+          buttonsStyling: false
+        })
+
+        swalWithBootstrapButtons.fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, delete it!',
+          cancelButtonText: 'No, cancel!',
+          reverseButtons: true,
+          showConfirmButton: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "@Url.Action("RemoveLog", "Log")",
+                    method: "GET",
+                    data:{"Id":Id},
+                    success: function (response) {
+                        swalWithBootstrapButtons.fire({
+                          title: 'Deleted.',
+                          text: "Selected Log Details Deleted Successfully..!!",
+                          icon: 'success'
+                        }).then((result) => {
+                            window.location.reload();
+                        });
+                    }
+                });
+            }
+            else if (
+                /* Read more about handling dismissals below */
+                result.dismiss === Swal.DismissReason.cancel
+              ) {
+                swalWithBootstrapButtons.fire(
+                  'Cancelled',
+                  'Cancled by User..!! :)',
+                  'error'
+                )
+              }
+        });
+    }
+</script>
+<script type="text/javascript">
+    $("#LogIds").click(function (event) {
+        event.preventDefault();
+        const swalWithBootstrapButtons = Swal.mixin({
+          customClass: {
+            confirmButton: 'ms-3 btn btn-success',
+            cancelButton: 'btn btn-danger'
+          },
+          buttonsStyling: false
+        })
+        var searchIDs = $("#datatable input:checkbox:checked").map(function () {
+            return $(this).val();
+        }).get(); 
+        if (searchIDs != null) {
+            swalWithBootstrapButtons.fire({
+              title: 'Are you sure?',
+              text: "You won't be able to revert this!",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonText: 'Yes, delete it!',
+              cancelButtonText: 'No, cancel!',
+              reverseButtons: true,
+              showConfirmButton: true,
+            }).then((result) => {
+                if(result.isConfirmed){
+                     $.ajax({
+                        url: "@Url.Action("RemoveSelectedLogs", "Log")",
+                        type:'POST',
+                        data: { "logIds": searchIDs },
+                        success: function (result) {
+                            alert("Selected Logs are deleted successfully.");
+                            window.location.reload();
+                        },
+                        error: function (result) {
+                            alert("Something went wrong.");
+                        }
+                    });
+                }
+                else if (result.dismiss === Swal.DismissReason.cancel) {
+                swalWithBootstrapButtons.fire(
+                  'Cancelled',
+                  'Cancled by User..!! :)',
+                  'error'
+                )
+              }
+            });
+        }
+        else {
+            swalWithBootstrapButtons.fire(
+                'Error',
+                'Please Select Log(s) Which you want to delete.',
+                'error'
+            )
+        }
+    });
+</script>
+<script>
+    $("#DeleteAllLog").on("click",function(){
+        event.preventDefault();
+        const swalWithBootstrapButtons = Swal.mixin({
+          customClass: {
+            confirmButton: 'ms-3 btn btn-success',
+            cancelButton: 'btn btn-danger'
+          },
+          buttonsStyling: false
+        })
+
+        swalWithBootstrapButtons.fire({
+              title: 'Are you sure?',
+              text: "You won't be able to revert this!",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonText: 'Yes, delete it!',
+              cancelButtonText: 'No, cancel!',
+              reverseButtons: true,
+              showConfirmButton: true,
+            }).then((result) => {
+            if(result.isConfirmed){
+                    $.ajax({
+                    url: "@Url.Action("RemoveAllLog", "Log")",
+                    type:'GET',
+                    success: function (result) {
+                        alert("All Logs are deleted successfully.");
+                        window.location.reload();
+                    },
+                    error: function (result) {
+                        alert("Something went wrong.");
+                    }
+                });
+            }
+            else if (result.dismiss === Swal.DismissReason.cancel) {
+            swalWithBootstrapButtons.fire(
+                'Cancelled',
+                'Cancled by User..!! :)',
+                'error'
+            )
+            }
+        });
+    });
+</script>

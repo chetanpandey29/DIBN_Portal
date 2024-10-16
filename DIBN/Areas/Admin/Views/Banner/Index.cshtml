@@ -1,0 +1,440 @@
+﻿@model IEnumerable<DIBN.Areas.Admin.Models.BannerViewModel>
+@{
+    ViewData["Title"] = "Index";
+}
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+@foreach (var item in Model)
+{
+    <input type="hidden" name="Module" id="Module" value="@item.Module" />
+    break;
+}
+<div id="View">
+    <div class="row">
+        <div class="col-md-12" id="Insert">
+            <div class="card card-primary">
+                <form action="@Url.Action("UploadBanner","Banner")" enctype="multipart/form-data" method="post" id="bannerUploadForm">
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group m-2 me-3">
+                                <label class="control-label">Upload File</label>
+                                <input name="formFile" class="form-control m-2" type="file" id="formFile" required />
+                            </div>
+                            <div class="form-group m-2">
+                                <input type="submit" value="Upload" class="btn btn-theme" id="btnBannerUpload"/>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-center">Banner(s)</h4>
+                    <hr style="height:1px;" class="text-theme" />
+                    <div class="table-rep-plugin">
+                        <div class="table-responsive mb-0" data-pattern="priority-columns">
+                            <table id="datatable" class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            #
+                                        </th>
+                                        <th>
+
+                                        </th>
+                                        <th class="Update">
+                                            Visible
+                                        </th>
+                                        <th class="Delete">
+
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        var i = 0;
+                                    }
+                                    @foreach (var items in Model)
+                                    {
+                                        @if (items.PictureBinary.Length > 0)
+                                        {
+                                            <tr>
+                                                @* @{
+                                                    var base64 = Convert.ToBase64String(@items.PictureBinary);
+                                                    var imgSrc = String.Format("data:image/png;base64,{0}", base64);
+                                                } *@
+                                                <td>@(i + 1)</td>
+                                                <td>
+                                                    <img src="@items.Path" height="100" width="200" class="img-fluid rounded" />
+                                                </td>
+                                                <td class="Update">
+
+                                                    @if (items.IsActive)
+                                                    {
+                                                        <input type="checkbox" class="form-check-input" asp-for="@items.IsActive" id="allow_@items.Id" value="@items.Id" checked="checked" onchange="DeActiveImage(@items.Id);" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="checkbox" class="form-check-input" asp-for="@items.IsActive" id="allow_@items.Id" value="@items.Id" onchange="ActiveImage(@items.Id)" />
+                                                    }
+                                                </td>
+                                                <td class="Delete">
+                                                    <span class="btn btn-theme Delete" onclick="RemoveBanner(@items.Id);">
+                                                        <i class="fas fa-trash"></i>
+                                                    </span>
+                                                </td>
+                                            </tr>
+
+                                            i++;
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+<script>
+    jQuery('#bannerUploadForm').on('submit', function () {
+        if (jQuery(this).data('form_is_invalid')) {
+            jQuery(this).data('form_is_invalid', false);
+        } else {
+            jQuery(this).find('#btnBannerUpload').prop('disabled', true);
+        }
+    }).on('invalid-form.validate', function () {
+        jQuery(this).data('form_is_invalid', true);
+    });
+</script>
+<script>
+    $(function () {
+        $("#Insert").hide();
+        $("#View").hide();
+        $(".Update").hide();
+        $(".Delete").hide();
+        $(".Details").hide();
+        $("#loader").hide();
+    });
+</script>
+<script>
+    $(function () {
+        var module = $("#Module").val();
+        $("#loader").show();
+        $.ajax({
+            url: "@Url.Action("GetRolePermissionsName", "Permission")",
+            method: "GET",
+            data: { "Module": "Banner" },
+            success: function (RoleResponse) {
+                $("#loader").show();
+                $.ajax({
+                    url: "@Url.Action("GetUserPermissionsName", "Permission")",
+                    method: "GET",
+                    data: { "Module": "Banner" },
+                    success: function (UserResponse) {
+                        $("#loader").show();
+                        if (UserResponse.length > 0) {
+                            for (let i = 0; i < UserResponse.length; i++) {
+                                $("#" + UserResponse[i]).show();
+                                if (UserResponse[i] == "View") {
+                                    $(".Details").show();
+                                }
+                                if (UserResponse[i] == "Update") {
+                                    $("." + UserResponse[i]).show();
+                                }
+                                if (UserResponse[i] == "Delete") {
+                                    $("." + UserResponse[i]).show();
+                                }
+                            }
+                            $("#loader").hide();
+                        }
+                        else if (RoleResponse.length > 0) {
+                            for (let i = 0; i < RoleResponse.length; i++) {
+                                $("#" + RoleResponse[i]).show();
+                                if (RoleResponse[i] == "View") {
+                                    $(".Details").show();
+                                }
+                                if (RoleResponse[i] == "Update") {
+                                    $("." + RoleResponse[i]).show();
+                                }
+                                if (RoleResponse[i] == "Delete") {
+                                    $("." + RoleResponse[i]).show();
+                                }
+                            }
+                            $("#loader").hide();
+                        } else {
+                            alert("You don't have any permission for this module.");
+                            $("#loader").hide();
+                        }
+                    }
+                })
+            }
+        });
+        $("#loader").hide();
+    });
+</script>
+<script>
+    var tableData = $('#datatable').DataTable({
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    });
+
+    $('#datatable tbody').on('click', 'td.dtr-control', function () {
+        var tr = $(this).closest('tr');
+        var row = tableData.row(tr);
+        if (!tr.hasClass("shown")) {
+            $("#loader").show();
+            row.child.show();
+            tr.addClass('shown');
+            $(".Update").hide();
+            $(".Delete").hide();
+            $(".Details").hide();
+            var module = $("#Module").val();
+            $.ajax({
+                url: "@Url.Action("GetRolePermissionsName", "Permission")",
+                method: "GET",
+                data: { "Module": "Banner" },
+                success: function (RoleResponse) {
+                    $("#loader").show();
+                    $.ajax({
+                        url: "@Url.Action("GetUserPermissionsName", "Permission")",
+                        method: "GET",
+                        data: { "Module": "Banner" },
+                        success: function (UserResponse) {
+                            $("#loader").show();
+                            if (UserResponse.length > 0) {
+                                for (let i = 0; i < UserResponse.length; i++) {
+                                    $("#" + UserResponse[i]).show();
+                                    if (UserResponse[i] == "View") {
+                                        $(".Details").show();
+                                    }
+                                    if (UserResponse[i] == "Update") {
+                                        $("." + UserResponse[i]).show();
+                                    }
+                                    if (UserResponse[i] == "Delete") {
+                                        $(".Delete").show();
+                                    }
+                                }
+                                $("#loader").hide();
+                            }
+                            else if (RoleResponse.length > 0) {
+                                for (let i = 0; i < RoleResponse.length; i++) {
+                                    $("#" + RoleResponse[i]).show();
+                                    if (RoleResponse[i] == "View") {
+                                        $(".Details").show();
+                                    }
+                                    if (RoleResponse[i] == "Update") {
+                                        $("." + RoleResponse[i]).show();
+                                    }
+                                    if (RoleResponse[i] == "Delete") {
+                                        $(".Delete").show();
+                                    }
+                                }
+                                $("#loader").hide();
+                            }
+                        }
+                    })
+                }
+            });
+            $("#loader").hide();
+        }
+        else {
+            row.child.hide();
+            tr.removeClass('shown');
+        }
+    });
+</script>
+<script>
+    $(function () {
+        var module = $("#Module").val();
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'ms-3 btn btn-success',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: false
+        })
+        var message = '@ViewData["Message"]';
+        if (message != "") {
+            $("#loader").hide();
+            if (message.startsWith("Image")) {
+                swalWithBootstrapButtons.fire({
+                    title: 'Success.',
+                    text: message,
+                    icon: 'success'
+                }).then((result) => {
+                    message = "";
+                    var url = "@Url.Action("Index","Banner")";
+                    window.location.href = url + "?name=" + module;
+                });
+            } else {
+                $("#loader").hide();
+                swalWithBootstrapButtons.fire({
+                    title: 'Failed.',
+                    text: message,
+                    icon: 'error'
+                }).then((result) => {
+                    message = "";
+                    var url = "@Url.Action("Index","Banner")";
+                    window.location.href = url + "?name=" + module;
+                });
+            }
+        }
+
+    });
+</script>
+<script>
+    function ActiveImage(Id) {
+        $("#loader").show();
+        var module = $("#Module").val();
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'ms-3 btn btn-success',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: false
+        })
+        $.ajax({
+            url: "@Url.Action("ActiveBanner","Banner")",
+            method: "GET",
+            data: { "Id": Id, "IsActive": true },
+            success: function (response) {
+                $("#loader").hide();
+                swalWithBootstrapButtons.fire({
+                    title: 'Success.',
+                    text: 'Image Activated Successfully.',
+                    icon: 'success'
+                }).then((result) => {
+                    window.location.reload();
+                });
+            }
+        });
+    }
+
+</script>
+<script>
+    function DeActiveImage(Id) {
+        $("#loader").show();
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'ms-3 btn btn-success',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: false
+        })
+        $.ajax({
+            url: "@Url.Action("DeActiveBanner","Banner")",
+            method: "GET",
+            data: { "Id": Id, "IsActive": false },
+            success: function (response) {
+                $("#loader").hide();
+                if (parseInt(response) > 0) {
+                    swalWithBootstrapButtons.fire({
+                        title: 'Success.',
+                        text: 'Image De-Actived Successfully..!!',
+                        icon: 'success'
+                    }).then((result) => {
+                        window.location.reload();
+                    });
+                }
+                else {
+                    swalWithBootstrapButtons.fire({
+                        title: 'Error.',
+                        text: 'One Banner Image is Required to Display on Login Page.',
+                        icon: 'error'
+                    }).then((result) => {
+                        window.location.reload();
+                    });
+                }
+            }
+        });
+    }
+</script>
+
+<script>
+    function RemoveBanner(Id) {
+        $("#loader").hide();
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'ms-3 btn btn-success',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: false
+        })
+        $.ajax({
+            url: "@Url.Action("DeleteBanner","Banner")",
+            method: "GET",
+            data: { "Id": Id },
+            success: function (response) {
+                $("#loader").show();
+                if (parseInt(response) > 0) {
+                    swalWithBootstrapButtons.fire({
+                        title: 'Success.',
+                        text: 'Image Deleted Successfully..!!',
+                        icon: 'success'
+                    }).then((result) => {
+                        window.location.reload();
+                    });
+                }
+                else {
+                    swalWithBootstrapButtons.fire({
+                        title: 'Error.',
+                        text: 'One Banner Image is Required to Display on Login Page.',
+                        icon: 'error'
+                    }).then((result) => {
+                        window.location.reload();
+                    });
+                }
+            }
+        });
+    }
+</script>
+<script>
+    $(window).resize(function () {
+        var allRows = $('#datatable tbody tr');
+        allRows.each(function () {
+            var tr = $(this).closest('tr');
+            var row = $($.fn.dataTable.tables(true)).DataTable().row(tr);
+            if (tr.hasClass("shown")) {
+                row.child.hide();
+                tr.removeClass('shown');
+                tr.removeClass('parent');
+            }
+        });
+    });
+</script>

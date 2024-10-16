@@ -1,0 +1,789 @@
+﻿@model DIBN.Models.CompanyWiseDocumentList
+<div id="loader">
+    <div class="spinner-1">
+        <div class="center-div-1">
+            <div class="loader-circle-75">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="float-start">
+            <h5 class="text-theme"><strong>@Model.Company</strong></h5>
+        </div>
+        <div class="float-end">
+            <a href="@Url.Action("Index","Document",new{name=@Model.Module})" class="btn btn-theme float-end mb-2">
+                Back to List
+            </a>
+        </div>
+    </div>
+</div>
+@if (Model.allowedModule.Contains("View"))
+{
+    <div class="row Details">
+        <div class="col-md-12 p-0">
+            <div class="col-md-2 col-sm-12 col ps-1 float-start">
+                <div class="card bg-blue p-3 mb-0 Suitable text-white text-center text-break font-weight-4 font-size-16" style="border-radius:15px 15px 0px 0px;">
+                    Company Document(s)
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-12 col ps-1 float-start">
+                <div class="card p-3 Benefits mb-0 text-break border-theme-top border-theme-left border-theme-right text-theme text-center font-weight-4 font-size-16" style="border-radius:15px 15px 0px 0px;">
+                    Employee(s)
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-12 col ps-1 float-start">
+                <div class="card p-3 Requirements mb-0 text-break border-theme-top border-theme-left border-theme-right text-theme text-center font-weight-4 font-size-16" style="border-radius:15px 15px 0px 0px;">
+                    Company Owner(s)
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-12 col ps-1 float-start">
+                <div class="card p-3 Official mb-0 text-break border-theme-top border-theme-left border-theme-right text-theme text-center font-weight-4 font-size-16" style="border-radius:15px 15px 0px 0px;">
+                    Shareholder(s)
+                </div>
+            </div>
+
+            <div class="col-md-12 col-sm-12 col-12 ps-1 float-start cssanimation fadeInBottom" style="background:#F8F8F8;" id="Suitable">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title text-center">Company Document(s)</h4>
+                            <hr style="height:1px;" class="text-theme" />
+                            <div class="table-rep-plugin">
+                                <div class="table-responsive mb-0" data-pattern="priority-columns">
+                                    <table id="datatable" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    #
+                                                </th>
+                                                <th>
+                                                    Documents
+                                                </th>
+                                                <th>
+                                                    Status
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                var index = 0;
+                                            }
+                                            @foreach (var item in Model.getCompanyUploadedDocument)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        @(index + 1)
+                                                    </td>
+                                                    <td>
+                                                        @item.Document
+                                                    </td>
+                                                    <td>
+                                                        @if (item.uploaded == "true")
+                                                        {
+                                                            <span class="text-success">
+                                                                Uploaded
+                                                            </span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-danger">
+                                                                Pending
+                                                            </span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                                index++;
+
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-sm-12 col-12 ps-1 float-start d-none cssanimation fadeInBottom" style="background:#F8F8F8;" id="Benefits">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title text-center">Active Employee(s)</h4>
+                            <hr style="height:1px;" class="text-theme" />
+                            <div class="table-rep-plugin">
+                                <div class="table-responsive mb-0" data-pattern="priority-columns">
+                                    <table id="datatable-2" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    #
+                                                </th>
+                                                <th>
+                                                    Name
+                                                </th>
+                                                <th>
+                                                    Documents
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                var i = 0;
+                                            }
+                                            @foreach (var item in Model.GetActiveEmpDocuments)
+                                            {
+                                                @if (!item.Designation.Contains("Company Owner"))
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            @(i + 1)
+                                                        </td>
+                                                        <td>
+                                                            @item.FirstName @Html.Raw(" ") @item.LastName
+                                                        </td>
+                                                        <td>
+                                                            <table class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>
+                                                                            #
+                                                                        </th>
+                                                                        <th>
+                                                                            Document
+                                                                        </th>
+                                                                        <th>
+                                                                            Status
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{
+                                                                        var j = 0;
+                                                                    }
+                                                                    @foreach (var document in @item.documentDetails)
+                                                                    {
+                                                                        <tr>
+                                                                            <td>
+                                                                                @(j + 1)
+                                                                            </td>
+                                                                            <td>
+                                                                                @document.Document
+                                                                            </td>
+                                                                            <td>
+                                                                                @if (document.Uploaded == "true")
+                                                                                {
+                                                                                    <span class="text-success">
+                                                                                        Uploaded
+                                                                                    </span>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <span class="text-danger">
+                                                                                        Pending
+                                                                                    </span>
+                                                                                }
+                                                                            </td>
+
+                                                                        </tr>
+                                                                        j++;
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                    i++;
+                                                }
+
+
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title text-center">In Active Employee(s)</h4>
+                            <hr style="height:1px;" class="text-theme" />
+                            <div class="table-rep-plugin">
+                                <div class="table-responsive mb-0" data-pattern="priority-columns">
+                                    <table id="datatable-4" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    #
+                                                </th>
+                                                <th>
+                                                    Name
+                                                </th>
+                                                <th>
+                                                    Documents
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                i = 0;
+                                            }
+                                            @foreach (var item in Model.GetInActiveEmpDocuments)
+                                            {
+                                                @if (!item.Designation.Contains("Company Owner"))
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            @(i + 1)
+                                                        </td>
+                                                        <td>
+                                                            @item.FirstName @Html.Raw(" ") @item.LastName
+                                                        </td>
+                                                        <td>
+                                                            <table class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>
+                                                                            #
+                                                                        </th>
+                                                                        <th>
+                                                                            Document
+                                                                        </th>
+                                                                        <th>
+                                                                            Status
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{
+                                                                        var j = 0;
+                                                                    }
+                                                                    @foreach (var document in @item.documentDetails)
+                                                                    {
+                                                                        <tr>
+                                                                            <td>
+                                                                                @(j + 1)
+                                                                            </td>
+                                                                            <td>
+                                                                                @document.Document
+                                                                            </td>
+                                                                            <td>
+                                                                                @if (document.Uploaded == "true")
+                                                                                {
+                                                                                    <span class="text-success">
+                                                                                        Uploaded
+                                                                                    </span>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <span class="text-danger">
+                                                                                        Pending
+                                                                                    </span>
+                                                                                }
+                                                                            </td>
+
+                                                                        </tr>
+                                                                        j++;
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                    i++;
+                                                }
+
+
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-sm-12 col-12 ps-1 float-start d-none cssanimation fadeInBottom" style="background:#F8F8F8;" id="Requirements">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title text-center">Active Company Owner(s)</h4>
+                            <hr style="height:1px;" class="text-theme" />
+                            <div class="table-rep-plugin">
+                                <div class="table-responsive mb-0" data-pattern="priority-columns">
+                                    <table id="datatable-2" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    #
+                                                </th>
+                                                <th>
+                                                    Name
+                                                </th>
+                                                <th>
+                                                    Documents
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                i = 0;
+                                            }
+                                            @foreach (var item in Model.GetActiveEmpDocuments)
+                                            {
+                                                @if (item.Designation.Contains("Company Owner"))
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            @(i + 1)
+                                                        </td>
+                                                        <td>
+                                                            @item.FirstName @Html.Raw(" ") @item.LastName
+                                                        </td>
+                                                        <td>
+                                                            <table class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>
+                                                                            #
+                                                                        </th>
+                                                                        <th>
+                                                                            Document
+                                                                        </th>
+                                                                        <th>
+                                                                            Status
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{
+                                                                        var j = 0;
+                                                                    }
+                                                                    @foreach (var document in @item.documentDetails)
+                                                                    {
+                                                                        <tr>
+                                                                            <td>
+                                                                                @(j + 1)
+                                                                            </td>
+                                                                            <td>
+                                                                                @document.Document
+                                                                            </td>
+                                                                            <td>
+                                                                                @if (document.Uploaded == "true")
+                                                                                {
+                                                                                    <span class="text-success">
+                                                                                        Uploaded
+                                                                                    </span>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <span class="text-danger">
+                                                                                        Pending
+                                                                                    </span>
+                                                                                }
+                                                                            </td>
+
+                                                                        </tr>
+                                                                        j++;
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                    i++;
+                                                }
+
+
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title text-center">In Active Company Owner(s)</h4>
+                            <hr style="height:1px;" class="text-theme" />
+                            <div class="table-rep-plugin">
+                                <div class="table-responsive mb-0" data-pattern="priority-columns">
+                                    <table id="datatable-5" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    #
+                                                </th>
+                                                <th>
+                                                    Name
+                                                </th>
+                                                <th>
+                                                    Documents
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                i = 0;
+                                            }
+                                            @foreach (var item in Model.GetInActiveEmpDocuments)
+                                            {
+                                                @if (item.Designation.Contains("Company Owner"))
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            @(i + 1)
+                                                        </td>
+                                                        <td>
+                                                            @item.FirstName @Html.Raw(" ") @item.LastName
+                                                        </td>
+                                                        <td>
+                                                            <table class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>
+                                                                            #
+                                                                        </th>
+                                                                        <th>
+                                                                            Document
+                                                                        </th>
+                                                                        <th>
+                                                                            Status
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{
+                                                                        var j = 0;
+                                                                    }
+                                                                    @foreach (var document in @item.documentDetails)
+                                                                    {
+                                                                        <tr>
+                                                                            <td>
+                                                                                @(j + 1)
+                                                                            </td>
+                                                                            <td>
+                                                                                @document.Document
+                                                                            </td>
+                                                                            <td>
+                                                                                @if (document.Uploaded == "true")
+                                                                                {
+                                                                                    <span class="text-success">
+                                                                                        Uploaded
+                                                                                    </span>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <span class="text-danger">
+                                                                                        Pending
+                                                                                    </span>
+                                                                                }
+                                                                            </td>
+
+                                                                        </tr>
+                                                                        j++;
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                    i++;
+                                                }
+
+
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-sm-12 col-12 ps-1 float-start d-none cssanimation fadeInBottom" style="background:#F8F8F8;" id="Official">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title text-center">Shareholder(s)</h4>
+                            <hr style="height:1px;" class="text-theme" />
+                            <div class="table-rep-plugin">
+                                <div class="table-responsive mb-0" data-pattern="priority-columns">
+                                    <table id="datatable-1" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    #
+                                                </th>
+                                                <th>
+                                                    Name
+                                                </th>
+                                                <th>
+                                                    Documents
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                var k = 0;
+                                            }
+                                            @foreach (var item in Model.GetshareholderDocuments)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        @(k + 1)
+                                                    </td>
+                                                    <td>
+                                                        @item.FirstName @Html.Raw(" ") @item.LastName
+                                                    </td>
+                                                    <td>
+                                                        @{
+                                                            var s = 0;
+                                                        }
+                                                        @if (@item.shareholderDocuments != null && @item.shareholderDocuments.Count > 0)
+                                                        {
+
+
+                                                            <table class="table table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <td>
+                                                                            #
+                                                                        </td>
+                                                                        <td>
+                                                                            Title
+                                                                        </td>
+                                                                        <td>
+                                                                            Document
+                                                                        </td>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach (var document in @item.shareholderDocuments)
+                                                                    {
+                                                                        <tr>
+                                                                            <td>
+                                                                                @(s + 1)
+                                                                            </td>
+                                                                            <td>
+                                                                                @document.Title
+                                                                            </td>
+                                                                            <td>
+                                                                                @document.FileName
+                                                                            </td>
+                                                                        </tr>
+
+                                                                        s++;
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-danger">
+                                                                Pending
+                                                            </span>
+                                                        }
+
+                                                    </td>
+                                                </tr>
+                                                k++;
+
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<input type="hidden" asp-for="@Model.Module" id="Module" />
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<!-- Required datatable js -->
+<script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- Responsive examples -->
+<script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+
+<!-- Sweet Alerts-->
+<script src="~/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" />
+<script>
+    $('#datatable').dataTable({
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    });
+    $('#datatable-1').dataTable({
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    });
+    $('#datatable-2').dataTable({
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    });
+    $('#datatable-3').dataTable({
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    });
+    $('#datatable-4').dataTable({
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20,30,50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    });
+    $('#datatable-5').dataTable({
+        paging: true,
+        ordering: true,
+        searching: true,
+        "aLengthMenu": [20, 30, 50],
+        dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    });
+    $(document).ready(function () {
+        $("#loader").hide();
+    });
+</script>
+
+<script>
+    var coll = document.getElementsByClassName("Suitable");
+
+    for (var i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function () {
+            $("#Suitable").removeClass("d-none");
+            $("#Benefits").addClass("d-none");
+            $("#Requirements").addClass("d-none");
+            $("#Official").addClass("d-none");
+            $(".Suitable").addClass("bg-blue").removeClass("border-theme");
+            $(".Suitable").closest("div").addClass("text-white").removeClass("text-theme");
+            if ($(".Requirements").hasClass("bg-blue")) {
+                $(".Requirements").removeClass("bg-blue").addClass("border-theme-top").addClass("border-theme-left").addClass("border-theme-right");
+                $(".Requirements").closest("div").addClass("text-theme").removeClass("text-white");
+            }
+            if ($(".Official").hasClass("bg-blue")) {
+                $(".Official").removeClass("bg-blue").addClass("border-theme-top").addClass("border-theme-left").addClass("border-theme-right");
+                $(".Official").closest("div").addClass("text-theme").removeClass("text-white");
+            }
+            if ($(".Benefits").hasClass("bg-blue")) {
+                $(".Benefits").removeClass("bg-blue").addClass("border-theme-top").addClass("border-theme-left").addClass("border-theme-right");
+                $(".Benefits").closest("div").addClass("text-theme").removeClass("text-white");
+            }
+        });
+    }
+</script>
+<script>
+    var coll = document.getElementsByClassName("Requirements");
+
+    for (var i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function () {
+            $("#Suitable").addClass("d-none");
+            $("#Benefits").addClass("d-none");
+            $("#Requirements").removeClass("d-none");
+            $("#Official").addClass("d-none");
+            $(".Requirements").addClass("bg-blue").addClass("border-theme-top").addClass("border-theme-left").addClass("border-theme-right");
+            $(".Requirements").closest("div").addClass("text-white").removeClass("text-theme");
+            if ($(".Suitable").hasClass("bg-blue")) {
+                $(".Suitable").removeClass("bg-blue").addClass("border-theme-top").addClass("border-theme-left").addClass("border-theme-right");
+                $(".Suitable").closest("div").addClass("text-theme").removeClass("text-white");
+            }
+            if ($(".Official").hasClass("bg-blue")) {
+                $(".Official").removeClass("bg-blue").addClass("border-theme-top").addClass("border-theme-left").addClass("border-theme-right");
+                $(".Official").closest("div").addClass("text-theme").removeClass("text-white");
+            }
+            if ($(".Benefits").hasClass("bg-blue")) {
+                $(".Benefits").removeClass("bg-blue").addClass("border-theme-top").addClass("border-theme-left").addClass("border-theme-right");
+                $(".Benefits").closest("div").addClass("text-theme").removeClass("text-white");
+            }
+        });
+    }
+</script>
+<script>
+    var coll = document.getElementsByClassName("Official");
+
+    for (var i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function () {
+            $("#Suitable").addClass("d-none");
+            $("#Benefits").addClass("d-none");
+            $("#Requirements").addClass("d-none");
+            $("#Official").removeClass("d-none");
+            $(".Official").addClass("bg-blue").removeClass("border-theme");
+            $(".Official").closest("div").addClass("text-white").removeClass("text-theme");
+            if ($(".Suitable").hasClass("bg-blue")) {
+                $(".Suitable").removeClass("bg-blue").addClass("border-theme-top").addClass("border-theme-left").addClass("border-theme-right");
+                $(".Suitable").closest("div").addClass("text-theme").removeClass("text-white");
+            }
+            if ($(".Requirements").hasClass("bg-blue")) {
+                $(".Requirements").removeClass("bg-blue").addClass("border-theme-top").addClass("border-theme-left").addClass("border-theme-right");
+                $(".Requirements").closest("div").addClass("text-theme").removeClass("text-white");
+            }
+            if ($(".Benefits").hasClass("bg-blue")) {
+                $(".Benefits").removeClass("bg-blue").addClass("border-theme-top").addClass("border-theme-left").addClass("border-theme-right");
+                $(".Benefits").closest("div").addClass("text-theme").removeClass("text-white");
+            }
+        });
+    }
+</script>
+<script>
+    var coll = document.getElementsByClassName("Benefits");
+
+    for (var i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function () {
+            $("#Suitable").addClass("d-none");
+            $("#Benefits").removeClass("d-none");
+            $("#Requirements").addClass("d-none");
+            $("#Official").addClass("d-none");
+            $(".Benefits").addClass("bg-blue").removeClass("border-theme");
+            $(".Benefits").closest("div").addClass("text-white").removeClass("text-theme");
+            if ($(".Suitable").hasClass("bg-blue")) {
+                $(".Suitable").removeClass("bg-blue").addClass("border-theme-top").addClass("border-theme-left").addClass("border-theme-right");
+                $(".Suitable").closest("div").addClass("text-theme").removeClass("text-white");
+            }
+            if ($(".Requirements").hasClass("bg-blue")) {
+                $(".Requirements").removeClass("bg-blue").addClass("border-theme-top").addClass("border-theme-left").addClass("border-theme-right");
+                $(".Requirements").closest("div").addClass("text-theme").removeClass("text-white");
+            }
+            if ($(".Official").hasClass("bg-blue")) {
+                $(".Official").removeClass("bg-blue").addClass("border-theme-top").addClass("border-theme-left").addClass("border-theme-right");
+                $(".Official").closest("div").addClass("text-theme").removeClass("text-white");
+            }
+        });
+    }
+</script>
