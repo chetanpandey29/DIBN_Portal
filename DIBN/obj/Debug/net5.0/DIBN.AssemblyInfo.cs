@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DIBN")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d6645098f844fbe28bd964da02be199906e58c56")]
 [assembly: System.Reflection.AssemblyProductAttribute("DIBN")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DIBN")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
