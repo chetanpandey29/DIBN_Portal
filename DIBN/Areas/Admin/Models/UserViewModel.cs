@@ -365,8 +365,7 @@ namespace DIBN.Areas.Admin.Models
         [Required(ErrorMessage = "Please enter Account number.")]
         public string AccountNumber { get; set; }
         [DisplayName("Password")]
-        [Required(ErrorMessage = "Please enter Password.")]
-        public string Password { get; set; }
+        public string? Password { get; set; }
         [DisplayName("First Name")]
         [Required(ErrorMessage = "Please enter First name.")]
         public string FirstName { get; set; }
@@ -460,6 +459,11 @@ namespace DIBN.Areas.Admin.Models
     {
         public int totalInActiveEmployee { get; set; }
         public List<GetMainCompanyEmployees> GetInActiveEmployee { get; set; }
+    }
+    public class GetUsersForCompanyModel
+    {
+        public int Id { get; set; }
+        public string Username { get; set; }
     }
 }
 

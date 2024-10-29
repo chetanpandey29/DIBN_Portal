@@ -12,7 +12,7 @@
     <WebStackScaffolding_IsLayoutPageSelected>False</WebStackScaffolding_IsLayoutPageSelected>
     <WebStackScaffolding_IsPartialViewSelected>True</WebStackScaffolding_IsPartialViewSelected>
     <WebStackScaffolding_IsReferencingScriptLibrariesSelected>False</WebStackScaffolding_IsReferencingScriptLibrariesSelected>
-    <NameOfLastUsedPublishProfile>D:\Devotion Business\DIBN\DIBN\Properties\PublishProfiles\FolderProfile4.pubxml</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>D:\DIBN PORTAL\DIBN PORTAL - LIVE\DIBN\Properties\PublishProfiles\FolderProfile.pubxml</NameOfLastUsedPublishProfile>
     <ActiveDebugProfile>IIS Express</ActiveDebugProfile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

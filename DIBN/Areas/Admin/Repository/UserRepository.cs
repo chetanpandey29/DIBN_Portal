@@ -2079,5 +2079,52 @@ namespace DIBN.Areas.Admin.Repository
                 connection.Close();
             }
         }
+
+        /// <summary>
+        /// get users                                                                                                                                       -- Yashasvi (29-10-2024)
+        /// </summary>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<List<GetUsersForCompanyModel>> GetUsersForCompany(string? prefix)
+        {
+            SqlConnection connection = new SqlConnection(_dataSetting.DefaultConnection);
+            try
+            {
+                List<GetUsersForCompanyModel> users = new List<GetUsersForCompanyModel>();
+
+                SqlCommand command = new SqlCommand("USP_Admin_UsersListForCompany", connection);
+                command.CommandType= CommandType.StoredProcedure;
+                if (prefix != null && prefix != "")
+                    command.Parameters.AddWithValue("@prefix", prefix);
+
+                connection.Open();
+
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+                while (reader.Read())
+                {
+                    GetUsersForCompanyModel model = new GetUsersForCompanyModel();
+
+                    if (reader["Id"] != DBNull.Value)
+                        model.Id = Convert.ToInt32(reader["Id"]);
+                    if (reader["Username"] != DBNull.Value)
+                        model.Username = reader["Username"].ToString();
+
+                    users.Add(model);
+                }
+
+                connection.Close();
+
+                return users;
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
     }
 }

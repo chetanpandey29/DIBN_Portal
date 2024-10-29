@@ -81,6 +81,10 @@ namespace DIBN.Areas.Admin.Models
         public string Module { get; set; }
         public List<CompanyShareholders> companyShareholders { get; set; }
         public List<CompanyUsers> companyUsers { get; set; }
+        [DisplayName("Does Company has Corporate Text?")]
+        public bool IsCorporateText {  get; set; }
+        [DisplayName("Corporate Text")]
+        public string CorporateText { get; set; }
 
 
         #region Nested Classes
@@ -210,27 +214,24 @@ namespace DIBN.Areas.Admin.Models
         public class SaveNewCompany
         {
             public int Id { get; set; }
-            [DisplayName("Company Type")]
-            public IList<SelectListItem> CompanyType { get; set; }
             public IList<SelectListItem> Countries { get; set; }
-            public string CompanyTypeName { get; set; }
             public string? MainContactNumberCountry { get; set; }
             public string EmergencyContactNumberCountry { get; set; }
-            [DisplayName("Account Number")]
-            [Required(ErrorMessage = "Please Enter Account Number of Company")]
+            [DisplayName("Company Code")]
+            [Required(ErrorMessage = "Please Enter Company Code.")]
             public string AccountNumber { get; set; }
-            [DisplayName("DIBN User Number")]
-            public string DIBNUserNumber { get; set; }
-            [DisplayName("User of Company")]
-            public IList<SelectListItem> Users { get; set; }
 
             [DisplayName("Sales Person")]
             public IList<SelectListItem> SalesPersons { get; set; }
             [DisplayName("Sales Person")]
             public List<int> SalesPersonId { get; set; }
+            [DisplayName("RM Team")]
+            public List<int> RMPersonId { get; set; }
+            [DisplayName("RM Team")]
+            public IList<SelectListItem> RMTeams { get; set; }
             public string Username { get; set; }
-            [DisplayName("User of Company")]
-            public int UserId { get; set; }
+            [DisplayName("Owner Name")]
+            public string? CompanyOwner { get; set; }
             [DisplayName("Company Name")]
             [Required(ErrorMessage = "Please enter Company Name.")]
             public string CompanyName { get; set; }
@@ -268,7 +269,7 @@ namespace DIBN.Areas.Admin.Models
             [DataType(DataType.Date)]
             [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
             public DateTime companyStartingDate { get; set; }
-            [DisplayName("Company Starting Date")]
+            [DisplayName("Company Creation Date")]
             public string CompanyStartingDate { get; set; }
             public string OldPassword { get; set; }
             [DisplayName("City")]
@@ -279,10 +280,17 @@ namespace DIBN.Areas.Admin.Models
             public bool IsCorporateText { get; set; }
             [DisplayName("Corporate Text")]
             public string CorporateText { get; set; }
-            [DisplayName("Sub Company Type")]
-            [Required(ErrorMessage = "Please enter company sub type.")]
+            [DisplayName("Company Type")]
+            [Required(ErrorMessage = "Please enter company type.")]
             public string CompanySubType {  get; set; }
             public int CreatedBy { get; set; }
+            [DisplayName("Is Company have TRN Number?")]
+            public bool IsTRN { get; set; }
+            [DisplayName("TRN Number")]
+            public string TRN { get; set; }
+            [DisplayName("TRN Creation Date")]
+            public string TRNCreationDate { get; set; }
+            public int CompanyOwnerId {  get; set; }
         }
         public class CompanyPermissionList
         {
@@ -378,4 +386,112 @@ namespace DIBN.Areas.Admin.Models
         public string CompanyCode { get; set; }
         public string CompanyName { get; set; }
     }
+
+    public class SaveCompanyModel
+    {
+        [DisplayName("Company Code")]
+        [Required(ErrorMessage = "Please Enter Company Code.")]
+        public string AccountNumber { get; set; }
+        [DisplayName("Owner Name")]
+        public string? CompanyOwner { get; set; }
+        [DisplayName("Company Name")]
+        [Required(ErrorMessage = "Please enter Company Name.")]
+        public string CompanyName { get; set; }
+
+        [DisplayName("Mobile Number")]
+        public string? MobileNumber { get; set; }
+
+        [DisplayName("Email ID")]
+        public string? EmailID { get; set; }
+        [DisplayName("Is Active")]
+        public bool IsActive { get; set; }
+        [DisplayName("Country")]
+        public string? Country { get; set; }
+        [DisplayName("Company Creation Date")]
+        public string CompanyStartingDate { get; set; }
+        [DisplayName("City")]
+        public string City { get; set; }
+
+        [DisplayName("Sales Person")]
+        public IList<SelectListItem> SalesPersons { get; set; }
+        [DisplayName("Sales Person")]
+        public List<int> SalesPersonId { get; set; }
+        [DisplayName("RM Team")]
+        public List<int> RMPersonId { get; set; }
+        [DisplayName("RM Team")]
+        public IList<SelectListItem> RMTeams { get; set; }        
+        [DisplayName("Does Company has Corporate Text?")]
+        public bool IsCorporateText { get; set; }
+        [DisplayName("Corporate Text")]
+        public string CorporateText { get; set; }
+        [DisplayName("Company Type")]
+        [Required(ErrorMessage = "Please enter company type.")]
+        public string CompanySubType { get; set; }
+        public int CreatedBy { get; set; }
+        [DisplayName("Is Company have TRN Number?")]
+        public bool IsTRN { get; set; }
+        [DisplayName("TRN Number")]
+        public string TRN { get; set; }
+        [DisplayName("TRN Creation Date")]
+        public string TRNCreationDate { get; set; }
+        public int CompanyOwnerId { get; set; }
+        public IList<SelectListItem> Countries { get; set; }
+        public string? MainContactNumberCountry { get; set; }
+        public string Module { get; set; }
+    }
+
+    public class UpdateCompanyModel
+    {
+        public int Id {  get; set; }
+        [DisplayName("Company Code")]
+        [Required(ErrorMessage = "Please Enter Company Code.")]
+        public string AccountNumber { get; set; }
+        [DisplayName("Owner Name")]
+        public string? CompanyOwner { get; set; }
+        [DisplayName("Company Name")]
+        [Required(ErrorMessage = "Please enter Company Name.")]
+        public string CompanyName { get; set; }
+
+        [DisplayName("Mobile Number")]
+        public string? MobileNumber { get; set; }
+
+        [DisplayName("Email ID")]
+        public string? EmailID { get; set; }
+        [DisplayName("Is Active")]
+        public bool IsActive { get; set; }
+        [DisplayName("Country")]
+        public string? Country { get; set; }
+        [DisplayName("Company Creation Date")]
+        public string CompanyStartingDate { get; set; }
+        [DisplayName("City")]
+        public string City { get; set; }
+
+        [DisplayName("Sales Person")]
+        public IList<SelectListItem> SalesPersons { get; set; }
+        [DisplayName("Sales Person")]
+        public List<int> SalesPersonId { get; set; }
+        [DisplayName("RM Team")]
+        public List<int> RMPersonId { get; set; }
+        [DisplayName("RM Team")]
+        public IList<SelectListItem> RMTeams { get; set; }
+        [DisplayName("Does Company has Corporate Text?")]
+        public bool IsCorporateText { get; set; }
+        [DisplayName("Corporate Text")]
+        public string CorporateText { get; set; }
+        [DisplayName("Company Type")]
+        [Required(ErrorMessage = "Please enter company type.")]
+        public string CompanySubType { get; set; }
+        public int CreatedBy { get; set; }
+        [DisplayName("Is Company have TRN Number?")]
+        public bool IsTRN { get; set; }
+        [DisplayName("TRN Number")]
+        public string TRN { get; set; }
+        [DisplayName("TRN Creation Date")]
+        public string TRNCreationDate { get; set; }
+        public int CompanyOwnerId { get; set; }
+        public IList<SelectListItem> Countries { get; set; }
+        public string? MainContactNumberCountry { get; set; }
+        public string Module { get; set; }
+    }
 }
+

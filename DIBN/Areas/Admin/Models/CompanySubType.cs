@@ -26,37 +26,19 @@ namespace DIBN.Areas.Admin.Models
     }
     public class SaveCompanySubTypeModel
     {
-        public SaveCompanySubTypeModel()
-        {
-            MainTypes = new List<SelectListItem>();
-        }
-        public List<SelectListItem> MainTypes { get; set; }
         [DisplayName("Sub Type")]
         [Required(ErrorMessage ="Please provide sub type.")]
         [MaxLength(150,ErrorMessage ="Please provide valid sub type. Maximum length of Sub type should be less than 150.")]
         public string SubType { get; set; }
-        [DisplayName("Main Type")]
-        [Required(ErrorMessage = "Please provide main type.")]
-        [MaxLength(150, ErrorMessage = "Please provide valid main type. Maximum length of Main type should be less than 150.")]
-        public string MainType { get; set; }
         public int UserId {  get; set; }
     }
     public class UpdateCompanySubTypeModel
     {
-        public UpdateCompanySubTypeModel()
-        {
-            MainTypes = new List<SelectListItem>();
-        }
-        public List<SelectListItem> MainTypes { get; set; }
-        [DisplayName("Main Type")]
+        [DisplayName("Sub Type")]
         [Required(ErrorMessage = "Please provide main type.")]
         [MaxLength(150, ErrorMessage = "Please provide valid main type. Maximum length of Main type should be less than 150.")]
         public string SubType { get; set; }
 
-        [DisplayName("Sub Type")]
-        [Required(ErrorMessage = "Please provide sub type.")]
-        [MaxLength(150, ErrorMessage = "Please provide valid sub type. Maximum length of Sub type should be less than 150.")]
-        public string MainType { get; set; }
         public int UserId { get; set; }
         public int Id { get; set; }
     }

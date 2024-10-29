@@ -382,5 +382,47 @@ namespace DIBN.Areas.Admin.Repository
                 connection.Close();
             }
         }
+
+        /// <summary>
+        /// Get RM Team for Company creation                                                                                                                                            -- Yashasvi (29-10-2024)
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<List<GetAllRMPersonModel>> GetAllRMPersonsForCompany()
+        {
+            SqlConnection connection = new SqlConnection(_dataSetting.DefaultConnection);
+            try
+            {
+                List<GetAllRMPersonModel> rmPersonList = new List<GetAllRMPersonModel>();
+
+                SqlCommand command = new SqlCommand("USP_Admin_GetAllRMTeamPersonForCompany", connection);
+                command.CommandType = CommandType.StoredProcedure;
+
+                connection.Open();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+                while (reader.Read()) 
+                {
+                    GetAllRMPersonModel model =new GetAllRMPersonModel();
+
+                    if (reader["Id"] != DBNull.Value)
+                        model.Id = Convert.ToInt32(reader["Id"]);
+                    if (reader["RMPerson"] != DBNull.Value)
+                        model.RmTeamName = reader["RMPerson"].ToString();
+
+                    rmPersonList.Add(model);
+                }
+                connection.Close();
+
+                return rmPersonList;
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
     }
 }

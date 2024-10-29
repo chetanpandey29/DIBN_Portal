@@ -118,4 +118,9 @@ namespace DIBN.Areas.Admin.Models
         public IList<SelectListItem> Countries { get; set; }
         public string Password { get; set; }
     }
+    public class GetAllRMPersonModel
+    {
+        public int Id {  get; set; }
+        public string RmTeamName { get; set; }
+    }
 }

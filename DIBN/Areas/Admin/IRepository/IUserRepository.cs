@@ -43,5 +43,6 @@ namespace DIBN.Areas.Admin.IRepository
         Task<GetAllInActiveCompanyOwnerListWithPaginationModel> GetAllInActiveCompanyOwnerWithPagination(int? companyId, int page, int pageSize, string searchString, string sortBy, string sortDirection);
         Task<GetAllActiveMainCompanyEmployeeListWithPaginationModel> GetAllActiveMainCompanyEmployeesWithPagination(int? CompanyId, int page, int pageSize, string searchBy, string searchString, string sortBy, string sortDirection);
         Task<GetAlInlActiveMainCompanyEmployeeListWithPaginationModel> GetAllInActiveMainCompanyEmployeesWithPagination(int? CompanyId, int page, int pageSize, string searchBy, string searchString, string sortBy, string sortDirection);
+        Task<List<GetUsersForCompanyModel>> GetUsersForCompany(string? prefix);
     }
 }

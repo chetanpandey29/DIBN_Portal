@@ -79,7 +79,6 @@ namespace DIBN.Areas.Admin.Repository
 
                 SqlCommand command = new SqlCommand("USP_Admin_Insert_Update_CompanySubType", connection);
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@MainType", model.MainType);
                 command.Parameters.AddWithValue("@SubType", model.SubType);
                 command.Parameters.AddWithValue("@UserId", model.UserId);
 
@@ -115,7 +114,6 @@ namespace DIBN.Areas.Admin.Repository
                 SqlCommand command = new SqlCommand("USP_Admin_Insert_Update_CompanySubType", connection);
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@Id", model.Id);
-                command.Parameters.AddWithValue("@MainType", model.MainType);
                 command.Parameters.AddWithValue("@SubType", model.SubType);
                 command.Parameters.AddWithValue("@UserId", model.UserId);
 
@@ -158,8 +156,6 @@ namespace DIBN.Areas.Admin.Repository
                 {
                     if (reader["Id"] != DBNull.Value)
                         model.Id = Convert.ToInt32(reader["Id"]);
-                    if (reader["CompanyType"] != DBNull.Value)
-                        model.MainType = reader["CompanyType"].ToString();
                     if (reader["CompanySubType"] != DBNull.Value)
                         model.SubType = reader["CompanySubType"].ToString();
                 }

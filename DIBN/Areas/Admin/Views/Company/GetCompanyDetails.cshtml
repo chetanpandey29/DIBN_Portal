@@ -90,24 +90,6 @@
                     <dd class="col-sm-8">
                         @Html.DisplayFor(model => model.CompanyName)
                     </dd>
-                    @*<dt class="col-sm-4">
-                        @Html.DisplayNameFor(model => model.ShareCapital)
-                    </dt>
-                    <dd class="col-sm-8">
-                        @Html.DisplayFor(model => model.ShareCapital)
-                    </dd>
-                    <dt class="col-sm-4">
-                        @Html.DisplayNameFor(model => model.CompanyRegistrationNumber)
-                    </dt>
-                    <dd class="col-sm-8">
-                        @Html.DisplayFor(model => model.CompanyRegistrationNumber)
-                    </dd>*@
-                    <dt class="col-sm-4">
-                        @Html.DisplayNameFor(model => model.LabourFileNo)
-                    </dt>
-                    <dd class="col-sm-8">
-                        @Html.DisplayFor(model => model.LabourFileNo)
-                    </dd>
                     <dt class="col-sm-4">
                         @Html.Raw("Is Company Active?")
                     </dt>
@@ -120,6 +102,50 @@
                         {
                             @Html.Raw("No")
                         }
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.Raw("Is Company have TRN Number?")
+                    </dt>
+                    <dd class="col-sm-8">
+                        @if (Model.IsTRN)
+                        {
+                            @Html.Raw("Yes")
+                        }
+                        else
+                        {
+                            @Html.Raw("No")
+                        }
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.Raw("TRN Number")
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.TRN)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.Raw("TRN Creation Date")
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.TRNCreationDate)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.Raw("Does Company has Corporate Text?")
+                    </dt>
+                    <dd class="col-sm-8">
+                        @if (Model.IsTRN)
+                        {
+                            @Html.Raw("Yes")
+                        }
+                        else
+                        {
+                            @Html.Raw("No")
+                        }
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.Raw("Corporate Text")
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.CorporateText)
                     </dd>
                 </dl>
             </div>
@@ -227,19 +253,6 @@
                                     @Html.Raw("No")
                                 }
                             </dd>
-                            <dt class="col-sm-4">
-                                @Html.Raw("Is Login Allowed for Company Owner ") @Html.Raw("-"+userIndex) @Html.Raw(" ?")
-                            </dt>
-                            <dd class="col-sm-8">
-                                @if (item.IsLogin)
-                                {
-                                    @Html.Raw("Yes")
-                                }
-                                else
-                                {
-                                    @Html.Raw("No")
-                                }
-                            </dd>
                             @if (@companyOwnerCount != userIndex)
                             {
                                 <hr style="height:1.5px;"/>
@@ -289,88 +302,6 @@
         </div>
     </div>
 }
-
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="card-title">
-                        <h5 class="text-dark"><b>License Details</b></h5>
-                    </div>
-                </div>
-                <hr />
-                <dl class="row">
-                    <dt class="col-sm-4">
-                        @Html.DisplayNameFor(model => model.LicenseType)
-                    </dt>
-                    <dd class="col-sm-8">
-                        @Html.DisplayFor(model => model.LicenseType)
-                    </dd>
-
-                    <dt class="col-sm-4">
-                        @Html.DisplayNameFor(model => model.LicenseStatus)
-                    </dt>
-                    <dd class="col-sm-8">
-                        @Html.DisplayFor(model => model.LicenseStatus)
-                    </dd>
-                    <dt class="col-sm-4">
-                        @Html.DisplayNameFor(model => model.LicenseIssueDate)
-                    </dt>
-                    <dd class="col-sm-8">
-                        @Html.DisplayFor(model => model.LicenseIssueDate)
-                    </dd>
-                    <dt class="col-sm-4">
-                        @Html.DisplayNameFor(model => model.LicenseExpiryDate)
-                    </dt>
-                    <dd class="col-sm-8">
-                        @Html.DisplayFor(model => model.LicenseExpiryDate)
-                    </dd>
-                </dl>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="card-title">
-                        <h5 class="text-dark"><b>Lease Details</b></h5>
-                    </div>
-                </div>
-                <hr />
-                <dl class="row">
-                    <dt class="col-sm-4">
-                        @Html.DisplayNameFor(model => model.LeaseFacilityType)
-                    </dt>
-                    <dd class="col-sm-8">
-                        @Html.DisplayFor(model => model.LeaseFacilityType)
-                    </dd>
-                    <dt class="col-sm-4">
-                        @Html.DisplayNameFor(model => model.LeaseStartDate)
-                    </dt>
-                    <dd class="col-sm-8">
-                        @Html.DisplayFor(model => model.LeaseStartDate)
-                    </dd>
-                    <dt class="col-sm-4">
-                        @Html.DisplayNameFor(model => model.LeaseExpiryDate)
-                    </dt>
-                    <dd class="col-sm-8">
-                        @Html.DisplayFor(model => model.LeaseExpiryDate)
-                    </dd>
-                    <dt class="col-sm-4">
-                        @Html.DisplayNameFor(model => model.LeaseStatus)
-                    </dt>
-                    <dd class="col-sm-8">
-                        @Html.DisplayFor(model => model.LeaseStatus)
-                    </dd>
-                </dl>
-            </div>
-        </div>
-    </div>
-</div>
 <input type="hidden" name="Module" id="Module" value="@Model.Module" />
 <script>
     $(document).ready(function () {

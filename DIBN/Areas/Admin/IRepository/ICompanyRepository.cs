@@ -39,9 +39,12 @@ namespace DIBN.Areas.Admin.IRepository
         List<GetCompanyLog> GetAllLogByCompanyId(int companyId);
         Task<GetCompanyDetailsWithPaginationModel> GetCompanyListWithPagination(int page, int pageSize, string sortBy, string sortingDirection, string searchValue);
         List<GetCompanyListForExport> GetCompanyListForExcelExport();
-        Task<List<string>> GetCompanySubTypePrefix(string companyType, string prefix);
+        Task<List<string>> GetCompanySubTypePrefix(string prefix);
         Task<List<GetWeeklyCompanySubTypeReportModel>> GetWeeklyCompanySubTypeReport();
         Task<List<GetMonthlyCompanySubTypeReportModel>> GetMonthlyCompanySubTypeReport();
         Task<List<GetYearlyCompanySubTypeReportModel>> GetYearlyCompanySubTypeReport();
+        Task<int> Create(SaveCompanyModel model);
+        Task<UpdateCompanyModel> GetCompanyDetailsByCompanyId(int companyId);
+        Task<int> Edit(UpdateCompanyModel model);
     }
 }

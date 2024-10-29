@@ -170,17 +170,13 @@
                     for (var index = 0; index < response.length; index++) {
                         xaxis.push(response[index].companySubType);
                         mainLand.push(response[index].totalMainlandCompanies);
-                        freezone.push(response[index].totalFreezoneCompanies);
                     }
 
                     var options = {
                         series: [
                             {
                                 data: mainLand,
-                                name: "Mainland"
-                            }, {
-                                data: freezone,
-                                name: "Freezone"
+                                name: "Total Company(s)"
                             }],
                         chart: {
                             type: 'bar',
@@ -232,10 +228,7 @@
                                 }
                             }
                         },
-                        colors: [ 
-                            "#2b4380",
-                            "#e31e25"
-                        ],
+                        colors: ['#071F63'],
                     };
 
                     var chart = new ApexCharts(document.querySelector("#loadCompanyGraph"), options);
@@ -266,17 +259,13 @@
                     for (var index = 0; index < response.length; index++) {
                         xaxis.push(response[index].companySubType);
                         mainLand.push(response[index].totalMainlandCompanies);
-                        freezone.push(response[index].totalFreezoneCompanies);
                     }
 
                     var options = {
                         series: [
                             {
                                 data: mainLand,
-                                name: "Mainland"
-                            }, {
-                                data: freezone,
-                                name: "Freezone"
+                                name: "Total Company(s)"
                             }],
                         chart: {
                             type: 'bar',
@@ -328,10 +317,7 @@
                                 }
                             }
                         },
-                        colors: [
-                            "#2b4380",
-                            "#e31e25"
-                        ],
+                        colors: ['#0E225A'],
                     };
 
                     var chart = new ApexCharts(document.querySelector("#loadCompanyGraph"), options);
@@ -353,22 +339,20 @@
                 if (response.length > 0) {
                     var xaxis = new Array();
                     var mainLand = new Array();
-                    var freezone = new Array();
+                    var _background = new Array();
 
                     for (var index = 0; index < response.length; index++) {
                         xaxis.push(response[index].companySubType);
                         mainLand.push(response[index].totalMainlandCompanies);
-                        freezone.push(response[index].totalFreezoneCompanies);
+                        _background.push(response[index].color);
                     }
+
 
                     var options = {
                         series: [
                             {
                                 data: mainLand,
-                                name: "Mainland"
-                            }, {
-                                data: freezone,
-                                name: "Freezone"
+                                name: "Total Company(s)"
                             }],
                         chart: {
                             type: 'bar',
@@ -420,10 +404,7 @@
                                 }
                             }
                         },
-                        colors: [
-                            "#2b4380",
-                            "#e31e25"
-                        ],
+                        colors: ['#0E225A'],
                     };
 
                     var chart = new ApexCharts(document.querySelector("#loadCompanyGraph"), options);

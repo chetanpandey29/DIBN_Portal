@@ -68,23 +68,6 @@ namespace DIBN.Areas.Admin.Controllers
             {
                 SaveCompanySubTypeModel model = new SaveCompanySubTypeModel(); 
                 
-                List<SelectListItem> companyType = new List<SelectListItem>();
-                companyType.Add(new SelectListItem
-                {
-                    Text = "Select Company Type",
-                    Value = ""
-                });
-                companyType.Add(new SelectListItem
-                {
-                    Text = "Mainland",
-                    Value = "Dubai Mainland"
-                });
-                companyType.Add(new SelectListItem
-                {
-                    Text = "Freezone",
-                    Value = "Freezone"
-                });
-                model.MainTypes = companyType;
                 return PartialView("_Create", model);
             }
             catch (Exception ex)
@@ -139,24 +122,6 @@ namespace DIBN.Areas.Admin.Controllers
             {
                 UpdateCompanySubTypeModel model = new UpdateCompanySubTypeModel();
                 model = await _companySubTypeRepository.GetCompanySubTypeDetails(Id);
-
-                List<SelectListItem> companyType = new List<SelectListItem>();
-                companyType.Add(new SelectListItem
-                {
-                    Text = "Select Company Type",
-                    Value = ""
-                });
-                companyType.Add(new SelectListItem
-                {
-                    Text = "Mainland",
-                    Value = "Dubai Mainland"
-                });
-                companyType.Add(new SelectListItem
-                {
-                    Text = "Freezone",
-                    Value = "Freezone"
-                });
-                model.MainTypes = companyType;
                 return PartialView("_Edit", model);
             }
             catch (Exception ex)

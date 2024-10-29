@@ -168,18 +168,13 @@ namespace DIBN.Areas.Admin.Repository
                 SqlCommand command = new SqlCommand("USP_Admin_CompanyOperation", con);
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@Status", Operation.Insert);
-                if (company.UserId != 0)
-                {
-                    command.Parameters.AddWithValue("@UserId", company.UserId);
-                }
-                command.Parameters.AddWithValue("@DIBNUserNumber", company.DIBNUserNumber);
+                
                 command.Parameters.AddWithValue("@CompanyName", company.CompanyName);
                 command.Parameters.AddWithValue("@AccountNumber", company.AccountNumber);
                 command.Parameters.AddWithValue("@MCountryCode", company.MainContactNumberCountry);
                 command.Parameters.AddWithValue("@MobileNumber", company.MobileNumber);
                 command.Parameters.AddWithValue("@EmailID", company.EmailID);
                 command.Parameters.AddWithValue("@SecondEmailID", company.SecondEmailID);
-                command.Parameters.AddWithValue("@CompanyType", company.CompanyTypeName);
                 command.Parameters.AddWithValue("@CompanyStartingDate", company.CompanyStartingDate);
                 command.Parameters.AddWithValue("@Cmp_pass", _Password);
                 command.Parameters.AddWithValue("@IsActive", company.IsActive);
@@ -253,26 +248,14 @@ namespace DIBN.Areas.Admin.Repository
                     comp.AccountNumber = dr["AccountNumber"].ToString();
                     comp.Username = dr["Username"].ToString();
                     comp.CompanyName = dr["CompanyName"].ToString();
-                    comp.ShareCapital = dr["ShareCapital"].ToString();
                     comp.CompanyRegistrationNumber = dr["CompanyRegistrationNumber"].ToString();
                     comp.MobileNumber = dr["MobileNumber"].ToString();
                     comp.CompanyTypeName = dr["CompanyType"].ToString();
                     comp.EmailID = dr["EmailID"].ToString();
-                    comp.SecondEmailID = dr["SecondEmailID"].ToString();
                     comp.CompanyTypeName = dr["CompanyType"].ToString();
-                    comp.LicenseType = dr["LicenseType"].ToString();
-                    comp.LicenseStatus = dr["LicenseStatus"].ToString();
-                    comp.LicenseIssueDate = dr["LicenseIssueDate"].ToString();
-                    comp.LicenseExpiryDate = dr["LicenseExpiryDate"].ToString();
-                    comp.LeaseFacilityType = dr["LeaseFacilityType"].ToString();
-                    comp.LeaseStartDate = dr["LeaseStartDate"].ToString();
-                    comp.LeaseExpiryDate = dr["LeaseExpiryDate"].ToString();
                     comp.CompanyStartingDate = dr["CompanyStartingDate"].ToString();
                     comp.ShareholderIsActive = Convert.ToBoolean(dr["ShareholderIsActive"].ToString());
-                    comp.LeaseStatus = dr["LeaseStatus"].ToString();
-                    comp.UnitLocation = dr["UnitLocation"].ToString();
                     comp.IsActive = Convert.ToBoolean(dr["IsActive"].ToString());
-                    comp.IsDelete = Convert.ToBoolean(dr["IsDelete"].ToString());
                     comp.CreatedOn = dr["CreatedOn"].ToString();
                     comp.ModifyOn = dr["ModifyOn"].ToString();
                     comp.ShareholderName = dr["ShareholderName"].ToString();
@@ -281,8 +264,20 @@ namespace DIBN.Areas.Admin.Repository
                     comp.City = dr["City"].ToString();
                     comp.LabourFileNo = dr["LabourFileNo"].ToString();
                     comp.IsTRN = Convert.ToBoolean(dr["IsTRN"]);
-                    comp.TRN = dr["TRN"].ToString();
-                    comp.TRNCreationDate = dr["TRNCreationDate"].ToString();
+                    if (dr["TRN"] != DBNull.Value && dr["TRN"].ToString() != "N/A")
+                        comp.TRN = dr["TRN"].ToString();
+                    else
+                        comp.TRN = "---";
+                    if (dr["TRNCreationDate"] != DBNull.Value && dr["TRNCreationDate"].ToString() != "N/A")
+                        comp.TRNCreationDate = dr["TRNCreationDate"].ToString();
+                    else
+                        comp.TRNCreationDate = "---";
+                    if (dr["IsCorportaeText"] != DBNull.Value)
+                        comp.IsCorporateText = Convert.ToBoolean(dr["IsCorportaeText"]);
+                    if (dr["CorporateText"] != DBNull.Value && dr["CorporateText"].ToString() != "N/A")
+                        comp.CorporateText = dr["CorporateText"].ToString();
+                    else
+                        comp.CorporateText = "---";
                 }
                 dr.Close();
                 con.Close();
@@ -2455,7 +2450,7 @@ namespace DIBN.Areas.Admin.Repository
         /// <param name="prefix"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<List<string>> GetCompanySubTypePrefix(string companyType,string prefix)
+        public async Task<List<string>> GetCompanySubTypePrefix(string prefix)
         {
             SqlConnection connection = new SqlConnection(_dataSetting.DefaultConnection);
             try
@@ -2464,7 +2459,6 @@ namespace DIBN.Areas.Admin.Repository
 
                 SqlCommand command = new SqlCommand("USP_Admin_GetCompanySubType", connection);
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@companyType", companyType);
                 if (prefix != null && prefix != "")
                     command.Parameters.AddWithValue("@prefix", prefix);
 
@@ -2530,14 +2524,8 @@ namespace DIBN.Areas.Admin.Repository
                         {
                             if (reader["TotalCompanies"] != DBNull.Value)
                                 model.TotalMainlandCompanies = Convert.ToInt32(reader["TotalCompanies"]);
-                        }
-
-                        await reader.NextResultAsync();
-
-                        while (reader.Read())
-                        {
-                            if (reader["TotalCompanies"] != DBNull.Value)
-                                model.TotalFreezoneCompanies = Convert.ToInt32(reader["TotalCompanies"]);
+                            string color = String.Format("#{0:X6}", new Random().Next(0x1000000));
+                            model.color = color;
                         }
                         connection.Close();
                         model.CompanySubType = subType;
@@ -2598,15 +2586,10 @@ namespace DIBN.Areas.Admin.Repository
                         {
                             if (reader["TotalCompanies"] != DBNull.Value)
                                 model.TotalMainlandCompanies = Convert.ToInt32(reader["TotalCompanies"]);
+                            string color = String.Format("#{0:X6}", new Random().Next(0x1000000));
+                            model.color = color;
                         }
 
-                        await reader.NextResultAsync();
-
-                        while (reader.Read())
-                        {
-                            if (reader["TotalCompanies"] != DBNull.Value)
-                                model.TotalFreezoneCompanies = Convert.ToInt32(reader["TotalCompanies"]);
-                        }
                         connection.Close();
                         model.CompanySubType = subType;
                         report.Add(model);
@@ -2666,15 +2649,10 @@ namespace DIBN.Areas.Admin.Repository
                         {
                             if (reader["TotalCompanies"] != DBNull.Value)
                                 model.TotalMainlandCompanies = Convert.ToInt32(reader["TotalCompanies"]);
+                            string color = String.Format("#{0:X6}", new Random().Next(0x1000000));
+                            model.color = color;
                         }
 
-                        await reader.NextResultAsync();
-
-                        while (reader.Read())
-                        {
-                            if (reader["TotalCompanies"] != DBNull.Value)
-                                model.TotalFreezoneCompanies = Convert.ToInt32(reader["TotalCompanies"]);
-                        }
                         connection.Close();
                         model.CompanySubType = subType;
                         report.Add(model);
@@ -2682,6 +2660,319 @@ namespace DIBN.Areas.Admin.Repository
                 }
 
                 return report;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
+        /// <summary>
+        /// Create new company                                                                                                                                                  -- Yashasvi (29-10-2024)
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<int> Create(SaveCompanyModel model)
+        {
+            SqlConnection connection = new SqlConnection(_dataSetting.DefaultConnection);
+            try
+            {
+                int _companyId = 0;
+
+                SqlCommand command = new SqlCommand("USP_Admin_Insert_Update_Company", connection);
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@CompanyType", model.CompanySubType);
+                command.Parameters.AddWithValue("@CompanyCode", model.AccountNumber);
+                command.Parameters.AddWithValue("@OwnerId", model.CompanyOwnerId);
+                command.Parameters.AddWithValue("@CompanyName", model.CompanyName);
+                if(model.MobileNumber != null && model.MobileNumber != "")
+                {
+                    command.Parameters.AddWithValue("@MobileCountry", model.MainContactNumberCountry);
+                    command.Parameters.AddWithValue("@MobileNumber", model.MobileNumber);
+                }
+                if(model.EmailID != null && model.EmailID != "")
+                    command.Parameters.AddWithValue("@EmailAddress", model.EmailID);
+                if(model.CompanyStartingDate != null && model.CompanyStartingDate != "")
+                    command.Parameters.AddWithValue("@CompanyCreationDate", model.CompanyStartingDate);
+                if(model.City != null && model.City != "")
+                    command.Parameters.AddWithValue("@City", model.City);
+                if(model.Country != null && model.Country != null)
+                    command.Parameters.AddWithValue("@Country", model.Country);
+                if (model.IsTRN)
+                {
+                    command.Parameters.AddWithValue("@IsTRNNumber", model.IsTRN);
+                    command.Parameters.AddWithValue("@TRNNumber", model.TRN);
+                    command.Parameters.AddWithValue("@TRNCreation", model.TRNCreationDate);
+                }
+                if (model.IsCorporateText)
+                {
+                    command.Parameters.AddWithValue("@IsCorporateText", model.IsCorporateText);
+                    command.Parameters.AddWithValue("@CorporateText", model.CorporateText);
+                }
+                
+                command.Parameters.AddWithValue("@IsActive", model.IsActive);
+                command.Parameters.AddWithValue("@UserId", model.CreatedBy);
+
+                connection.Open();
+                _companyId = Convert.ToInt32(await command.ExecuteScalarAsync());
+                connection.Close();
+
+                if (_companyId > 0)
+                {
+                    if (model.SalesPersonId != null)
+                    {
+                        if (model.SalesPersonId.Count > 0)
+                        {
+                            for (int index = 0; index < model.SalesPersonId.Count; index++)
+                            {
+                                command = new SqlCommand("USP_Admin_SaveAssignedSalesPerson", connection);
+                                command.CommandType = CommandType.StoredProcedure;
+                                command.Parameters.AddWithValue("@Status", Operation.Insert);
+                                command.Parameters.AddWithValue("@SalesPersonId", model.SalesPersonId[index]);
+                                command.Parameters.AddWithValue("@CompanyId", _companyId);
+                                command.Parameters.AddWithValue("@UserId", model.CreatedBy);
+                                connection.Open();
+                                var _returnCompanyId = (int)command.ExecuteScalar();
+                                connection.Close();
+                                command.Parameters.Clear();
+                            }
+                        }
+                    }
+                    if (model.RMPersonId != null)
+                    {
+                        if (model.RMPersonId.Count > 0)
+                        {
+                            for (int index = 0; index < model.RMPersonId.Count; index++)
+                            {
+                                command.Parameters.Clear();
+                                command = new SqlCommand("USP_Admin_Insert_AssignedCompanyRMTeam", connection);
+                                command.CommandType = CommandType.StoredProcedure;
+                                command.Parameters.AddWithValue("@Id", model.RMPersonId[index]);
+                                command.Parameters.AddWithValue("@CompanyId", _companyId);
+                                command.Parameters.AddWithValue("@UserId", model.CreatedBy);
+
+                                connection.Open();
+                                await command.ExecuteNonQueryAsync();
+                                connection.Close();
+                            }
+                        }
+                    }
+                }
+
+                return _companyId;
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
+        /// <summary>
+        /// Get Company Details For Update                                                                                                                                 -- Yashasvi (29-10-2024)
+        /// </summary>
+        /// <param name="companyId"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<UpdateCompanyModel> GetCompanyDetailsByCompanyId(int companyId)
+        {
+            SqlConnection connection = new SqlConnection(_dataSetting.DefaultConnection);
+            try
+            {
+                UpdateCompanyModel model = new UpdateCompanyModel();
+
+                SqlCommand command = new SqlCommand("USP_Select_GetCompanyDetailsById", connection);
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@Id", companyId);
+
+                connection.Open();
+
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+                while (reader.Read())
+                {
+                    if (reader["Id"] != DBNull.Value)
+                        model.Id = Convert.ToInt32(reader["Id"]);
+                    if (reader["CompanyName"] != DBNull.Value && reader["CompanyName"].ToString() != "N/A")
+                        model.CompanyName = reader["CompanyName"].ToString();
+                    if (reader["CompanyType"] != DBNull.Value && reader["CompanyType"].ToString() != "N/A")
+                        model.CompanySubType = reader["CompanyType"].ToString();
+                    if (reader["CompanyCode"] != DBNull.Value && reader["CompanyCode"].ToString() != "N/A")
+                        model.AccountNumber = reader["CompanyCode"].ToString();
+                    if (reader["MainContactNumberCountry"] != DBNull.Value && reader["MainContactNumberCountry"].ToString() != "N/A")
+                        model.MainContactNumberCountry = reader["MainContactNumberCountry"].ToString();
+                    if (reader["MobileNumber"] != DBNull.Value && reader["MobileNumber"].ToString() != "N/A")
+                        model.MobileNumber = reader["MobileNumber"].ToString();
+                    if (reader["EmailID"] != DBNull.Value && reader["EmailID"].ToString() != "N/A")
+                        model.EmailID = reader["EmailID"].ToString();
+                    if (reader["CompanyStartingDate"] != DBNull.Value && reader["CompanyStartingDate"].ToString() != "N/A")
+                        model.CompanyStartingDate = reader["CompanyStartingDate"].ToString();
+                    if (reader["City"] != DBNull.Value && reader["City"].ToString() != "N/A")
+                        model.City = reader["City"].ToString();
+                    if (reader["Country"] != DBNull.Value && reader["Country"].ToString() != "N/A")
+                        model.Country = reader["Country"].ToString();
+                    if (reader["IsTRN"] != DBNull.Value)
+                        model.IsTRN = Convert.ToBoolean(reader["IsTRN"]);
+                    if (reader["TRN"] != DBNull.Value && reader["TRN"].ToString() != "N/A")
+                        model.TRN = reader["TRN"].ToString();
+                    if (reader["TRNCreationDate"] != DBNull.Value && reader["TRNCreationDate"].ToString() != "N/A")
+                        model.TRNCreationDate = reader["TRNCreationDate"].ToString();
+                    if (reader["IsCorporateText"] != DBNull.Value)
+                        model.IsCorporateText = Convert.ToBoolean(reader["IsCorporateText"]);
+                    if (reader["CorporateText"] != DBNull.Value && reader["CorporateText"].ToString() != "N/A")
+                        model.CorporateText = reader["CorporateText"].ToString();
+                    if (reader["IsActive"] != DBNull.Value)
+                        model.IsActive = Convert.ToBoolean(reader["IsActive"]);
+                    if (reader["Ownername"] != DBNull.Value && reader["Ownername"].ToString() != "N/A")
+                        model.CompanyOwner = reader["Ownername"].ToString();
+                    if (reader["OwnerId"] != DBNull.Value)
+                        model.CompanyOwnerId = Convert.ToInt32(reader["OwnerId"]);
+                }
+
+                connection.Close();
+
+                command.Parameters.Clear();
+                command = new SqlCommand("USP_Admin_SaveAssignedSalesPerson", connection);
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@Status", Operation.GetById);
+                command.Parameters.AddWithValue("@CompanyId", companyId);
+                connection.Open();
+                reader = command.ExecuteReader();
+                model.SalesPersonId = new List<int>();
+                while (reader.Read())
+                {
+                    int salesPersonId = Convert.ToInt32(reader["SalesPersonId"]);
+                    model.SalesPersonId.Add(salesPersonId);
+                }
+                connection.Close();
+
+                command.Parameters.Clear();
+                command = new SqlCommand("USP_Admin_Select_GetAssignedRMTeamToCompany", connection);
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@CompanyId", companyId);
+                connection.Open();
+                reader = command.ExecuteReader();
+                model.RMPersonId = new List<int>();
+                while (reader.Read())
+                {
+                    int Id = Convert.ToInt32(reader["Id"]);
+                    model.RMPersonId.Add(Id);
+                }
+                connection.Close();
+
+                return model;
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+        /// <summary>
+        /// Update company                                                                                                                                                  -- Yashasvi (29-10-2024)
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<int> Edit(UpdateCompanyModel model)
+        {
+            SqlConnection connection = new SqlConnection(_dataSetting.DefaultConnection);
+            try
+            {
+                int _companyId = 0;
+
+                SqlCommand command = new SqlCommand("USP_Admin_Insert_Update_Company", connection);
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@Id", model.Id);
+                command.Parameters.AddWithValue("@CompanyType", model.CompanySubType);
+                command.Parameters.AddWithValue("@CompanyCode", model.AccountNumber);
+                command.Parameters.AddWithValue("@OwnerId", model.CompanyOwnerId);
+                command.Parameters.AddWithValue("@CompanyName", model.CompanyName);
+                if (model.MobileNumber != null && model.MobileNumber != "")
+                {
+                    command.Parameters.AddWithValue("@MobileCountry", model.MainContactNumberCountry);
+                    command.Parameters.AddWithValue("@MobileNumber", model.MobileNumber);
+                }
+                if (model.EmailID != null && model.EmailID != "")
+                    command.Parameters.AddWithValue("@EmailAddress", model.EmailID);
+                if (model.CompanyStartingDate != null && model.CompanyStartingDate != "")
+                    command.Parameters.AddWithValue("@CompanyCreationDate", model.CompanyStartingDate);
+                if (model.City != null && model.City != "")
+                    command.Parameters.AddWithValue("@City", model.City);
+                if (model.Country != null && model.Country != null)
+                    command.Parameters.AddWithValue("@Country", model.Country);
+                if (model.IsTRN)
+                {
+                    command.Parameters.AddWithValue("@IsTRNNumber", model.IsTRN);
+                    command.Parameters.AddWithValue("@TRNNumber", model.TRN);
+                    command.Parameters.AddWithValue("@TRNCreation", model.TRNCreationDate);
+                }
+                if (model.IsCorporateText)
+                {
+                    command.Parameters.AddWithValue("@IsCorporateText", model.IsCorporateText);
+                    command.Parameters.AddWithValue("@CorporateText", model.CorporateText);
+                }
+
+                command.Parameters.AddWithValue("@IsActive", model.IsActive);
+                command.Parameters.AddWithValue("@UserId", model.CreatedBy);
+
+                connection.Open();
+                _companyId = Convert.ToInt32(await command.ExecuteScalarAsync());
+                connection.Close();
+
+                if (_companyId > 0)
+                {
+                    if (model.SalesPersonId != null)
+                    {
+                        if (model.SalesPersonId.Count > 0)
+                        {
+                            for (int index = 0; index < model.SalesPersonId.Count; index++)
+                            {
+                                command = new SqlCommand("USP_Admin_SaveAssignedSalesPerson", connection);
+                                command.CommandType = CommandType.StoredProcedure;
+                                command.Parameters.AddWithValue("@Status", Operation.Insert);
+                                command.Parameters.AddWithValue("@SalesPersonId", model.SalesPersonId[index]);
+                                command.Parameters.AddWithValue("@CompanyId", _companyId);
+                                command.Parameters.AddWithValue("@UserId", model.CreatedBy);
+                                connection.Open();
+                                await command.ExecuteNonQueryAsync();
+                                connection.Close();
+                                command.Parameters.Clear();
+                            }
+                        }
+                    }
+                    if (model.RMPersonId != null)
+                    {
+                        if (model.RMPersonId.Count > 0)
+                        {
+                            for (int index = 0; index < model.RMPersonId.Count; index++)
+                            {
+                                command.Parameters.Clear();
+                                command = new SqlCommand("USP_Admin_Insert_AssignedCompanyRMTeam", connection);
+                                command.CommandType = CommandType.StoredProcedure;
+                                command.Parameters.AddWithValue("@Id", model.RMPersonId[index]);
+                                command.Parameters.AddWithValue("@CompanyId", _companyId);
+                                command.Parameters.AddWithValue("@UserId", model.CreatedBy);
+
+                                connection.Open();
+                                await command.ExecuteNonQueryAsync();
+                                connection.Close();
+                            }
+                        }
+                    }
+                }
+
+                return _companyId;
             }
             catch (Exception ex)
             {

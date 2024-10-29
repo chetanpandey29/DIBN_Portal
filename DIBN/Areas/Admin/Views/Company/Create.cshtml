@@ -1,4 +1,4 @@
-﻿@model DIBN.Areas.Admin.Models.CompanyViewModel.SaveNewCompany
+﻿@model DIBN.Areas.Admin.Models.SaveCompanyModel
 @{
     ViewData["Title"] = "Create";
 }
@@ -11,11 +11,10 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-md-8">
-        <h4 class="card-title">Add New Company</h4>
-    </div>
-    <div class="col-md-4">
+    <div class="col-md-12">
+        <h4 class="card-title float-start">Add New Company</h4>
         <a href="javascript:history.go(-1);" class="btn btn-theme float-end" style="margin-bottom:15px;">Back to List</a>
+        <a href="@Url.Action("AddUserForCompany","Company",new{name=@Model.Module,actionMethod="Create"})" class="btn btn-theme float-end me-2" style="margin-bottom:15px;">Add User for Company</a>
     </div>
 </div>
 
@@ -26,24 +25,15 @@
                 <form asp-action="Creates" asp-area="admin" method="post" id="createCompanyForm">
                     <div class="row">
                         @Html.ValidationSummary("", new { @class = "text-danger" })
-                        <div class="form-group col-md-5 float-start ms-2 me-3">
-                            <label asp-for="CompanyType" class="control-label"></label> <span class="text-danger">*</span>
-                            @Html.DropDownListFor(w => w.CompanyTypeName, Model.CompanyType, new { @class = "form-control form-select single-line", @id = "CompanyTypeName", required = (string)null })
-                        </div>
-                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                        <div class="form-group col-md-6 mt-2">
                             <label asp-for="CompanySubType" class="control-label"></label> <span class="text-danger">*</span>
-                            <input asp-for="CompanySubType" class="form-control" id="CompanySubType" readonly />
+                            <input asp-for="CompanySubType" class="form-control" id="CompanySubType" />
                         </div>
-                        <div class="form-group col-md-5 float-start ms-2 me-3">
-                            <label asp-for="UserId" class="control-label"></label>
-                            @Html.DropDownListFor(w => w.UserId, Model.Users, new { @id = "UserChange", @class = "form-control form-select single-line", @onchange = "UserChangeFn();" })
+                        <div class="form-group col-md-6 mt-2">
+                            <label asp-for="CompanyOwner" class="control-label"></label> 
+                            <input asp-for="CompanyOwner" class="form-control" id="CompanyOwner" />
                         </div>
-                        <div class="form-group col-md-5 float-start ms-2 me-3" id="DibnBlock">
-                            <label asp-for="DIBNUserNumber" class="control-label"></label> 
-                            <input asp-for="DIBNUserNumber" id="accountNumber" class="form-control" readonly />
-                            <span asp-validation-for="DIBNUserNumber" class="text-danger"></span>
-                        </div>
-                        <div class=" col-md-5 float-start ms-2 me-3">
+                        <div class=" col-md-6 mt-2">
                             <div class="form-group">
                                 <label asp-for="AccountNumber" class="control-label"></label> <span class="text-danger">*</span>
                                 <input asp-for="AccountNumber" id="AccountNumber" class="form-control" />
@@ -57,7 +47,7 @@
                                 <span id="AccountNumberValidation" class="text-danger"></span>
                             </div>
                         </div>
-                        <div class=" col-md-5 float-start ms-2 me-3">
+                        <div class=" col-md-6 mt-2">
                             <div class="form-group" id="companyNameBlock">
                                 <label asp-for="CompanyName" class="control-label"></label> <span class="text-danger">*</span>
                                 <input asp-for="CompanyName" class="form-control" id="CompanyName" onfocus="CheckExistanceOfAccountNumber();" maxlength="100"/>
@@ -67,17 +57,7 @@
                                 <span id="CompanyNameValidation" class="text-danger"></span>
                             </div>
                         </div>
-                        @* <div class="form-group col-md-5 float-start ms-2 me-3">
-                            <label asp-for="CompanyPassword" class="control-label"></label> <span class="text-danger">*</span>
-                            <div class="input-group">
-                                <input asp-for="CompanyPassword" id="Password" type="password" class="form-control" />
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text btn btn-theme" id="show_password"><i class="fas fa-eye-slash icon"></i></span>
-                                </div>
-                                <span asp-validation-for="CompanyPassword" class="text-danger"></span>
-                            </div>
-                        </div> *@
-                        <div class="col-md-5 float-start ms-2 me-3">
+                        <div class="col-md-6 mt-2">
                             <div class="form-group" id="MobileNumberBlock">
                                 <label asp-for="MobileNumber" class="control-label"></label> 
                                 <div class="d-flex">
@@ -90,52 +70,79 @@
                                     </div>
                                 </div>
                             </div>
-                            @* <div id="NewContactNumbers">
-                            </div>
-                            <div class="form-group col-md-5 float-start ms-2 me-3 pt-2">
-                                <input class="btn btn-theme mt-2 mb-2" onclick="AddNewContactNumber();" type="button" value="Add New Contact No.">
-                            </div> *@
                         </div>
-                        <div class="col-md-5 float-start ms-2 me-3">
-                            <div class="form-group" id="EmailidBlock">
+                        <div class="col-md-6 mt-2">
+                            <div class="form-group">
                                 <label asp-for="EmailID" class="control-label"></label> 
                                 <input asp-for="EmailID" type="email" class="form-control" id="EmailID" />
                                 <span asp-validation-for="EmailID" class="text-danger"></span>
                             </div>
-                            @* <div id="NewEmails">
-                            </div>
-
-                            <div>
-                                <span id="EmailValidation" class="text-danger"></span>
-                            </div>
-                            <div class="form-group col-md-5 float-start ms-2 me-3 pt-2">
-                                <input class="btn btn-theme mt-2 mb-2" onclick="AddTextBox();" type="button" value="Add New Email">
-                            </div> *@
                         </div>
-                        <div class="form-group col-md-5 float-start ms-2 me-3">
+                        <div class="form-group col-md-6 mt-2">
                             <label asp-for="CompanyStartingDate" class="control-label"></label><span style="font-weight:bold;">(eg. 2022-01-31)</span> <span class="text-danger">*</span>
                             <input asp-for="CompanyStartingDate" id="CompanyStartingDate" class="form-control" readonly/>
                             <span asp-validation-for="CompanyStartingDate" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-md-5 float-start ms-2 me-3" id="CountryBlock">
+                        <div class="form-group col-md-6 mt-2" id="CountryBlock">
                             <label asp-for="City" class="control-label"></label> 
                             <input asp-for="City" class="form-control" />
                             <span asp-validation-for="City" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-md-5 float-start ms-2 me-3" id="CountryBlock">
+                        <div class="form-group col-md-6 mt-2" id="CountryBlock">
                             <label asp-for="Country" class="control-label"></label>
                             @Html.DropDownListFor(w => w.Country, Model.Countries, new { @class = "form-control form-select single-line select-box" })
                             <span asp-validation-for="Country" class="text-danger"></span>
                         </div>
-                        <div class="form-group form-check" id="IsActiveBlock" hidden="hidden">
-                            <label class="form-check-label">
-                                <input class="form-check-input" asp-for="IsActive" value="false" /> @Html.DisplayNameFor(model => model.IsActive)
-                            </label>
+                        <div class="form-group col-md-6 mt-2">
+                            <label asp-for="SalesPersonId" class="control-label"></label>
+                            @Html.ListBoxFor(model => model.SalesPersonId, new MultiSelectList(Model.SalesPersons, "Value", "Text"), new { @class = "form-control form-select single-line", multiple = "multiple", id = "salesPerson" })
+                        </div>
+                        <div class="form-group col-md-6 mt-2">
+                            <label asp-for="RMPersonId" class="control-label"></label>
+                            @Html.ListBoxFor(model => model.RMPersonId, new MultiSelectList(Model.RMTeams, "Value", "Text"), new { @class = "form-control form-select single-line", multiple = "multiple", id = "RMPersonId" })
+                        </div>
+                        <div class="col-md-12 float-start ms-2 me-3 mt-2">
+                            <div class="form-group form-check" id="IsTRNBlock">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" asp-for="IsTRN" id="IsTRN" type="checkbox" />   @Html.DisplayNameFor(model => model.IsTRN)
+                                    <input class="form-check-input" id="IsTRNValue" type="hidden" value="@Model.IsTRN" />
+                                </label>
+                            </div>
+                            <div class="row">
+                                <div class="form-group  col-md-6 mt-2" hidden="hidden" id="TRNBlock">
+                                    <label asp-for="TRN" class="control-label"></label> <span class="text-danger">*</span>
+                                    <input asp-for="TRN" class="form-control" id="TRN" />
+                                    <span asp-validation-for="TRN" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-md-6 mt-2" hidden="hidden" id="TRNCreationDateBlock">
+                                    <label asp-for="TRNCreationDate" class="control-label"></label> <span style="font-weight:bold;">(eg. 2022-01-31)</span> <span class="text-danger">*</span>
+                                    <input asp-for="TRNCreationDate" class="form-control" data-toggle="datepicker" id="TRNCreationDate" placeholder="yyyy-mm-dd" readonly />
+                                    <span asp-validation-for="TRNCreationDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 float-start ms-2 me-3 mt-2">
+                            <div class="form-group form-check" id="IsCorporateTextBlock">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" asp-for="IsCorporateText" id="IsCorporateText" type="checkbox" />   @Html.DisplayNameFor(model => model.IsCorporateText)
+                                    <input class="form-check-input" id="IsCorporateTextValue" type="hidden" value="@Model.IsCorporateText" />
+                                </label>
+                            </div>
+                            <div class="form-group col-md-12 float-start ms-2 me-3" hidden="hidden" id="CorporateTextBlock">
+                                <label asp-for="CorporateText" class="control-label"></label> <span class="text-danger">*</span>
+                                <input asp-for="CorporateText" class="form-control" id="CorporateText" />
+                                <span asp-validation-for="CorporateText" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-12 float-start ms-2 me-3 mt-2">
+                            <div class="form-group form-check">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" asp-for="IsActive" id="IsActive" type="checkbox" />   @Html.DisplayNameFor(model => model.IsActive)
+                                </label>
+                            </div>
                         </div>
                         <input type="hidden" asp-for="Module" id="Module" value="@Model.Module" />
-                        <div id="_newEmails">
-                            <input type="hidden" asp-for="OtherEmailIdValues" id="OtherEmailIdValues" value="@Model.OtherEmailIdValues" />
-                        </div>
+                        <input type="hidden" asp-for="CompanyOwnerId" id="CompanyOwnerId" />
                         <div class="form-group m-3 mt-3">
                             <input type="submit" value="Create" class="btn btn-theme" id="btnSubmit" />
                         </div>
@@ -146,30 +153,63 @@
     </div>
 </div>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script src="~/assets/libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+
 <link href="~/select2/select2.min.css" rel="stylesheet" />
 <script src="~/select2/select2.min.js"></script>
 <script>
+    $("#TRNCreationDate").datepicker({
+        format: 'yyyy-mm-dd',
+        changeMonth: true,
+        changeYear: true,
+        autoclose: true,
+        todayHighlight: true,
+    });
     ////// Open Selection dropdown on focus                                     -- Yashasvi TBC (09-02-2023)
     $(document).on('focus', '.select2.select2-container', function (e) {
         if (e.originalEvent && $(this).find(".select2-selection--single").length > 0) {
             $(this).siblings('select').select2('open');
         }
     });
+
     $('#IsTRN').change(function() {
         if(this.checked) {
             $("#TRNBlock").removeAttr("hidden");
-            $("#TRN").attr("required","required");
+            $("#TRNCreationDateBlock").removeAttr("hidden");
+            $("#TRN").attr("required", "required");
+            $("#TRNCreationDateBlock").attr("required", "required");
+            $("#IsTRN").val(true);
+
         }
         else{
             $("#TRNBlock").attr("hidden","hidden");
+            $("#TRNCreationDateBlock").attr("hidden", "hidden");
             $("#TRN").removeAttr("required");
+            $("#TRNCreationDateBlock").removeAttr("required");
+            $("#IsTRN").val(false);
         }
     });
+
+    $('#IsCorporateText').change(function () {
+        if (this.checked) {
+            $("#CorporateTextBlock").removeAttr("hidden");
+            $("#CorporateText").attr("required", "required");
+            $("#IsCorporateText").val(true);
+        }
+        else {
+            $("#CorporateTextBlock").attr("hidden", "hidden");
+            $("#CorporateText").removeAttr("required");
+            $("#IsCorporateText").val(false);
+        }
+    });
+
     $(function() {
       $('#UserChange').select2();
     });
     $(function() {
         $('#salesPerson').select2();
+        $('#RMPersonId').select2();
     });
     $(document).ready(function () {
         $("#loader").hide();
@@ -233,78 +273,6 @@
     };
 </script>
 <script>
-    var i=1;
-    var _countries = new Array();
-
-    $(document).ready(function(){
-        
-        $.ajax({
-            url: "@Url.Action("GetCountries", "Company")",
-            method: "GET",
-            success: function (response) {
-                
-                if(response!=null){
-                    for(var index=0;index < response.length;index++){
-                        _countries.push(response[index].commonName);
-                    }
-                }
-            }
-        });
-    });
-
-    function GetDynamicTxtBox() {
-        
-        var _textboxId = "Id"+i;
-        var div = $("<div />").attr("class","form-group");
-
-        var div1 = $("<div />").attr("class","d-flex justify-content-between");
-
-        var div2 = $("<div />").attr("class","col-md-8");
-
-        var div4 = $("<div />").attr("class","col-md-6 col-lg-6 col-sm-6 float-start");
-
-        var div5 = $("<div />").attr("class","col-md-6 col-lg-6 col-sm-6 float-start mt-2");
-
-        var selectBox = $("<select />").attr("name", "OtherContactNumbersCode").attr("class","form-control col-md-6 col-lg-6 form-select select-box single-line removeTxt"+i).attr("onchange","GetDialingCodeOfCountry(this.value,"+_textboxId+");").attr("required","required");
-        selectBox.append("<option value=''>Select Country</option>");
-        if(_countries.length!=null){
-            for(var index=0;index < _countries.length;index++){
-                selectBox.append("<option value='"+_countries[index]+"'>"+_countries[index]+"</option>");
-            }
-        }
-        div5.append(selectBox);
-        div2.append(div5);
-
-        var textBox = $("<input />").attr("type", "text").attr("name", "OtherContactNumbers").attr("class","form-control col-md-6 col-lg-6 mt-2 removeTxt"+i).attr("required","required").attr("id",_textboxId).attr("onkeyup","ValidAlphabet(this)").attr("maxlength","20");
-        textBox.val("");
-        div4.append(textBox);
-        div2.append(div4);
-
-        div1.append(div2);
-
-        var div3 = $("<div />");
-        var _class = "removeTxt"+i;
-        var button = $("<input />").attr("type", "button").attr("value", "Remove").attr("class","btn btn-theme ms-2 mt-2 removeTxt"+i);
-        button.attr("onclick", "RemoveTxtBox('"+_class+"')");
-        div3.append(button);
-        div1.append(div3);
-
-        div.append(div1);
-        i=i+1;
-        $(selectBox).select2();
-        $("#NewContactNumbers").append(div);
-    };
-
-    function AddNewContactNumber() {
-        
-        GetDynamicTxtBox();
-    };
-
-    function RemoveTxtBox(button) {
-        $("."+button).parent().remove();
-    };
-</script>
-<script>
     function GetDialingCodeOfCountryE(value){
         $.ajax({
             url: "@Url.Action("GetDialingCodeOfCountry", "Company")",
@@ -360,104 +328,7 @@
 	    }
     }
 </script>
-<script>
-    $(document).ready(function(){
-        
-        var _emails=$("#OtherEmailIdValues").val();
-        if($("#OtherEmailIdValues").val()!=""){
-           if(_emails.indexOf(",")>-1){
-               var index=1;
-               var _allemails = _emails.split(",");
-               var _length = _allemails.length;
-               for(var i=0;i<_length;i++){
-                    var div = $("<div />").attr("class","form-group");
 
-                    var div1 = $("<div />").attr("class","d-flex justify-content-between");
-
-                    var div2 = $("<div />").attr("class","col-lg-9 col-md-9");
-
-                    var textBox = $("<input />").attr("type", "email").attr("name", "OtherEmailID").attr("class","form-control col-lg-9 col-md-9 EmailID mt-2 remove"+index).attr("value",_allemails[i]).attr("required","required");
-                    div2.append(textBox);
-                    div1.append(div2);
-
-                    var div3 = $("<div />");
-                    var _class = "remove"+index;
-                    var button = $("<input />").attr("type", "button").attr("value", "Remove").attr("class","btn btn-theme ms-2 mt-2 remove"+index);
-                    button.attr("onclick", "RemoveTextBox('"+_class+"')");
-                    div3.append(button);
-                    div1.append(div3);
-
-                    div.append(div1);
-                    index=index+1;
-
-                    $("#NewEmails").append(div);
-               }
-           }
-           else{
-                var div = $("<div />").attr("class","form-group");
-
-                var div1 = $("<div />").attr("class","d-flex justify-content-between");
-
-                var div2 = $("<div />").attr("class","col-md-9 col-lg-9");
-
-                var textBox = $("<input />").attr("type", "email").attr("name", "OtherEmailID").attr("class","form-control col-lg-9 col-md-9 EmailID mt-2 remove"+i).attr("value",_emails).attr("required","required");
-                div2.append(textBox);
-                div1.append(div2);
-
-                var div3 = $("<div />");
-                var _class = "remove"+i;
-                var button = $("<input />").attr("type", "button").attr("value", "Remove").attr("class","btn btn-theme ms-2 mt-2 remove"+i);
-                button.attr("onclick", "RemoveTextBox('"+_class+"')");
-                div3.append(button);
-                div1.append(div3);
-
-                div.append(div1);
-                i=i+1;
-
-                $("#NewEmails").append(div);
-           }
-        }
-    });
-</script>
-
-
-<script>
-    var i=1;
-    function GetDynamicTextBox(value) {
-
-        var div = $("<div />").attr("class","form-group");
-
-        var div1 = $("<div />").attr("class","d-flex justify-content-between");
-
-        var div2 = $("<div />").attr("class","col-md-9 col-lg-9");
-
-        var textBox = $("<input />").attr("type", "email").attr("name", "OtherEmailID").attr("class","form-control col-lg-9 col-md-9 EmailID mt-2 remove"+i).attr("required","required");
-        textBox.val(value);
-        div2.append(textBox);
-        div1.append(div2);
-
-        var div3 = $("<div />");
-        var _class = "remove"+i;
-        var button = $("<input />").attr("type", "button").attr("value", "Remove").attr("class","btn btn-theme ms-2 mt-2 remove"+i);
-        button.attr("onclick", "RemoveTextBox('"+_class+"')");
-        div3.append(button);
-        div1.append(div3);
-
-        div.append(div1);
-        i=i+1;
-        return div;
-    };
-
-    function AddTextBox() {
-        var div = GetDynamicTextBox("");
-        $("#NewEmails").append(div);
-    };
-
-    function RemoveTextBox(button) {
-        
-        $("."+button).parent().remove();
-    };
-</script>
 
 <script>
     function CheckExistanceOfAccountNumber(){
@@ -560,19 +431,8 @@
         });
     }
 
-    $("#CompanyTypeName").on("change", function () {
-        var CompanyTypeName = $("#CompanyTypeName").val();
-        if (CompanyTypeName != "") {
-            $("#CompanySubType").removeAttr("readonly");
-        }
-        else {
-            $("#CompanySubType").attr("readonly", "readonly");
-        }
-    });
-
     
     $(document).ready(function () {
-        var CompanyTypeName = $("#CompanyTypeName").val();
         $("#CompanySubType").autocomplete({
             minLength: 1,
             source: function (request, response) {
@@ -580,7 +440,7 @@
                     url: "@Url.Action("GetCompanySubTypePrefix", "Company")",
                     type: "GET",
                     dataType: "json",
-                    data: { "companyType": CompanyTypeName, "prefix": request.term },
+                    data: { "prefix": request.term },
                     success: function (data) {
                         if (data.length > 0) {
 
@@ -604,5 +464,43 @@
             }
         });
     });
-    
+
+    $(document).ready(function () {
+        $("#CompanyOwner").autocomplete({
+            minLength: 1,
+            source: function (request, response) {
+                $.ajax({
+                    url: "@Url.Action("GetUsersListForCompany", "Company")",
+                    type: "GET",
+                    dataType: "json",
+                    data: { "prefix": request.term },
+                    success: function (data) {
+                        if (data.length > 0) {
+
+                            response($.map(data, function (item) {
+                                return {
+                                    label: item.username,
+                                    val: item.id,
+                                    value:item.username
+                                };
+                            }))
+                        }
+                    }
+                })
+            },
+            select: function (val,data) {
+                $("#CompanyOwnerId").val(data.item.val);
+
+            },
+            focus: function () {
+                return false;
+            },
+        });
+
+        $('#CompanyOwner').on("keydown", function (event) {
+            if (event.keyCode === $.ui.keyCode.TAB && $(this).data("autocomplete").menu.active) {
+                event.preventDefault();
+            }
+        });
+    });
 </script>

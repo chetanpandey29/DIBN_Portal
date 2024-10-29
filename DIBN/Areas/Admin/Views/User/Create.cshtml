@@ -15,11 +15,8 @@
     <div class="col-md-6">
         <h4 class="card-title">Add New User</h4>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-6">
         <a href="@Url.Action("OtherCompanyOwner","User",new{name=@Model.Module})" class="btn btn-theme float-end" style="margin-bottom:15px;">Back to List</a>
-    </div>
-    <div class="col-md-2">
-        <a href="@Url.Action("AddCompanyForUser","User",new{name=@Model.Module,actionMethod="Create"})" class="btn btn-theme float-end" style="margin-bottom:15px;">Add Company for User</a>
     </div>
 </div>
 <div class="row">
@@ -96,11 +93,6 @@
                             </div>
                         </div>
                         <div class="col-md-12 float-start ms-2 me-3 mt-2">
-                            <div class="form-group form-check" id="IsLoginBlock">
-                                <label class="form-check-label">
-                                    <input class="form-check-input" asp-for="IsLogin" type="checkbox" /> @Html.DisplayNameFor(model => model.IsLogin)
-                                </label>
-                            </div>
                             <div class="form-group form-check" id="IsActiveBlock">
                                 <label class="form-check-label">
                                     <input class="form-check-input" asp-for="IsActive" type="checkbox" /> @Html.DisplayNameFor(model => model.IsActive)

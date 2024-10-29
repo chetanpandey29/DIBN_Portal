@@ -38,17 +38,20 @@ namespace DIBN.Areas.Admin.Models
         public int TotalMainlandCompanies { get; set; }
         public int TotalFreezoneCompanies { get; set; }
         public string CompanySubType {  get; set; }
+        public string color {  get; set; }
     }
     public class GetMonthlyCompanySubTypeReportModel
     {
         public int TotalMainlandCompanies { get; set; }
         public int TotalFreezoneCompanies { get; set; }
         public string CompanySubType { get; set; }
+        public string color { get; set; }
     }
     public class GetYearlyCompanySubTypeReportModel
     {
         public int TotalMainlandCompanies { get; set; }
         public int TotalFreezoneCompanies { get; set; }
         public string CompanySubType { get; set; }
+        public string color { get; set; }
     }
 }

@@ -4,10 +4,6 @@
     <form asp-action="Edits" asp-controller="CompanySubType" method="post" id="editCompanyService">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group">
-            <label asp-for="MainType" class="control-label"></label>
-            @Html.DropDownListFor(w => w.MainType, Model.MainTypes, new { @class = "form-control form-select single-line", @id = "MainType", required = (string)null })
-        </div>
-        <div class="form-group">
             <label asp-for="SubType" class="control-label"></label>
             <input asp-for="SubType" class="form-control" oninvalid="this.setCustomValidity('Please provide Sub Type.')" oninput="this.setCustomValidity('')" maxlength="100" required />
             <span asp-validation-for="SubType" class="text-danger"></span>
@@ -33,9 +29,7 @@
             $(this).siblings('select').select2('open');
         }
     });
-    $(function () {
-        $('#MainType').select2();
-    });
+   
 </script>
 <script>
     jQuery('#editCompanyService').on('submit', function () {

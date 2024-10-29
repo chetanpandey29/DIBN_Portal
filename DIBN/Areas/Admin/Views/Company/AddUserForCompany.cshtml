@@ -38,16 +38,6 @@
                             </div>
                         </div>
                         <div class="form-group col-md-5 float-start ms-2 me-3">
-                            <label asp-for="Password" class="control-label"></label> <span class="text-danger">*</span>
-                            <div class="input-group">
-                                <input asp-for="Password" type="password" class="form-control" onfocus="CheckExistanceOfAccountNumber();" />
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text btn btn-theme" id="show_password"><i class="fas fa-eye-slash icon"></i></span>
-                                </div>
-                                <span asp-validation-for="Password" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="form-group col-md-5 float-start ms-2 me-3">
                             <label asp-for="FirstName" class="control-label"></label> <span class="text-danger">*</span>
                             <input asp-for="FirstName" class="form-control" />
                             <span asp-validation-for="FirstName" class="text-danger"></span>
@@ -87,11 +77,11 @@
                             </div>
                         </div>
                         <div class="col-md-12 float-start ms-2 me-3 mt-2">
-                            <div class="form-group form-check" id="IsLoginBlock">
+                            @* <div class="form-group form-check" id="IsLoginBlock">
                                 <label class="form-check-label">
                                     <input class="form-check-input" asp-for="IsLogin" type="checkbox" /> @Html.DisplayNameFor(model => model.IsLogin)
                                 </label>
-                            </div>
+                            </div> *@
                             <div class="form-group form-check" id="IsActiveBlock">
                                 <label class="form-check-label">
                                     <input class="form-check-input" asp-for="IsActive" type="checkbox" /> @Html.DisplayNameFor(model => model.IsActive)

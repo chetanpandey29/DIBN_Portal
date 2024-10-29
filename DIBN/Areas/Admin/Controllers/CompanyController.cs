@@ -22,6 +22,8 @@ using static DIBN.Models.AccountViewModel;
 using System.Data;
 using ClosedXML.Excel;
 using Microsoft.Extensions.Caching.Memory;
+using DocumentFormat.OpenXml.EMMA;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace DIBN.Areas.Admin.Controllers
 {
@@ -44,6 +46,7 @@ namespace DIBN.Areas.Admin.Controllers
         private readonly ISupportTicketRepository _supportTicketRepository;
         private readonly ISalesPersonRepository _salesPersonRepository;
         private IMemoryCache _cache;
+        private readonly IRMTeamManagementRepository _rmTeammanagementRepository;
         public CompanyController(
             ICompanyRepository companyRepository,
             IUserRepository userRepository,
@@ -56,7 +59,8 @@ namespace DIBN.Areas.Admin.Controllers
             IServiceFormRepository serviceFormRepository,
             ISupportTicketRepository supportTicketRepository,
             ISalesPersonRepository salesPersonRepository,
-            IMemoryCache cache
+            IMemoryCache cache,
+            IRMTeamManagementRepository rMTeamManagementRepository
             )
         {
             _companyRepository = companyRepository;
@@ -71,6 +75,7 @@ namespace DIBN.Areas.Admin.Controllers
             _supportTicketRepository = supportTicketRepository;
             _salesPersonRepository = salesPersonRepository;
             _cache = cache;
+            _rmTeammanagementRepository = rMTeamManagementRepository;
         }
 
         [HttpGet]
@@ -109,28 +114,13 @@ namespace DIBN.Areas.Admin.Controllers
             companies.allowedPermission = allowedPermission;
             return View(companies);
         }
+
         [HttpGet]
         [Route("[action]")]
-        public IActionResult Create(string? name)
+        public async Task<IActionResult> Create(string? name)
         {
-            int _companyId = 0;
-            List<SelectListItem> users = new List<SelectListItem>();
-            var userList = _userRepository.GetUserListForCompany(_companyId);
-
-            users.Add(new SelectListItem
-            {
-                Text = "Select Owner of this Company",
-                Value = "0"
-            });
-            for (int i = 0; i < userList.Count; i++)
-            {
-                users.Add(new SelectListItem
-                {
-                    Text = userList[i].Username + " (" + userList[i].AccountNumber + ")",
-                    Value = userList[i].Id.ToString()
-                });
-            }
-
+            SaveCompanyModel model = new SaveCompanyModel();
+           
             List<SelectListItem> salesPersons = new List<SelectListItem>();
             var salesPersonsList = _salesPersonRepository.GetAllSalesPersons();
 
@@ -143,22 +133,64 @@ namespace DIBN.Areas.Admin.Controllers
                 });
             }
 
-            List<SelectListItem> companyType = new List<SelectListItem>();
-            companyType.Add(new SelectListItem
+            ICountryProvider countryProvider = new CountryProvider();
+            var countryList = countryProvider.GetCountries().ToList();
+
+            List<SelectListItem> _countries = new List<SelectListItem>();
+            _countries.Add(new SelectListItem
             {
-                Text = "Select Company Type",
+                Text = "Select Country",
                 Value = ""
             });
-            companyType.Add(new SelectListItem
+
+            for (int i = 0; i < countryList.Count; i++)
             {
-                Text = "Mainland",
-                Value = "Dubai Mainland"
-            });
-            companyType.Add(new SelectListItem
+                _countries.Add(new SelectListItem
+                {
+                    Text = countryList[i].CommonName,
+                    Value = countryList[i].CommonName.ToString()
+                });
+            }
+
+            List<SelectListItem> rmPersons = new List<SelectListItem>();
+            var rmPersonList = await _rmTeammanagementRepository.GetAllRMPersonsForCompany();
+
+            for (int i = 0; i < rmPersonList.Count; i++)
             {
-                Text = "Freezone",
-                Value = "Freezone"
-            });
+                rmPersons.Add(new SelectListItem
+                {
+                    Text = rmPersonList[i].RmTeamName,
+                    Value = rmPersonList[i].Id.ToString()
+                });
+            }
+
+            DateTime date = DateTime.Now;
+            model.Countries = _countries;
+            model.SalesPersons = salesPersons;
+            model.Module = name;
+            model.RMTeams = rmPersons;
+            model.CompanyStartingDate = date.ToString("yyyy-MM-dd");
+            return View(model);
+        }
+
+        [HttpPost]
+        [Route("[action]")]
+        public async Task<IActionResult> Creates(SaveCompanyModel company)
+        {
+            string User = GetUserClaims();
+            int UserId = _permissionRepository.GetUserIdForPermission(User);
+
+            List<SelectListItem> salesPersons = new List<SelectListItem>();
+            var salesPersonsList = _salesPersonRepository.GetAllSalesPersons();
+
+            for (int i = 0; i < salesPersonsList.Count; i++)
+            {
+                salesPersons.Add(new SelectListItem
+                {
+                    Text = salesPersonsList[i].FirstName + " " + salesPersonsList[i].LastName + " (" + salesPersonsList[i].EmailId + ")",
+                    Value = salesPersonsList[i].Id.ToString()
+                });
+            }
 
             ICountryProvider countryProvider = new CountryProvider();
             var countryList = countryProvider.GetCountries().ToList();
@@ -178,45 +210,25 @@ namespace DIBN.Areas.Admin.Controllers
                     Value = countryList[i].CommonName.ToString()
                 });
             }
-            DateTime date = DateTime.Now;
 
-            SaveNewCompany saveCompany = new SaveNewCompany();
-            saveCompany.Countries = _countries;
-            saveCompany.Users = users;
-            saveCompany.SalesPersons = salesPersons;
-            saveCompany.Module = name;
-            saveCompany.CompanyStartingDate = date.ToString("yyyy-MM-dd");
-            saveCompany.CompanyType = companyType;
+            List<SelectListItem> rmPersons = new List<SelectListItem>();
+            var rmPersonList = await _rmTeammanagementRepository.GetAllRMPersonsForCompany();
 
-            return View(saveCompany);
-        }
-
-        [HttpPost]
-        [Route("[action]")]
-        public IActionResult Creates(SaveNewCompany company)
-        {
-            string User = GetUserClaims();
-            int UserId = _permissionRepository.GetUserIdForPermission(User);
-            ICountryProvider countryProvider = new CountryProvider();
-            var countryList = countryProvider.GetCountries().ToList();
-
-            List<SelectListItem> _countries = new List<SelectListItem>();
-            List<SelectListItem> salesPersons = new List<SelectListItem>();
-            var salesPersonsList = _salesPersonRepository.GetAllSalesPersons();
-
-            for (int i = 0; i < salesPersonsList.Count; i++)
+            for (int i = 0; i < rmPersonList.Count; i++)
             {
-                salesPersons.Add(new SelectListItem
+                rmPersons.Add(new SelectListItem
                 {
-                    Text = salesPersonsList[i].FirstName + " " + salesPersonsList[i].LastName + " (" + salesPersonsList[i].EmailId + ")",
-                    Value = salesPersonsList[i].Id.ToString()
+                    Text = rmPersonList[i].RmTeamName,
+                    Value = rmPersonList[i].Id.ToString()
                 });
             }
+            company.Countries = _countries;
+            company.SalesPersons = salesPersons;
+            company.RMTeams = rmPersons;
 
             if (ModelState.IsValid)
             {
-                int returnId = 0, _companyId = 0;
-                int PrimaryEmailExistance = 1;
+                int returnId = 0;
                 int AccountNumber = _companyRepository.CheckExistanceOfCompanyAccountNumber(company.AccountNumber);
 
                 if (AccountNumber < 1)
@@ -224,221 +236,42 @@ namespace DIBN.Areas.Admin.Controllers
                     Log.Error(company.AccountNumber + " Account number already exists ");
                     ViewBag.ErrorMessage = company.AccountNumber + " Account number already exists.";
                     ModelState.AddModelError(company.AccountNumber, AccountNumber + " Already Exists.!");
-                    List<SelectListItem> user = new List<SelectListItem>();
-                    var userLists = _userRepository.GetUserListForCompany(_companyId);
-                    user.Add(new SelectListItem
-                    {
-                        Text = "Select Owner of this Company",
-                        Value = ""
-                    });
-                    for (int i = 0; i < userLists.Count; i++)
-                    {
-                        user.Add(new SelectListItem
-                        {
-                            Text = userLists[i].Username + " (" + userLists[i].AccountNumber + ")",
-                            Value = userLists[i].Id.ToString()
-                        });
-                    }
-                    List<SelectListItem> companyT = new List<SelectListItem>();
-                    companyT.Add(new SelectListItem
-                    {
-                        Text = "Select Company Type",
-                        Value = ""
-                    });
-                    companyT.Add(new SelectListItem
-                    {
-                        Text = "Mainland",
-                        Value = "Dubai Mainland"
-                    });
-                    companyT.Add(new SelectListItem
-                    {
-                        Text = "Freezone",
-                        Value = "Freezone"
-                    });
-                    _countries.Add(new SelectListItem
-                    {
-                        Text = "Select Country",
-                        Value = ""
-                    });
-
-                    for (int i = 0; i < countryList.Count; i++)
-                    {
-                        _countries.Add(new SelectListItem
-                        {
-                            Text = countryList[i].CommonName,
-                            Value = countryList[i].CommonName.ToString()
-                        });
-                    }
-
-                    company.Countries = _countries;
-                    company.Users = user;
-                    company.CompanyType = companyT;
-                    company.AccountNumber = company.AccountNumber;
-                    company.SalesPersons = salesPersons;
+                    
                     return View("Create", company);
                 }
-                if (PrimaryEmailExistance > 0)
-                {
-                    string _emails = "", _mobileNumbers = "", _mobileNumberCode = "";
-                    if (company.OtherEmailID != null)
-                    {
-                        if (company.OtherEmailID.Count > 0)
-                        {
-                            for (int i = 0; i < company.OtherEmailID.Count; i++)
-                            {
-                                if (_emails == "")
-                                {
-                                    _emails = company.EmailID + "," + company.OtherEmailID[i];
-                                }
-                                else
-                                {
-                                    _emails = _emails + "," + company.OtherEmailID[i];
-                                }
-                            }
-                        }
 
-                    }
-                    else
-                    {
-                        _emails = company.EmailID;
-                    }
-
-                    if (company.OtherContactNumbers != null && company.OtherContactNumbersCode != null)
-                    {
-                        if (company.OtherContactNumbers.Count > 0)
-                        {
-                            for (int i = 0; i < company.OtherContactNumbers.Count; i++)
-                            {
-                                if (_mobileNumbers == "")
-                                {
-                                    _mobileNumbers = company.MobileNumber + "," + company.OtherContactNumbers[i];
-                                    _mobileNumberCode = company.MainContactNumberCountry + "," + company.OtherContactNumbersCode[i];
-                                }
-                                else
-                                {
-                                    _mobileNumbers = _mobileNumbers + "," + company.OtherContactNumbers[i];
-                                    _mobileNumberCode = _mobileNumberCode + "," + company.OtherContactNumbersCode[i];
-                                }
-                            }
-                        }
-
-                    }
-                    else
-                    {
-                        _mobileNumbers = company.MobileNumber;
-                        _mobileNumberCode = company.MainContactNumberCountry;
-                    }
-
-                    company.SecondEmailID = company.EmailID;
-                    company.EmailID = _emails;
-                    company.MobileNumber = _mobileNumbers;
-                    company.MainContactNumberCountry = _mobileNumberCode;
-                    company.CreatedBy = UserId;
-                    returnId = _companyRepository.AddNewCompany(company);
-                    Log.Information("Added New Company " + company.CompanyName);
-                    return RedirectToAction("Index", "Company", new { name = company.Module });
-
-                }
+                company.CreatedBy = UserId;
+                returnId = await _companyRepository.Create(company);
+                Log.Information("Added New Company " + company.CompanyName);
+                return RedirectToAction("Index", "Company", new { name = company.Module });
             }
 
-
-            int companyId = 0;
             string messages = string.Join("; ", ModelState.Values
                                         .SelectMany(x => x.Errors)
                                         .Select(x => x.ErrorMessage));
-            List<SelectListItem> users = new List<SelectListItem>();
-            var userList = _userRepository.GetUserListForCompany(companyId);
-            users.Add(new SelectListItem
-            {
-                Text = "Select Owner of this Company",
-                Value = "0"
-            });
-            for (int i = 0; i < userList.Count; i++)
-            {
-                users.Add(new SelectListItem
-                {
-                    Text = userList[i].Username,
-                    Value = userList[i].Id.ToString()
-                });
-            }
-            List<SelectListItem> companyType = new List<SelectListItem>();
-            companyType.Add(new SelectListItem
-            {
-                Text = "Select Company Type",
-                Value = ""
-            });
-            companyType.Add(new SelectListItem
-            {
-                Text = "Mainland",
-                Value = "Dubai Mainland"
-            });
-            companyType.Add(new SelectListItem
-            {
-                Text = "Freezone",
-                Value = "Freezone"
-            });
-            _countries.Add(new SelectListItem
-            {
-                Text = "Select Country",
-                Value = ""
-            });
 
-            for (int i = 0; i < countryList.Count; i++)
-            {
-                _countries.Add(new SelectListItem
-                {
-                    Text = countryList[i].CommonName,
-                    Value = countryList[i].CommonName.ToString()
-                });
-            }
-            company.SalesPersons = salesPersons;
-            company.Countries = _countries;
-            company.Users = users;
-            company.CompanyType = companyType;
             return View("Create", company);
         }
+
         [HttpGet]
         [Route("[action]")]
-        public IActionResult Edit(int Id, string? name)
+        public async Task<IActionResult> Edit(int Id, string? name)
         {
-            SaveCompany companyDetails = new SaveCompany();
-            companyDetails = _companyRepository.GetCompanyDetails(Id);
+            UpdateCompanyModel model = new UpdateCompanyModel();
+            model = await _companyRepository.GetCompanyDetailsByCompanyId(Id);
 
-            List<SelectListItem> users = new List<SelectListItem>();
-            var userList = _userRepository.GetAssignedUserListForCompany(Id);
-            if (userList.Count == 0)
+            List<SelectListItem> salesPersons = new List<SelectListItem>();
+            var salesPersonsList = _salesPersonRepository.GetAllSalesPersons();
+
+            for (int i = 0; i < salesPersonsList.Count; i++)
             {
-                userList = _userRepository.GetUserListForCompany(Id);
-            }
-            users.Add(new SelectListItem
-            {
-                Text = "Select Owner of this Company",
-                Value = "0"
-            });
-            for (int i = 0; i < userList.Count; i++)
-            {
-                users.Add(new SelectListItem
+                salesPersons.Add(new SelectListItem
                 {
-                    Text = userList[i].Username + " (" + userList[i].AccountNumber + ")",
-                    Value = userList[i].Id.ToString()
+                    Text = salesPersonsList[i].FirstName + " " + salesPersonsList[i].LastName + " (" + salesPersonsList[i].EmailId + ")",
+                    Value = salesPersonsList[i].Id.ToString()
                 });
             }
-            List<SelectListItem> companyType = new List<SelectListItem>();
-            companyType.Add(new SelectListItem
-            {
-                Text = "Select Company Type",
-                Value = ""
-            });
-            companyType.Add(new SelectListItem
-            {
-                Text = "Mainland",
-                Value = "Dubai Mainland"
-            });
-            companyType.Add(new SelectListItem
-            {
-                Text = "Freezone",
-                Value = "Freezone"
-            });
+
             ICountryProvider countryProvider = new CountryProvider();
             var countryList = countryProvider.GetCountries().ToList();
 
@@ -457,34 +290,33 @@ namespace DIBN.Areas.Admin.Controllers
                     Value = countryList[i].CommonName.ToString()
                 });
             }
-            List<SelectListItem> salesPersons = new List<SelectListItem>();
-            var salesPersonsList = _salesPersonRepository.GetAllSalesPersons();
 
-            for (int i = 0; i < salesPersonsList.Count; i++)
+            List<SelectListItem> rmPersons = new List<SelectListItem>();
+            var rmPersonList = await _rmTeammanagementRepository.GetAllRMPersonsForCompany();
+
+            for (int i = 0; i < rmPersonList.Count; i++)
             {
-                salesPersons.Add(new SelectListItem
+                rmPersons.Add(new SelectListItem
                 {
-                    Text = salesPersonsList[i].FirstName + " " + salesPersonsList[i].LastName + " (" + salesPersonsList[i].EmailId + ")",
-                    Value = salesPersonsList[i].Id.ToString()
+                    Text = rmPersonList[i].RmTeamName,
+                    Value = rmPersonList[i].Id.ToString()
                 });
             }
-            companyDetails.Users = users;
-            companyDetails.Module = name;
-            companyDetails.Countries = _countries;
-            companyDetails.CompanyType = companyType;
-            companyDetails.SalesPersons = salesPersons;
-            return View(companyDetails);
+
+            DateTime date = DateTime.Now;
+            model.Countries = _countries;
+            model.SalesPersons = salesPersons;
+            model.Module = name;
+            model.RMTeams = rmPersons;
+            model.CompanyStartingDate = date.ToString("yyyy-MM-dd");
+            return View(model);
         }
         [HttpPost]
         [Route("[action]")]
-        public IActionResult Edits(SaveCompany company)
+        public async Task<IActionResult> Edits(UpdateCompanyModel company)
         {
             string User = GetUserClaims();
             int UserId = _permissionRepository.GetUserIdForPermission(User);
-            ICountryProvider countryProvider = new CountryProvider();
-            var countryList = countryProvider.GetCountries().ToList();
-
-            List<SelectListItem> _countries = new List<SelectListItem>();
             List<SelectListItem> salesPersons = new List<SelectListItem>();
             var salesPersonsList = _salesPersonRepository.GetAllSalesPersons();
 
@@ -496,67 +328,48 @@ namespace DIBN.Areas.Admin.Controllers
                     Value = salesPersonsList[i].Id.ToString()
                 });
             }
+
+            ICountryProvider countryProvider = new CountryProvider();
+            var countryList = countryProvider.GetCountries().ToList();
+
+            List<SelectListItem> _countries = new List<SelectListItem>();
+            _countries.Add(new SelectListItem
+            {
+                Text = "Select Country",
+                Value = ""
+            });
+
+            for (int i = 0; i < countryList.Count; i++)
+            {
+                _countries.Add(new SelectListItem
+                {
+                    Text = countryList[i].CommonName,
+                    Value = countryList[i].CommonName.ToString()
+                });
+            }
+
+            List<SelectListItem> rmPersons = new List<SelectListItem>();
+            var rmPersonList = await _rmTeammanagementRepository.GetAllRMPersonsForCompany();
+
+            for (int i = 0; i < rmPersonList.Count; i++)
+            {
+                rmPersons.Add(new SelectListItem
+                {
+                    Text = rmPersonList[i].RmTeamName,
+                    Value = rmPersonList[i].Id.ToString()
+                });
+            }
+
+            DateTime date = DateTime.Now;
+            company.Countries = _countries;
+            company.SalesPersons = salesPersons;
+            company.RMTeams = rmPersons;
+
             if (ModelState.IsValid)
             {
                 int returnId = 0;
-                string _emails = "", _mobileNumbers = "", _mobileNumberCode = "";
-                if (company.OtherEmailID != null)
-                {
-                    if (company.OtherEmailID.Count > 0)
-                    {
-                        for (int i = 0; i < company.OtherEmailID.Count; i++)
-                        {
-                            if (_emails == "")
-                            {
-                                _emails = company.EmailID + "," + company.OtherEmailID[i];
-                            }
-                            else
-                            {
-                                _emails = _emails + "," + company.OtherEmailID[i];
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    _emails = company.EmailID;
-                }
-                if (company.OtherContactNumbers != null && company.OtherContactNumbersCode != null)
-                {
-                    if (company.OtherContactNumbers.Count > 0)
-                    {
-                        for (int i = 0; i < company.OtherContactNumbers.Count; i++)
-                        {
-                            if (_mobileNumbers == "")
-                            {
-                                _mobileNumbers = company.MobileNumber + "," + company.OtherContactNumbers[i];
-                                _mobileNumberCode = company.MainContactNumberCountry + "," + company.OtherContactNumbersCode[i];
-                            }
-                            else
-                            {
-                                _mobileNumbers = _mobileNumbers + "," + company.OtherContactNumbers[i];
-                                _mobileNumberCode = _mobileNumberCode + "," + company.OtherContactNumbersCode[i];
-                            }
-                        }
-                    }
-
-                }
-                else
-                {
-                    _mobileNumbers = company.MobileNumber;
-                    _mobileNumberCode = company.MainContactNumberCountry;
-                }
-                company.SecondEmailID = company.EmailID;
-                company.EmailID = _emails;
-                company.MobileNumber = _mobileNumbers;
-                company.MainContactNumberCountry = _mobileNumberCode;
                 company.CreatedBy = UserId;
-                returnId = _companyRepository.UpdateCompanyDetails(company);
-                if (company.OldPassword != company.CompanyPassword)
-                {
-                    Log.Information("Change Password of " + company.CompanyName + " From " + company.OldPassword + " To " + company.CompanyPassword);
-                    //await _companyRepository.SendChangePasswordMail(company.CompanyName, company.OldPassword, company.CompanyPassword, company.EmailID);
-                }
+                returnId = await _companyRepository.Edit(company);
                 Log.Information("Change Details of " + company.CompanyName);
 
                 return RedirectToAction("Index", "Company", new { name = company.Module });
@@ -564,59 +377,6 @@ namespace DIBN.Areas.Admin.Controllers
             string messages = string.Join("; ", ModelState.Values
                                         .SelectMany(x => x.Errors)
                                         .Select(x => x.ErrorMessage));
-            List<SelectListItem> users = new List<SelectListItem>();
-            var userList = _userRepository.GetAssignedUserListForCompany(company.Id);
-            if (userList.Count == 0)
-            {
-                userList = _userRepository.GetUserListForCompany(company.Id);
-            }
-            users.Add(new SelectListItem
-            {
-                Text = "Select Owner of this Company",
-                Value = ""
-            });
-            for (int i = 0; i < userList.Count; i++)
-            {
-                users.Add(new SelectListItem
-                {
-                    Text = userList[i].Username + " (" + userList[i].AccountNumber + ")",
-                    Value = userList[i].Id.ToString()
-                });
-            }
-            List<SelectListItem> companyType = new List<SelectListItem>();
-            companyType.Add(new SelectListItem
-            {
-                Text = "Select Company Type",
-                Value = ""
-            });
-            companyType.Add(new SelectListItem
-            {
-                Text = "Mainland",
-                Value = "Dubai Mainland"
-            });
-            companyType.Add(new SelectListItem
-            {
-                Text = "Freezone",
-                Value = "Freezone"
-            });
-            _countries.Add(new SelectListItem
-            {
-                Text = "Select Country",
-                Value = ""
-            });
-
-            for (int i = 0; i < countryList.Count; i++)
-            {
-                _countries.Add(new SelectListItem
-                {
-                    Text = countryList[i].CommonName,
-                    Value = countryList[i].CommonName.ToString()
-                });
-            }
-            company.Countries = _countries;
-            company.Users = users;
-            company.CompanyType = companyType;
-            company.SalesPersons = salesPersons;
             return View("Edit", company);
         }
         [HttpGet]
@@ -2192,15 +1952,31 @@ namespace DIBN.Areas.Admin.Controllers
 
         [HttpGet]
         [Route("[action]")]
-        public async Task<IActionResult> GetCompanySubTypePrefix(string companyType,string prefix)
+        public async Task<IActionResult> GetCompanySubTypePrefix(string prefix)
         {
             List<string> subTypes = new List<string>();
             try
             {
-                subTypes = await _companyRepository.GetCompanySubTypePrefix(companyType, prefix);
+                subTypes = await _companyRepository.GetCompanySubTypePrefix(prefix);
                 return new JsonResult(subTypes);
             }
             catch(Exception ex)
+            {
+                return new JsonResult(subTypes);
+            }
+        }
+
+        [HttpGet]
+        [Route("[action]")]
+        public async Task<IActionResult> GetUsersListForCompany(string prefix)
+        {
+            List<GetUsersForCompanyModel> subTypes = new List<GetUsersForCompanyModel>();
+            try
+            {
+                subTypes = await _userRepository.GetUsersForCompany(prefix);
+                return new JsonResult(subTypes);
+            }
+            catch (Exception ex)
             {
                 return new JsonResult(subTypes);
             }

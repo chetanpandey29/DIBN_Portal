@@ -1,4 +1,5 @@
 ﻿using DIBN.Areas.Admin.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DIBN.Areas.Admin.IRepository
@@ -10,5 +11,6 @@ namespace DIBN.Areas.Admin.IRepository
         Task<int> UpdateRMTeamDetails(UpdateRMTeamModel model);
         Task<UpdateRMTeamModel> GetRMTeamDetails(int Id);
         Task Delete(int Id, int UserId);
+        Task<List<GetAllRMPersonModel>> GetAllRMPersonsForCompany();
     }
 }

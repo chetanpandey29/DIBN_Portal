@@ -51,9 +51,6 @@
                                             Email
                                         </th>
                                         <th>
-                                            Authority
-                                        </th>
-                                        <th>
                                             Shareholder
                                         </th>
                                         <th>
@@ -158,6 +155,9 @@
                         else if (data.companyType.includes("Freezone")) {
                             return '<span class="text-theme">Freezone</span>';
                         }
+                        else{
+                            return '<span class="text-theme">' + data.companyType + '</span>';
+                        }
                     },
                     "name": "Company Type"
                 },
@@ -190,17 +190,6 @@
                         }
                     },
                     "name": "Email"
-                },
-                {
-                    "data": function (data, full, meta) {
-                        if (data.licenseType != "N/A") {
-                            return '<span>' + data.licenseType + '</span>';
-                        }
-                        else {
-                            return '<span>--</span>';
-                        }
-                    },
-                    "name": "Authority"
                 },
                 {
                     "data": function (data, full, meta) {
