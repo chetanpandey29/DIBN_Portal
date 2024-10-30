@@ -1968,12 +1968,12 @@ namespace DIBN.Areas.Admin.Controllers
 
         [HttpGet]
         [Route("[action]")]
-        public async Task<IActionResult> GetUsersListForCompany(string prefix)
+        public async Task<IActionResult> GetUsersListForCompany(string prefix,int? companyId)
         {
             List<GetUsersForCompanyModel> subTypes = new List<GetUsersForCompanyModel>();
             try
             {
-                subTypes = await _userRepository.GetUsersForCompany(prefix);
+                subTypes = await _userRepository.GetUsersForCompany(prefix,companyId);
                 return new JsonResult(subTypes);
             }
             catch (Exception ex)

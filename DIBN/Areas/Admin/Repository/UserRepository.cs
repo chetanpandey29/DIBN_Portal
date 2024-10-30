@@ -283,8 +283,11 @@ namespace DIBN.Areas.Admin.Repository
                 {
                     user.Id = Convert.ToInt32(dr["ID"].ToString());
                     user.AccountNumber = dr["AccountNumber"].ToString();
-                    user.Password = dr["Password"].ToString();
-                    user.Password = _encryptionService.DecryptText(user.Password);
+                    if (dr["Password"] != DBNull.Value && dr["Password"].ToString() != "N/A")
+                    {
+                        user.Password = dr["Password"].ToString();
+                        user.Password = _encryptionService.DecryptText(user.Password);
+                    }
                     user.FirstName = dr["FirstName"].ToString();
                     user.LastName = dr["LastName"].ToString();
                     user.CompanyId = Convert.ToInt32(dr["CompanyId"].ToString());
@@ -2086,7 +2089,7 @@ namespace DIBN.Areas.Admin.Repository
         /// <param name="prefix"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<List<GetUsersForCompanyModel>> GetUsersForCompany(string? prefix)
+        public async Task<List<GetUsersForCompanyModel>> GetUsersForCompany(string? prefix,int? companyId)
         {
             SqlConnection connection = new SqlConnection(_dataSetting.DefaultConnection);
             try
@@ -2097,6 +2100,8 @@ namespace DIBN.Areas.Admin.Repository
                 command.CommandType= CommandType.StoredProcedure;
                 if (prefix != null && prefix != "")
                     command.Parameters.AddWithValue("@prefix", prefix);
+                //if (companyId != null && companyId.HasValue && companyId.Value != 0)
+                //    command.Parameters.AddWithValue("@companyId", companyId);
 
                 connection.Open();
 

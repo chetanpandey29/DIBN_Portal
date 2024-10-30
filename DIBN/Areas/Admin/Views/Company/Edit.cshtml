@@ -15,7 +15,7 @@
     <div class="col-md-12">
         <h4 class="card-title float-start">Edit Company Details</h4>
         <a href="javascript:history.go(-1);" class="btn btn-theme float-end" style="margin-bottom:15px;">Back to List</a>
-        <a href="@Url.Action("AddUserForCompany","Company",new{name=@Model.Module,actionMethod="Edit"})" class="btn btn-theme float-end me-2" style="margin-bottom:15px;">Add User for Company</a>
+       @*  <a href="@Url.Action("AddUserForCompany","Company",new{name=@Model.Module,actionMethod="Edit"})" class="btn btn-theme float-end me-2" style="margin-bottom:15px;">Add User for Company</a> *@
     </div>
 </div>
 
@@ -147,7 +147,7 @@
                         <input type="hidden" asp-for="CompanyOwnerId" id="CompanyOwnerId" />
                         <input type="hidden" id="IsTRNSelected" value="@Model.IsTRN" />
                         <div class="form-group m-3 mt-3">
-                            <input type="submit" value="Create" class="btn btn-theme" id="btnSubmit" />
+                            <input type="submit" value="Save" class="btn btn-theme" id="btnSubmit" />
                         </div>
                     </div>
                 </form>
@@ -306,7 +306,6 @@
         jQuery(this).data('form_is_invalid', true);
     });
 </script>
-=
 <script>
     function GetDialingCodeOfCountry(value, Id) {
         $.ajax({
@@ -413,6 +412,7 @@
     });
 
     $(document).ready(function () {
+        var Id = $("#Id").val();
         $("#CompanyOwner").autocomplete({
             minLength: 1,
             source: function (request, response) {
@@ -420,7 +420,7 @@
                     url: "@Url.Action("GetUsersListForCompany", "Company")",
                     type: "GET",
                     dataType: "json",
-                    data: { "prefix": request.term },
+                    data: { "prefix": request.term,"companyId": Id },
                     success: function (data) {
                         if (data.length > 0) {
 
