@@ -3,40 +3,48 @@
   "WorkspaceRootPath": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|d:\\dibn portal\\dibn portal - live\\dibn\\areas\\admin\\models\\scheduledtasks\\generatenotifications.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|solutionrelative:dibn\\areas\\admin\\models\\scheduledtasks\\generatenotifications.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|d:\\dibn portal\\dibn portal - live\\dibn\\areas\\admin\\models\\scheduledtasks\\updateexpirydate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|solutionrelative:dibn\\areas\\admin\\models\\scheduledtasks\\updateexpirydate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|d:\\dibn portal\\dibn portal - live\\dibn\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|solutionrelative:dibn\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|d:\\dibn portal\\dibn portal - live\\dibn\\areas\\admin\\models\\scheduledtasks\\updateexpirydate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|solutionrelative:dibn\\areas\\admin\\models\\scheduledtasks\\updateexpirydate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|d:\\dibn portal\\dibn portal - live\\dibn\\areas\\admin\\repository\\userrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|solutionrelative:dibn\\areas\\admin\\repository\\userrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|d:\\dibn portal\\dibn portal - live\\dibn\\areas\\admin\\views\\company\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|solutionrelative:dibn\\areas\\admin\\views\\company\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|d:\\dibn portal\\dibn portal - live\\dibn\\areas\\admin\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|solutionrelative:dibn\\areas\\admin\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|d:\\dibn portal\\dibn portal - live\\dibn\\areas\\admin\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|solutionrelative:dibn\\areas\\admin\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|d:\\dibn portal\\dibn portal - live\\dibn\\areas\\admin\\models\\scheduledtasks\\generatenotifications.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|solutionrelative:dibn\\areas\\admin\\models\\scheduledtasks\\generatenotifications.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|d:\\dibn portal\\dibn portal - live\\dibn\\areas\\admin\\repository\\companyrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|solutionrelative:dibn\\areas\\admin\\repository\\companyrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|d:\\dibn portal\\dibn portal - live\\dibn\\areas\\admin\\repository\\userrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|solutionrelative:dibn\\areas\\admin\\repository\\userrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|d:\\dibn portal\\dibn portal - live\\dibn\\areas\\admin\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|solutionrelative:dibn\\areas\\admin\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|d:\\dibn portal\\dibn portal - live\\dibn\\areas\\admin\\views\\user\\othercompanyowner.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|solutionrelative:dibn\\areas\\admin\\views\\user\\othercompanyowner.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|d:\\dibn portal\\dibn portal - live\\dibn\\areas\\admin\\controllers\\companycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|solutionrelative:dibn\\areas\\admin\\controllers\\companycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|d:\\dibn portal\\dibn portal - live\\dibn\\areas\\admin\\views\\user\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|solutionrelative:dibn\\areas\\admin\\views\\user\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|d:\\dibn portal\\dibn portal - live\\dibn\\areas\\admin\\views\\company\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|solutionrelative:dibn\\areas\\admin\\views\\company\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|d:\\dibn portal\\dibn portal - live\\dibn\\areas\\admin\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|solutionrelative:dibn\\areas\\admin\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{CC96BBD2-A31A-4A6C-AE91-294DDB73FB82}|DIBN\\DIBN.csproj|d:\\dibn portal\\dibn portal - live\\dibn\\areas\\admin\\irepository\\iuserrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -62,17 +70,17 @@
       "DocumentGroups": [
         {
           "DockedWidth": 208,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "GenerateNotifications.cs",
               "DocumentMoniker": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Models\\ScheduledTasks\\GenerateNotifications.cs",
               "RelativeDocumentMoniker": "DIBN\\Areas\\Admin\\Models\\ScheduledTasks\\GenerateNotifications.cs",
               "ToolTip": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Models\\ScheduledTasks\\GenerateNotifications.cs",
               "RelativeToolTip": "DIBN\\Areas\\Admin\\Models\\ScheduledTasks\\GenerateNotifications.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAACkAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAswBUAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-10-29T11:30:19.711Z",
               "IsPinned": true,
@@ -89,20 +97,26 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2024-10-29T11:30:10.222Z",
-              "IsPinned": true
+              "IsPinned": true,
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "UpdateExpiryDate.cs",
               "DocumentMoniker": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Models\\ScheduledTasks\\UpdateExpiryDate.cs",
               "RelativeDocumentMoniker": "DIBN\\Areas\\Admin\\Models\\ScheduledTasks\\UpdateExpiryDate.cs",
               "ToolTip": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Models\\ScheduledTasks\\UpdateExpiryDate.cs",
               "RelativeToolTip": "DIBN\\Areas\\Admin\\Models\\ScheduledTasks\\UpdateExpiryDate.cs",
-              "ViewState": "AgIAAE4AAAAAAAAAAAAYwDYAAAAMAAAAAAAAAA==",
+              "ViewState": "AgIAACEAAAAAAAAAAAAQwEEAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-10-29T11:30:25.844Z",
-              "IsPinned": true
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
             },
             {
               "$type": "Bookmark",
@@ -142,43 +156,59 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "IUserRepository.cs",
-              "DocumentMoniker": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\IRepository\\IUserRepository.cs",
-              "RelativeDocumentMoniker": "DIBN\\Areas\\Admin\\IRepository\\IUserRepository.cs",
-              "ToolTip": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\IRepository\\IUserRepository.cs",
-              "RelativeToolTip": "DIBN\\Areas\\Admin\\IRepository\\IUserRepository.cs",
-              "ViewState": "AgIAAB8AAAAAAAAAAAAnwCYAAAA6AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-30T06:42:14.898Z"
+              "DocumentIndex": 6,
+              "Title": "OtherCompanyOwner.cshtml",
+              "DocumentMoniker": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Views\\User\\OtherCompanyOwner.cshtml",
+              "RelativeDocumentMoniker": "DIBN\\Areas\\Admin\\Views\\User\\OtherCompanyOwner.cshtml",
+              "ToolTip": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Views\\User\\OtherCompanyOwner.cshtml",
+              "RelativeToolTip": "DIBN\\Areas\\Admin\\Views\\User\\OtherCompanyOwner.cshtml",
+              "ViewState": "AgIAABoBAAAAAAAAAAAAADIBAACeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-10-30T09:05:24.887Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
+              "Title": "CompanyRepository.cs",
+              "DocumentMoniker": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Repository\\CompanyRepository.cs",
+              "RelativeDocumentMoniker": "DIBN\\Areas\\Admin\\Repository\\CompanyRepository.cs",
+              "ToolTip": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Repository\\CompanyRepository.cs",
+              "RelativeToolTip": "DIBN\\Areas\\Admin\\Repository\\CompanyRepository.cs",
+              "ViewState": "AgIAAGUKAAAAAAAAAAAQwH0KAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-30T06:51:35.702Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "UserController.cs",
+              "DocumentMoniker": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Controllers\\UserController.cs",
+              "RelativeDocumentMoniker": "DIBN\\Areas\\Admin\\Controllers\\UserController.cs",
+              "ToolTip": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Controllers\\UserController.cs",
+              "RelativeToolTip": "DIBN\\Areas\\Admin\\Controllers\\UserController.cs",
+              "ViewState": "AgIAAFUIAAAAAAAAAAAswG0IAABNAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-30T06:57:37.937Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "UserRepository.cs",
               "DocumentMoniker": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Repository\\UserRepository.cs",
               "RelativeDocumentMoniker": "DIBN\\Areas\\Admin\\Repository\\UserRepository.cs",
               "ToolTip": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Repository\\UserRepository.cs",
               "RelativeToolTip": "DIBN\\Areas\\Admin\\Repository\\UserRepository.cs",
-              "ViewState": "AgIAAAEBAAAAAAAAAAD4vyEBAAAVAAAAAAAAAA==",
+              "ViewState": "AgIAAKEGAAAAAAAAAAAowMMGAABhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-30T06:33:35.53Z"
+              "WhenOpened": "2024-10-30T06:33:35.53Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "CompanyController.cs",
-              "DocumentMoniker": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Controllers\\CompanyController.cs",
-              "RelativeDocumentMoniker": "DIBN\\Areas\\Admin\\Controllers\\CompanyController.cs",
-              "ToolTip": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Controllers\\CompanyController.cs",
-              "RelativeToolTip": "DIBN\\Areas\\Admin\\Controllers\\CompanyController.cs",
-              "ViewState": "AgIAAJkHAAAAAAAAAAAMwLIHAABcAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-29T11:48:05.501Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 9,
               "Title": "Edit.cshtml",
               "DocumentMoniker": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Views\\Company\\Edit.cshtml",
               "RelativeDocumentMoniker": "DIBN\\Areas\\Admin\\Views\\Company\\Edit.cshtml",
@@ -190,19 +220,45 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "UserController.cs",
-              "DocumentMoniker": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Controllers\\UserController.cs",
-              "RelativeDocumentMoniker": "DIBN\\Areas\\Admin\\Controllers\\UserController.cs",
-              "ToolTip": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Controllers\\UserController.cs",
-              "RelativeToolTip": "DIBN\\Areas\\Admin\\Controllers\\UserController.cs",
-              "ViewState": "AgIAAOwCAAAAAAAAAAAWwPYCAAAwAAAAAAAAAA==",
+              "DocumentIndex": 7,
+              "Title": "CompanyController.cs",
+              "DocumentMoniker": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Controllers\\CompanyController.cs",
+              "RelativeDocumentMoniker": "DIBN\\Areas\\Admin\\Controllers\\CompanyController.cs",
+              "ToolTip": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Controllers\\CompanyController.cs",
+              "RelativeToolTip": "DIBN\\Areas\\Admin\\Controllers\\CompanyController.cs",
+              "ViewState": "AgIAAPABAAAAAAAAAAAAwAgCAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-30T06:57:37.937Z"
+              "WhenOpened": "2024-10-29T11:48:05.501Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 8,
+              "Title": "Create.cshtml",
+              "DocumentMoniker": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Views\\User\\Create.cshtml",
+              "RelativeDocumentMoniker": "DIBN\\Areas\\Admin\\Views\\User\\Create.cshtml",
+              "ToolTip": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Views\\User\\Create.cshtml",
+              "RelativeToolTip": "DIBN\\Areas\\Admin\\Views\\User\\Create.cshtml",
+              "ViewState": "AgIAAI4AAAAAAAAAAAAswKYAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-10-30T08:18:24.915Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "IUserRepository.cs",
+              "DocumentMoniker": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\IRepository\\IUserRepository.cs",
+              "RelativeDocumentMoniker": "DIBN\\Areas\\Admin\\IRepository\\IUserRepository.cs",
+              "ToolTip": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\IRepository\\IUserRepository.cs",
+              "RelativeToolTip": "DIBN\\Areas\\Admin\\IRepository\\IUserRepository.cs",
+              "ViewState": "AgIAAB8AAAAAAAAAAAAnwCYAAAA6AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-30T06:42:14.898Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
               "Title": "_Layout.cshtml",
               "DocumentMoniker": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Views\\Shared\\_Layout.cshtml",
               "RelativeDocumentMoniker": "DIBN\\Areas\\Admin\\Views\\Shared\\_Layout.cshtml",
@@ -214,19 +270,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "CompanyRepository.cs",
-              "DocumentMoniker": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Repository\\CompanyRepository.cs",
-              "RelativeDocumentMoniker": "DIBN\\Areas\\Admin\\Repository\\CompanyRepository.cs",
-              "ToolTip": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Repository\\CompanyRepository.cs",
-              "RelativeToolTip": "DIBN\\Areas\\Admin\\Repository\\CompanyRepository.cs",
-              "ViewState": "AgIAAGYKAAAAAAAAAAAEwH4KAABUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-30T06:51:35.702Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 12,
               "Title": "Create.cshtml",
               "DocumentMoniker": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Views\\Company\\Create.cshtml",
               "RelativeDocumentMoniker": "DIBN\\Areas\\Admin\\Views\\Company\\Create.cshtml",
@@ -238,7 +282,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 13,
               "Title": "HomeController.cs",
               "DocumentMoniker": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\DIBN\\Areas\\Admin\\Controllers\\HomeController.cs",
               "RelativeDocumentMoniker": "DIBN\\Areas\\Admin\\Controllers\\HomeController.cs",
@@ -250,7 +294,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 14,
               "Title": "applicationhost.config",
               "DocumentMoniker": "D:\\DIBN PORTAL\\DIBN PORTAL - LIVE\\.vs\\DIBN\\config\\applicationhost.config",
               "RelativeDocumentMoniker": ".vs\\DIBN\\config\\applicationhost.config",

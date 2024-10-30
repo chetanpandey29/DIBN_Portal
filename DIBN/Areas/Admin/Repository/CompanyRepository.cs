@@ -310,11 +310,16 @@ namespace DIBN.Areas.Admin.Repository
                 while (dr.Read())
                 {
                     CompanyUsers companyUser = new CompanyUsers();
-                    companyUser.IsActive = Convert.ToBoolean(dr["IsActive"]);
-                    companyUser.IsLogin = Convert.ToBoolean(dr["IsLogin"]);
-                    companyUser.UserId = Convert.ToInt32(dr["UserId"]);
-                    companyUser.UserName = Convert.ToString(dr["Username"]);
-                    companyUser.UserAccountNumber = Convert.ToString(dr["UserAccountNumber"]);
+                    if (dr["IsActive"] != DBNull.Value)
+                        companyUser.IsActive = Convert.ToBoolean(dr["IsActive"]);
+                    if (dr["IsLogin"] != DBNull.Value)
+                        companyUser.IsLogin = Convert.ToBoolean(dr["IsLogin"]);
+                    if (dr["UserId"] != DBNull.Value)
+                        companyUser.UserId = Convert.ToInt32(dr["UserId"]);
+                    if (dr["Username"] != DBNull.Value)
+                        companyUser.UserName = Convert.ToString(dr["Username"]);
+                    if (dr["UserAccountNumber"] != DBNull.Value)
+                        companyUser.UserAccountNumber = Convert.ToString(dr["UserAccountNumber"]);
                     companyUsers.Add(companyUser);
                 }
                 dr.Close();
@@ -2689,6 +2694,7 @@ namespace DIBN.Areas.Admin.Repository
                 command.Parameters.AddWithValue("@CompanyType", model.CompanySubType);
                 command.Parameters.AddWithValue("@CompanyCode", model.AccountNumber);
                 command.Parameters.AddWithValue("@OwnerId", model.CompanyOwnerId);
+                command.Parameters.AddWithValue("@OwnerName", model.CompanyOwner);
                 command.Parameters.AddWithValue("@CompanyName", model.CompanyName);
                 if(model.MobileNumber != null && model.MobileNumber != "")
                 {
@@ -2896,6 +2902,7 @@ namespace DIBN.Areas.Admin.Repository
                 command.Parameters.AddWithValue("@Id", model.Id);
                 command.Parameters.AddWithValue("@CompanyType", model.CompanySubType);
                 command.Parameters.AddWithValue("@CompanyCode", model.AccountNumber);
+                command.Parameters.AddWithValue("@OwnerName", model.CompanyOwner);
                 command.Parameters.AddWithValue("@OwnerId", model.CompanyOwnerId);
                 command.Parameters.AddWithValue("@CompanyName", model.CompanyName);
                 if (model.MobileNumber != null && model.MobileNumber != "")
