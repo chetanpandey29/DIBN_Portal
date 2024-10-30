@@ -1,4 +1,3 @@
-D:\DIBN PORTAL\DIBN PORTAL - LIVE\DIBN\obj\Debug\net5.0\staticwebassets\msbuild.DIBN.Microsoft.AspNetCore.StaticWebAssets.props
 D:\DIBN PORTAL\DIBN PORTAL - LIVE\DIBN\bin\Debug\net5.0\web.config
 D:\DIBN PORTAL\DIBN PORTAL - LIVE\DIBN\bin\Debug\net5.0\appsettings.Development.json
 D:\DIBN PORTAL\DIBN PORTAL - LIVE\DIBN\bin\Debug\net5.0\appsettings.json
@@ -379,6 +378,7 @@ D:\DIBN PORTAL\DIBN PORTAL - LIVE\DIBN\obj\Debug\net5.0\DIBN.Views.pdb
 D:\DIBN PORTAL\DIBN PORTAL - LIVE\DIBN\obj\Debug\net5.0\scopedcss\bundle\DIBN.styles.css
 D:\DIBN PORTAL\DIBN PORTAL - LIVE\DIBN\obj\Debug\net5.0\staticwebassets\DIBN.StaticWebAssets.Manifest.cache
 D:\DIBN PORTAL\DIBN PORTAL - LIVE\DIBN\obj\Debug\net5.0\staticwebassets\DIBN.StaticWebAssets.Pack.cache
+D:\DIBN PORTAL\DIBN PORTAL - LIVE\DIBN\obj\Debug\net5.0\staticwebassets\msbuild.DIBN.Microsoft.AspNetCore.StaticWebAssets.props
 D:\DIBN PORTAL\DIBN PORTAL - LIVE\DIBN\obj\Debug\net5.0\staticwebassets\msbuild.build.DIBN.props
 D:\DIBN PORTAL\DIBN PORTAL - LIVE\DIBN\obj\Debug\net5.0\staticwebassets\msbuild.buildMultiTargeting.DIBN.props
 D:\DIBN PORTAL\DIBN PORTAL - LIVE\DIBN\obj\Debug\net5.0\staticwebassets\msbuild.buildTransitive.DIBN.props
