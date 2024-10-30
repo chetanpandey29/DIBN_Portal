@@ -146,16 +146,6 @@
                     }
                 });
             }
-            else if (
-                /* Read more about handling dismissals below */
-                result.dismiss === Swal.DismissReason.cancel
-              ) {
-                swalWithBootstrapButtons.fire(
-                  'Cancelled',
-                  'Cancled by User..!! :)',
-                  'error'
-                )
-              }
         });
     }
 </script>
@@ -197,13 +187,6 @@
                         }
                     });
                 }
-                else if (result.dismiss === Swal.DismissReason.cancel) {
-                swalWithBootstrapButtons.fire(
-                  'Cancelled',
-                  'Cancled by User..!! :)',
-                  'error'
-                )
-              }
             });
         }
         else {
@@ -248,13 +231,6 @@
                         alert("Something went wrong.");
                     }
                 });
-            }
-            else if (result.dismiss === Swal.DismissReason.cancel) {
-            swalWithBootstrapButtons.fire(
-                'Cancelled',
-                'Cancled by User..!! :)',
-                'error'
-            )
             }
         });
     });

@@ -187,7 +187,12 @@
             "columns": [
                 {
                     "data": function (data, full, meta) {
-                        return data.firstName + ' ' + data.lastName;
+                        if (data.lastName != "N/A") {
+                            return data.firstName + ' ' + data.lastName;
+                        }
+                        else {
+                            return data.firstName;
+                        }
                     },
                     "name": "Name"
                 },
@@ -285,7 +290,12 @@
                     "columns": [
                         {
                             "data": function (data, full, meta) {
-                                return data.firstName + ' ' + data.lastName;
+                                if (data.lastName != "N/A") {
+                                    return data.firstName + ' ' + data.lastName;
+                                }
+                                else {
+                                    return data.firstName;
+                                }
                             },
                             title: "Name",
                             name: "Name"
@@ -423,16 +433,6 @@
                         });
                     }
                 });
-            }
-            else if (
-                result.dismiss === Swal.DismissReason.cancel
-            ) {
-                $("#loader").hide();
-                swalWithBootstrapButtons.fire(
-                    'Cancelled',
-                    'Cancled by User..!! :)',
-                    'error'
-                )
             }
         });
     }

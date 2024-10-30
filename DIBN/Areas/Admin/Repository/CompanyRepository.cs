@@ -2377,14 +2377,38 @@ namespace DIBN.Areas.Admin.Repository
                 {
                     GetCompanyDetailsWithPagination comp = new GetCompanyDetailsWithPagination();
                     comp.Id = Convert.ToInt32(dr["Id"].ToString());
-                    comp.AccountNumber = dr["AccountNumber"].ToString();
-                    comp.CompanyName = dr["CompanyName"].ToString();
-                    comp.CompanyType = dr["CompanyType"].ToString();
-                    comp.MobileNumber = dr["MobileNumber"].ToString();
-                    comp.EmailID = dr["EmailID"].ToString();
-                    comp.LicenseType = dr["LicenseType"].ToString();
-                    comp.ShareholderName = dr["ShareholderName"].ToString();
-                    comp.ShareholderSharePercentage = dr["ShareholderSharePercentage"].ToString();
+                    if (dr["AccountNumber"] != DBNull.Value && dr["AccountNumber"].ToString() != "N/A")
+                        comp.AccountNumber = dr["AccountNumber"].ToString();
+                    else
+                        comp.AccountNumber = "---";
+                    if (dr["CompanyName"] != DBNull.Value && dr["CompanyName"].ToString() != "N/A")
+                        comp.CompanyName = dr["CompanyName"].ToString();
+                    else
+                        comp.CompanyName = "---";
+                    if (dr["CompanyType"] != DBNull.Value && dr["CompanyType"].ToString() != "N/A")
+                        comp.CompanyType = dr["CompanyType"].ToString();
+                    else
+                        comp.CompanyType = "---";
+                    if (dr["MobileNumber"] != DBNull.Value && dr["MobileNumber"].ToString() != "N/A")
+                        comp.MobileNumber = dr["MobileNumber"].ToString();
+                    else
+                        comp.MobileNumber = "---";
+                    if (dr["EmailID"] != DBNull.Value && dr["EmailID"].ToString() != "N/A")
+                        comp.EmailID = dr["EmailID"].ToString();
+                    else
+                        comp.EmailID = "---";
+                    if (dr["LicenseType"] != DBNull.Value && dr["LicenseType"].ToString() != "N/A")
+                        comp.LicenseType = dr["LicenseType"].ToString();
+                    else
+                        comp.LicenseType = "---";
+                    if (dr["ShareholderName"] != DBNull.Value && dr["ShareholderName"].ToString() != "N/A")
+                        comp.ShareholderName = dr["ShareholderName"].ToString();
+                    else
+                        comp.ShareholderName = "---";
+                    if (dr["ShareholderSharePercentage"] != DBNull.Value && dr["ShareholderSharePercentage"].ToString() != "N/A")
+                        comp.ShareholderSharePercentage = dr["ShareholderSharePercentage"].ToString();
+                    else
+                        comp.ShareholderSharePercentage = "---";
                     comp.IsActive = Convert.ToBoolean(dr["IsActive"]);
                     comp.ShareholderIsActive = Convert.ToBoolean(dr["ShareholderIsActive"]);
                     companies.Add(comp);

@@ -194,14 +194,14 @@
                 {
                     "data": function (data, full, meta) {
                         if (data.shareholderIsActive == false) {
-                            return '<span>--</span>';
+                            return '<span>---</span>';
                         }
                         else {
                             if (data.shareholderName != "N/A") {
                                 return '<span>' + data.shareholderName + '</span>';
                             }
                             else {
-                                return '<span>--</span>';
+                                return '<span>---</span>';
                             }
                         }
                     },
@@ -210,14 +210,14 @@
                 {
                     "data": function (data, full, meta) {
                         if (data.shareholderIsActive == false) {
-                            return '<span>--</span>';
+                            return '<span>---</span>';
                         }
                         else {
                             if (data.shareholderSharePercentage != "N/A") {
                                 return '<span>' + data.shareholderSharePercentage + ' %</span>';
                             }
                             else {
-                                return '<span>--</span>';
+                                return '<span>---</span>';
                             }
                         }
                     },
@@ -470,16 +470,6 @@
                         }
                     }
                 });
-            }
-            else if (
-                result.dismiss === Swal.DismissReason.cancel
-            ) {
-                $("#loader").hide();
-                swalWithBootstrapButtons.fire(
-                    'Cancelled',
-                    'Cancled by User..!! :)',
-                    'error'
-                )
             }
         });
     }
